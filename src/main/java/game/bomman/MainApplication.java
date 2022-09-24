@@ -1,17 +1,20 @@
-package com.example.bomman;
+package game.bomman;
 
+import game.object.Bomber;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class MainApplication extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 620, 260);
+    public void start(Stage stage) {
+        Bomber b = new Bomber(50, 50);
+
+        Group root = new Group(b.view);
+
+        Scene scene = new Scene(root, 620, 260);
+
         stage.setTitle("Bomberman");
         stage.setScene(scene);
         stage.show();

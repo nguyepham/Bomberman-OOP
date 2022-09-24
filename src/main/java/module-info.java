@@ -1,8 +1,9 @@
 module com.example.bomman {
     requires javafx.controls;
     requires javafx.fxml;
+    requires org.jetbrains.annotations;
 
 
-    opens com.example.bomman to javafx.fxml;
-    exports com.example.bomman;
+    opens game.bomman to javafx.fxml;
+    exports game.bomman;
 }
