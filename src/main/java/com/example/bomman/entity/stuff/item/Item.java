@@ -1,4 +1,4 @@
-package com.example.bomman.entity.item;
+package com.example.bomman.entity.stuff.item;
 
 import com.example.bomman.entity.Entity;
 
