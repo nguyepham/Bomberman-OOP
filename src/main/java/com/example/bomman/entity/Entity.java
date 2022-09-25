@@ -1,10 +1,10 @@
 package com.example.bomman.entity;
 
-public abstract class Entity {
+public interface Entity {
 
 
 
-    public void loadResource() {
+   default void load(String path) {
 
-    }
+   }
 }
