@@ -1,5 +1,6 @@
 package game.bomman.entity;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileInputStream;
@@ -14,7 +15,7 @@ public abstract class Entity {
    protected double positionY;
 
    // create a load Image method to encapsulate
-   // how handling loading images so that
+   // the functionality of loading images so that
    // we can change the particular implementation
    // later on if necessary
    public static Image loadImage(String path) throws FileNotFoundException {

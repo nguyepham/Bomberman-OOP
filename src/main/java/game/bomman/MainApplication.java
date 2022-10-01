@@ -1,6 +1,11 @@
 package game.bomman;
 
+import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
+import game.bomman.entity.stuff.Brick;
+import game.bomman.entity.stuff.Grass;
+import game.bomman.entity.stuff.Stuff;
+import game.bomman.entity.stuff.Wall;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -10,7 +15,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import static game.bomman.entity.character.Character.NOT_MOVING;
 
@@ -80,16 +89,55 @@ public class MainApplication extends Application {
         }.start();
     }
 
-    public void loadStaticMapSample(Stage stage) {
+    public void loadStaticMapSample(Stage stage) throws FileNotFoundException {
+        FileInputStream maps = new FileInputStream("src/main/resources/game/bomman/assets/maps/map1.txt");
+        Scanner mapScanner = new Scanner(maps);
 
+        int height = mapScanner.nextInt();
+        int width = mapScanner.nextInt();
+
+        mapScanner.useDelimiter("\n");
+        mapScanner.next();
+
+        ArrayList<Stuff> entities = new ArrayList<>();
+
+        for (int row = 0; row < height; ++row) {
+            String thisRow = mapScanner.next();
+            for (int col = 0; col < width; ++col) {
+                switch (thisRow.charAt(col)) {
+                    case '#' -> {
+                        Wall w = new Wall(col, row);
+                        entities.add(w);
+                    }
+                    case ' ' -> {
+                        Grass g = new Grass(col, row);
+                        entities.add(g);
+                    }
+                    case '*' -> {
+                        Brick b = new Brick(col, row);
+                        entities.add(b);
+                    }
+                }
+            }
+        }
+
+        Canvas canvas = new Canvas(width * Stuff.side, height * Stuff.side);
+        Group root = new Group(canvas);
+        Scene scene = new Scene(root, canvas.getWidth(), canvas.getHeight());
+        stage.setScene(scene);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        for (Stuff entity: entities) {
+            entity.render(gc);
+        }
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws FileNotFoundException {
         stage.setTitle("Bomberman");
         stage.setResizable(false);
 
-        loadBomberSample(stage);
+        loadStaticMapSample(stage);
 
         stage.show();
     }
