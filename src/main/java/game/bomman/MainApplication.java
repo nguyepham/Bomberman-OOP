@@ -80,6 +80,10 @@ public class MainApplication extends Application {
         }.start();
     }
 
+    public void loadStaticMapSample(Stage stage) {
+
+    }
+
     @Override
     public void start(Stage stage) {
         stage.setTitle("Bomberman");
