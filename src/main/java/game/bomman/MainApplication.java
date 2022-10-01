@@ -1,6 +1,6 @@
-package com.example.bomman;
+package game.bomman;
 
-import com.example.bomman.entity.character.Bomber;
+import game.bomman.entity.character.Bomber;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 import java.util.Arrays;
 
-import static com.example.bomman.entity.character.Character.NOT_MOVING;
+import static game.bomman.entity.character.Character.NOT_MOVING;
 
 public class MainApplication extends Application {
 

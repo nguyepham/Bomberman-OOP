@@ -1,6 +1,6 @@
-package com.example.bomman.entity.character;
+package game.bomman.entity.character;
 
-import com.example.bomman.entity.Entity;
+import game.bomman.entity.Entity;
 
 public abstract class Character extends Entity {
     // Notes that X's coordinate here is the horizontal one

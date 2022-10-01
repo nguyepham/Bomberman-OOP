@@ -1,4 +1,4 @@
-package com.example.bomman.entity;
+package game.bomman.entity;
 
 import javafx.scene.image.Image;
 
@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public abstract class Entity {
-   public static final String IMAGES_PATH = "src/main/resources/com/example/bomman/assets/sprites";
+   public static final String IMAGES_PATH = "src/main/resources/game/bomman/assets/sprites";
 
 
    // create a load Image method to encapsulate
