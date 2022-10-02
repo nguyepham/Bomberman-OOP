@@ -89,7 +89,7 @@ public class MainApplication extends Application {
         }.start();
     }
 
-    public void loadStaticMapSample(Stage stage) throws FileNotFoundException {
+    public Scene loadStaticMapSample(Stage stage) throws FileNotFoundException {
         FileInputStream maps = new FileInputStream("src/main/resources/game/bomman/assets/maps/map1.txt");
         Scanner mapScanner = new Scanner(maps);
 
@@ -124,7 +124,6 @@ public class MainApplication extends Application {
         Canvas canvas = new Canvas(width * Stuff.side, height * Stuff.side);
         Group root = new Group(canvas);
         Scene scene = new Scene(root, canvas.getWidth(), canvas.getHeight());
-        stage.setScene(scene);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         for (Stuff entity: entities) {
@@ -137,7 +136,7 @@ public class MainApplication extends Application {
         stage.setTitle("Bomberman");
         stage.setResizable(false);
 
-        loadStaticMapSample(stage);
+        stage.setScene(loadStaticMapSample(stage));
 //        loadBomberSample(stage);
 
         stage.show();
