@@ -16,8 +16,8 @@ public class Grass extends Stuff {
         }
     }
 
-    public Grass(double positionX, double positionY) {
-        super(positionX, positionY);
+    public Grass(int row, int col) {
+        super(row, col);
     }
 
     @Override

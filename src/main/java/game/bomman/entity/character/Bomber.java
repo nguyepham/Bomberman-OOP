@@ -1,5 +1,8 @@
 package game.bomman.entity.character;
 
+import game.bomman.entity.stuff.Grass;
+import game.bomman.entity.stuff.Stuff;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -17,19 +20,29 @@ public class Bomber extends Character {
         try {
             walkingImage = loadImage(IMAGES_PATH + "/player/walking@16.png");
             idleImage = loadImage(IMAGES_PATH + "/player/idle@4.png");
-            imageWidth = walkingImage.getWidth() / 16;
-            imageHeight = walkingImage.getHeight();
+            spriteWidth = walkingImage.getWidth() / 16;
+            spriteHeight = walkingImage.getHeight();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-    private static final double imageWidth;
-    private static final double imageHeight;
+    private static final double spriteWidth;
+    private static final double spriteHeight;
+
+    private static final double boundaryWidth = 45;
+    private static final double boundaryHeight = 46;
+    private static final double paddingTop = 12;
+    private static final double paddingLeft = 3;
 
     // these are set like this so that at the start of the game
     // the character stands forward facing the user.
     private String currentDirection = "DOWN";
     private int index = 8;
+
+    public Bomber(int row, int col) {
+        positionX = col * Stuff.side + 1 - paddingLeft;
+        positionY = row * Stuff.side + 1 - paddingTop;
+    }
 
     /**
      * Updates the position of the character.
@@ -39,9 +52,10 @@ public class Bomber extends Character {
      * @param timeSinceStart the time passed since the game started.
      * @param direction the direction in which the character moves.
      */
-    public void update(double elapsedTime, double timeSinceStart, String direction) {
-        setPositionX(positionX + elapsedTime * velocityX);
-        setPositionY(positionY + elapsedTime * velocityY);
+    public void update(double elapsedTime, double timeSinceStart, String direction, Stuff[][] entities) {
+        if (velocityX > 0 || velocityY > 0)
+            setPosition(positionX + elapsedTime * velocityX,
+                positionY + elapsedTime * velocityY, entities);
 
         // set the index of the sprite to be drawn to screen
         if (!direction.equals(NOT_MOVING)) {
@@ -62,42 +76,53 @@ public class Bomber extends Character {
         }
     }
 
+    private void setPosition(double positionX, double positionY, Stuff[][] entities) {
+        if (positionX < 0 || positionY < 0)
+            return;
+
+        double boxPosX = positionX + paddingLeft;
+        double boxPosY = positionY + paddingTop;
+        int topLeftX = (int) (boxPosX / Stuff.side);
+        int topLeftY = (int) (boxPosY / Stuff.side);
+        int bottomRightX = (int) ((boxPosX + boundaryWidth) / Stuff.side);
+        int bottomRightY = (int) ((boxPosY + boundaryHeight) / Stuff.side);
+
+        System.out.println(topLeftY + " " + topLeftX + " " + bottomRightY + " " + bottomRightX);
+
+        for (int x = topLeftX; x <= bottomRightX; ++x) {
+            for (int y = topLeftY; y <= bottomRightY; ++y) {
+                if (!(entities[y][x] instanceof Grass) && this.intersects(entities[x][y])) {
+                    return;
+                }
+            }
+        }
+
+        this.positionX = positionX;
+        this.positionY = positionY;
+    }
+
     // Renders the character to scene scaled to the dimension
     // specified by the arguments width and height.
     public void render(GraphicsContext gc) {
+        double imageX = 0;
+        Image outputImage;
         // if currently not moving then draw the correct idle sprite
         if (velocityX == 0 && velocityY == 0) {
             switch (currentDirection) {
-                case "UP" -> gc.drawImage(idleImage, 0, 0, imageWidth, imageHeight,
-                        positionX, positionY, imageWidth, imageHeight);
-                case "RIGHT" -> gc.drawImage(idleImage, imageWidth, 0, imageWidth, imageHeight,
-                        positionX, positionY, imageWidth, imageHeight);
-                case "DOWN" -> gc.drawImage(idleImage, imageWidth * 2, 0, imageWidth, imageHeight,
-                        positionX, positionY, imageWidth, imageHeight);
-                case "LEFT" -> gc.drawImage(idleImage, imageWidth * 3, 0, imageWidth, imageHeight,
-                        positionX, positionY, imageWidth, imageHeight);
-                default -> throw new RuntimeException();
+                case "UP" -> imageX = 0;
+                case "RIGHT" -> imageX = spriteWidth;
+                case "DOWN" -> imageX = spriteWidth * 2;
+                case "LEFT" -> imageX = spriteWidth * 3;
             }
+            outputImage = idleImage;
         }
         // else draw the correct walking spite corresponding to the current moving direction
         else {
-            gc.drawImage(walkingImage, index * imageWidth, 0, imageWidth, imageHeight, positionX, positionY, imageWidth, imageHeight);
+            imageX = spriteWidth * index;
+            outputImage = walkingImage;
         }
-    }
-
-    // Updates the X's coordinate of the character.
-    // The condition for valid position will change soon
-    // when I add some code handling collision.
-    public void setPositionX(double positionX) {
-        if (positionX >= 0) {
-            this.positionX = positionX;
-        }
-    }
-    // the same goes for the Y's coordinate.
-    public void setPositionY(double positionY) {
-        if (positionY >= 0) {
-            this.positionY = positionY;
-        }
+        gc.drawImage(outputImage, imageX, 0, spriteWidth, spriteHeight,
+                positionX, positionY, spriteWidth, spriteHeight);
     }
 
     public void setVelocity(double velocityX, double velocityY) {
@@ -108,5 +133,13 @@ public class Bomber extends Character {
     public void addVelocity(double dX, double dY) {
         velocityX += dX;
         velocityY += dY;
+    }
+
+    public Rectangle2D getBoundary() {
+        return new Rectangle2D(positionX + paddingLeft, positionY + paddingTop, boundaryWidth, boundaryHeight);
+    }
+
+    public boolean intersects(Stuff stuff) {
+        return this.getBoundary().intersects(stuff.getBoundary());
     }
 }

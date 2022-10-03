@@ -16,8 +16,8 @@ public class Brick extends Stuff {
         }
     }
 
-    public Brick(double positionX, double positionY) {
-        super(positionX, positionY);
+    public Brick(int row, int col) {
+        super(row, col);
     }
 
     @Override
