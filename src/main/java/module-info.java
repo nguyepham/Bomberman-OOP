@@ -4,6 +4,6 @@ module game.bomman {
     requires org.jetbrains.annotations;
 
 
-    opens game.bomman to javafx.fxml;
-    exports game.bomman;
+    opens game.application to javafx.fxml;
+    exports game.application;
 }
