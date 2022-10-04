@@ -9,8 +9,8 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 
 public class Bomber extends Character {
-    // number of sprites for each direction in the Image
-    // describing the walking motion of the character
+    // Number of sprites for each direction in the Image
+    // describing the walking motion of the character.
     private static final int nWalkingSpritesPerDirection = 4;
     private static final double duration = 0.1;
     // UP RIGHT DOWN LEFT
@@ -34,8 +34,8 @@ public class Bomber extends Character {
     private static final double paddingTop = 12;
     private static final double paddingLeft = 3;
 
-    // these are set like this so that at the start of the game
-    // the character stands forward facing the user.
+    // In the beginning
+    // the character stands face to face with the user.
     private String currentDirection = "DOWN";
     private int index = 8;
 
