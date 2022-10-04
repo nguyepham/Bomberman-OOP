@@ -1,25 +1,23 @@
 package game.bomman;
 
+
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.stuff.Brick;
 import game.bomman.entity.stuff.Grass;
 import game.bomman.entity.stuff.Stuff;
 import game.bomman.entity.stuff.Wall;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
 import java.util.Arrays;
 import java.util.Scanner;
-
-import static game.bomman.entity.character.Character.NOT_MOVING;
 
 public class MainApplication extends Application {
     public Scene loadStaticMapSample() throws FileNotFoundException {
@@ -110,7 +108,7 @@ public class MainApplication extends Application {
                 b.renderBoundingBox(gc);
             }
         }.start();
-
+        
         return scene;
     }
 
