@@ -1,4 +1,4 @@
-module com.example.bomman {
+module game.bomman {
     requires javafx.controls;
     requires javafx.fxml;
     requires org.jetbrains.annotations;
