@@ -103,11 +103,11 @@ public class MainApplication extends Application {
 
                 for (Stuff[] entityRow: entities) {
                     for (Stuff entity: entityRow) {
-                        entity.render(gc);
+                        entity.renderBoundingBox(gc);
                     }
                 }
 
-                b.render(gc);
+                b.renderBoundingBox(gc);
             }
         }.start();
 

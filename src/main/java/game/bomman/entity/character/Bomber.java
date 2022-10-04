@@ -5,8 +5,13 @@ import game.bomman.entity.stuff.Stuff;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
+
+// Todo:
+// 1. Let position X, Y represent the position of the box
+// 2. Render bounding box and try and error to find the correct dimension for the box
 
 public class Bomber extends Character {
     // number of sprites for each direction in the Image
@@ -29,10 +34,11 @@ public class Bomber extends Character {
     private static final double spriteWidth;
     private static final double spriteHeight;
 
-    private static final double boundaryWidth = 45;
-    private static final double boundaryHeight = 46;
-    private static final double paddingTop = 12;
-    private static final double paddingLeft = 3;
+    private static final double boundaryWidth = 31;
+    private static final double boundaryHeight = 31;
+    private static final double paddingBottom = 5;
+    private static final double paddingTop = spriteHeight - boundaryHeight - paddingBottom;
+    private static final double paddingLeft = (spriteWidth - boundaryWidth - 1) / 2;
 
     // these are set like this so that at the start of the game
     // the character stands forward facing the user.
@@ -40,8 +46,8 @@ public class Bomber extends Character {
     private int index = 8;
 
     public Bomber(int row, int col) {
-        positionX = col * Stuff.side + 1 - paddingLeft;
-        positionY = row * Stuff.side + 1 - paddingTop;
+        positionX = col * Stuff.side + (Stuff.side - boundaryWidth) / 2;
+        positionY = row * Stuff.side + (Stuff.side - boundaryHeight) / 2;
     }
 
     /**
@@ -77,21 +83,18 @@ public class Bomber extends Character {
     }
 
     private void setPosition(double positionX, double positionY, Stuff[][] entities) {
-        if (positionX < 0 || positionY < 0)
-            return;
+        int topLeftX = (int) (positionX / Stuff.side);
+        int topLeftY = (int) (positionY / Stuff.side);
+        int bottomRightX = (int) ((positionX + boundaryWidth) / Stuff.side);
+        int bottomRightY = (int) ((positionY + boundaryHeight) / Stuff.side);
 
-        double boxPosX = positionX + paddingLeft;
-        double boxPosY = positionY + paddingTop;
-        int topLeftX = (int) (boxPosX / Stuff.side);
-        int topLeftY = (int) (boxPosY / Stuff.side);
-        int bottomRightX = (int) ((boxPosX + boundaryWidth) / Stuff.side);
-        int bottomRightY = (int) ((boxPosY + boundaryHeight) / Stuff.side);
-
-        System.out.println(topLeftY + " " + topLeftX + " " + bottomRightY + " " + bottomRightX);
+        System.out.println(topLeftY + " " + topLeftX + " " + bottomRightY + " " + bottomRightX + " "
+        + positionX / Stuff.side + " " + positionY / Stuff.side + " "
+        + (positionX + boundaryWidth) / Stuff.side + " " + (positionY + boundaryHeight) / Stuff.side);
 
         for (int x = topLeftX; x <= bottomRightX; ++x) {
             for (int y = topLeftY; y <= bottomRightY; ++y) {
-                if (!(entities[y][x] instanceof Grass) && this.intersects(entities[x][y])) {
+                if (!(entities[y][x] instanceof Grass) && this.intersects(entities[y][x])) {
                     return;
                 }
             }
@@ -122,7 +125,12 @@ public class Bomber extends Character {
             outputImage = walkingImage;
         }
         gc.drawImage(outputImage, imageX, 0, spriteWidth, spriteHeight,
-                positionX, positionY, spriteWidth, spriteHeight);
+                positionX - paddingLeft, positionY - paddingTop, spriteWidth, spriteHeight);
+    }
+
+    public void renderBoundingBox(GraphicsContext gc) {
+        gc.setFill(Color.BLACK);
+        gc.fillRect(positionX, positionY, boundaryWidth, boundaryHeight);
     }
 
     public void setVelocity(double velocityX, double velocityY) {
@@ -136,7 +144,7 @@ public class Bomber extends Character {
     }
 
     public Rectangle2D getBoundary() {
-        return new Rectangle2D(positionX + paddingLeft, positionY + paddingTop, boundaryWidth, boundaryHeight);
+        return new Rectangle2D(positionX, positionY, boundaryWidth, boundaryHeight);
     }
 
     public boolean intersects(Stuff stuff) {

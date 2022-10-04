@@ -1,6 +1,5 @@
 package game.bomman.entity;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileInputStream;
@@ -11,6 +10,8 @@ public abstract class Entity {
 
    // Notes that X's coordinate here is the horizontal one
    // while Y's coordinate is the vertical one.
+   // And they are the position of the bounding box of the sprite
+   // rather than the sprite itself.
    protected double positionX;
    protected double positionY;
 
