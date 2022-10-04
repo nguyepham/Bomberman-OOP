@@ -14,7 +14,7 @@ public abstract class Stuff extends Entity implements Blocking {
         this.positionY = row * side;
     }
 
-    //public abstract void render(GraphicsContext gc);
+    public abstract void render(GraphicsContext gc);
 
     public void renderBoundingBox(GraphicsContext gc) {
         Color fillColor = Color.ALICEBLUE;
