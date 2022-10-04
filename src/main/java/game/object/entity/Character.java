@@ -1,6 +1,15 @@
-package game.object;
+package game.object.entity;
+
+import game.object.entity.Entity;
 
 public abstract class Character extends Entity {
+    public enum Direction {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
+
     protected enum State {
         UP,
         DOWN,
@@ -32,5 +41,14 @@ public abstract class Character extends Entity {
      */
     public Character(int x, int y) {
         super(x, y);
+    }
+
+    public void move(Direction direction) {
+        switch (direction) {
+            case UP -> x--;
+            case DOWN -> x++;
+            case LEFT -> y--;
+            case RIGHT -> y++;
+        }
     }
 }
