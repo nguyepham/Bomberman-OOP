@@ -16,8 +16,8 @@ public class Wall extends Stuff {
         }
     }
 
-    public Wall(double positionX, double positionY) {
-        super(positionX, positionY);
+    public Wall(int row, int col) {
+        super(row, col);
     }
 
     @Override
