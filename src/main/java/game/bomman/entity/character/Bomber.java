@@ -14,8 +14,8 @@ import java.io.FileNotFoundException;
 // 2. Render bounding box and try and error to find the correct dimension for the box
 
 public class Bomber extends Character {
-    // number of sprites for each direction in the Image
-    // describing the walking motion of the character
+    // Number of sprites for each direction in the Image
+    // describing the walking motion of the character.
     private static final int nWalkingSpritesPerDirection = 4;
     private static final double duration = 0.1;
     // UP RIGHT DOWN LEFT
@@ -40,8 +40,8 @@ public class Bomber extends Character {
     private static final double paddingTop = spriteHeight - boundaryHeight - paddingBottom;
     private static final double paddingLeft = (spriteWidth - boundaryWidth - 1) / 2;
 
-    // these are set like this so that at the start of the game
-    // the character stands forward facing the user.
+    // In the beginning
+    // the character stands face to face with the user.
     private String currentDirection = "DOWN";
     private int index = 8;
 
