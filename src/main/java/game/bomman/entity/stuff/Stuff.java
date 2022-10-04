@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Stuff extends Entity implements Blocking {
     public static final double side = 48;
+
     public Stuff(int row, int col) {
         this.positionX = col * side;
         this.positionY = row * side;

@@ -1,6 +1,5 @@
 package game.bomman;
 
-import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.stuff.Brick;
 import game.bomman.entity.stuff.Grass;
@@ -17,14 +16,13 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 import static game.bomman.entity.character.Character.NOT_MOVING;
 
 public class MainApplication extends Application {
-    public void loadStaticMapSample(Stage stage) throws FileNotFoundException {
+    public Scene loadStaticMapSample() throws FileNotFoundException {
         FileInputStream maps = new FileInputStream("src/main/resources/game/bomman/assets/maps/map1.txt");
         Scanner mapScanner = new Scanner(maps);
 
@@ -50,7 +48,6 @@ public class MainApplication extends Application {
         Canvas canvas = new Canvas(width * Stuff.side, height * Stuff.side);
         Group root = new Group(canvas);
         Scene scene = new Scene(root, canvas.getWidth(), canvas.getHeight());
-        stage.setScene(scene);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // currently allow only one pressed key which is
@@ -113,13 +110,8 @@ public class MainApplication extends Application {
                 b.render(gc);
             }
         }.start();
-    }
 
-    void loadFullMap() {
-        // Todo:
-        // 1. create bounding box for each entities: checked
-        // 2. add collision detection functionality: checked
-        // 3. change setPosition condition
+        return scene;
     }
 
     @Override
@@ -127,7 +119,8 @@ public class MainApplication extends Application {
         stage.setTitle("Bomberman");
         stage.setResizable(false);
 
-        loadStaticMapSample(stage);
+        stage.setScene(loadStaticMapSample());
+//        loadBomberSample(stage);
 
         stage.show();
     }
