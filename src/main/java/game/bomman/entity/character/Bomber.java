@@ -11,8 +11,8 @@ public class Bomber extends Character {
     private static final int nWalkingSpritesPerDirection = 4;
     private static final double duration = 0.1;
     // UP RIGHT DOWN LEFT
-    private static final Image walkingImage;
-    private static final Image idleImage;
+    public static final Image walkingImage;
+    public static final Image idleImage;
     static {
         try {
             walkingImage = loadImage(IMAGES_PATH + "/player/walking@16.png");
@@ -23,6 +23,7 @@ public class Bomber extends Character {
             throw new RuntimeException(e);
         }
     }
+
     private static final double imageWidth;
     private static final double imageHeight;
 
