@@ -57,21 +57,60 @@ public class Map {
             String thisRow = mapScanner.next();
             for (int i = 0; i < width; ++i) {
                 char rawConfig = thisRow.charAt(i);
-                int debug = 0;
-                if (i == 12) {
-                    debug = 1;
-                }
                 cells[j][i] = new Cell(i, j, rawConfig);
+                double[] pos = cells[j][i].getLoadingPosition();
+
+                if (j == height - 1) {
+                    cells[j][i].getSpriteFrom(
+                            "src/main/resources/game/bomman/assets/sprites/map/walls@10.png");
+                    gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 5, 0, Entity.SIDE, Entity.SIDE,
+                            pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                    continue;
+                }
+
+                if (j == 0) {
+                    cells[j][i].getSpriteFrom(
+                            "src/main/resources/game/bomman/assets/sprites/map/walls@10.png");
+                    if (i == 0) {
+                        gc.drawImage(cells[j][i].getSprite(), Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
+                                pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                        continue;
+                    }
+                    if (i == width - 1) {
+                        gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 3, 0, Entity.SIDE, Entity.SIDE,
+                                pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                        continue;
+                    }
+                    gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 2, 0, Entity.SIDE, Entity.SIDE,
+                            pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                    continue;
+                }
+
+                if (i == 0 || i == width - 1) {
+                    cells[j][i].getSpriteFrom(
+                            "src/main/resources/game/bomman/assets/sprites/map/walls@10.png");
+                    if (i == 0) {
+                        gc.drawImage(cells[j][i].getSprite(), 0, 0, Entity.SIDE, Entity.SIDE,
+                                pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                    } else {
+                        gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 4, 0, Entity.SIDE, Entity.SIDE,
+                                pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                    }
+                    continue;
+                }
 
                 switch (rawConfig) {
                     case '#' -> {
-                        cells[j][i].getSpriteFrom("src/main/resources/game/bomman/assets/sprites/map/steel.png");
+                        cells[j][i].getSpriteFrom(
+                                "src/main/resources/game/bomman/assets/sprites/map/steel.png");
                     }
                     case '*' -> {
-                        cells[j][i].getSpriteFrom("src/main/resources/game/bomman/assets/sprites/map/brick.png");
+                        cells[j][i].getSpriteFrom(
+                                "src/main/resources/game/bomman/assets/sprites/map/brick.png");
                     }
                     default -> {
-                        if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
+                        if (j > 0
+                                && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
                             cells[j][i].getSpriteFrom(
                                     "src/main/resources/game/bomman/assets/sprites/map/shaderGrass.png");
                         } else {
@@ -80,8 +119,6 @@ public class Map {
                         }
                     }
                 }
-
-                double[] pos = cells[j][i].getLoadingPosition();
                 gc.drawImage(cells[j][i].getSprite(), pos[0], pos[1], Entity.SIDE, Entity.SIDE);
             }
         }
