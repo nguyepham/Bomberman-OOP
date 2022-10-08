@@ -16,7 +16,7 @@ public abstract class Entity {
    // while Y's coordinate is the vertical one.
    protected double positionX;
    protected double positionY;
-   protected BoundingBox hitBox;
+   protected HitBox hitBox;
 
    // create a load Image method to encapsulate
    // the functionality of loading images so that
@@ -33,6 +33,10 @@ public abstract class Entity {
       return image;
    }
 
+//   public void getSpriteFrom(String filePath) throws FileNotFoundException {
+//      sprite = Entity.loadImage(filePath);
+//   }
+
    public double[] getPosition() {
       double x = hitBox.getCenterX();
       double y = hitBox.getCenterY();
@@ -44,6 +48,6 @@ public abstract class Entity {
    }
 
    public boolean gotInto(Entity other) {
-      return other.hitBox.contains(getPosition()[0], getPosition()[1]);
+      return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
    }
 }

@@ -1,6 +1,7 @@
 package game.bomman.map;
 
 import game.bomman.entity.Entity;
+import game.bomman.entity.HitBox;
 import javafx.geometry.BoundingBox;
 import javafx.scene.image.Image;
 
@@ -15,7 +16,7 @@ public class Cell extends Entity {
         pos[0] = x;
         pos[1] = y;
         this.rawConfig = rawConfig;
-        hitBox = new BoundingBox(SIDE * x, SIDE * y, SIDE, SIDE);
+        hitBox = new HitBox(SIDE * x, SIDE * y, SIDE, SIDE);
     }
 
     public double getWidth() {
@@ -30,16 +31,14 @@ public class Cell extends Entity {
         return rawConfig;
     }
 
+    public Image getSprite() { return sprite; }
+
     public int[] getPostitionInMap() {
         return pos;
     }
 
     public void getSpriteFrom(String filePath) throws FileNotFoundException {
-        sprite =  Entity.loadImage(filePath);
-    }
-
-    public Image getSprite() {
-        return sprite;
+        sprite = loadImage(filePath);
     }
 }
 
