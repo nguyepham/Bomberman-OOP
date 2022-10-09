@@ -9,10 +9,11 @@ import javafx.scene.paint.Color;
 public abstract class Stuff extends Entity implements Blocking {
     public static final double side = 48;
 
+    public Stuff() {}
+
     public Stuff(int row, int col) {
         this.positionX = col * side;
         this.positionY = row * side;
-
     }
 
     public abstract void render(GraphicsContext gc);

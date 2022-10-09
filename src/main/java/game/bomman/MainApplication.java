@@ -1,22 +1,24 @@
 package game.bomman;
 
-
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.stuff.Brick;
 import game.bomman.entity.stuff.Grass;
 import game.bomman.entity.stuff.Stuff;
 import game.bomman.entity.stuff.Wall;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class MainApplication extends Application {
@@ -52,22 +54,24 @@ public class MainApplication extends Application {
         // about moving direction to be handled at a time.
         // wrap keyPressed around a single element array
         // to pass it in a lambda function
-        final String[] keyPressed = {NOT_MOVING};
+        LinkedList<String> keyPressed = new LinkedList<>();
         KeyCode[] allowedKeys = {
                 KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT
         };
 
         scene.setOnKeyPressed(event -> {
-            if (Arrays.asList(allowedKeys).contains(event.getCode())
-                    && keyPressed[0].equals(NOT_MOVING)) {
-                keyPressed[0] = event.getCode().toString();
+            if (Arrays.asList(allowedKeys).contains(event.getCode())) {
+                String key = event.getCode().toString();
+                if (!keyPressed.contains(key)) {
+                    keyPressed.add(key);
+                }
             }
         });
 
         scene.setOnKeyReleased(event -> {
-            if (Arrays.asList(allowedKeys).contains(event.getCode())
-                    && keyPressed[0].equals(event.getCode().toString())) {
-                keyPressed[0] = NOT_MOVING;
+            if (Arrays.asList(allowedKeys).contains(event.getCode())) {
+                String key = event.getCode().toString();
+                keyPressed.remove(key);
             }
         });
 
@@ -88,27 +92,29 @@ public class MainApplication extends Application {
                 double timeSinceStart = (currentNanoTime - startTime) / 1000000000.0;
 
                 b.setVelocity(0,0);
-                switch (keyPressed[0]) {
-                    case "UP" -> b.addVelocity(0, -speed);
-                    case "DOWN" -> b.addVelocity(0, speed);
-                    case "LEFT" -> b.addVelocity(-speed, 0);
-                    case "RIGHT" -> b.addVelocity(speed, 0);
+                if (!keyPressed.isEmpty()) {
+                    switch (keyPressed.getFirst()) {
+                        case "UP" -> b.addVelocity(0, -speed);
+                        case "DOWN" -> b.addVelocity(0, speed);
+                        case "LEFT" -> b.addVelocity(-speed, 0);
+                        case "RIGHT" -> b.addVelocity(speed, 0);
+                    }
+                    b.update(elapsedTime, timeSinceStart, keyPressed.getFirst(), entities);
                 }
-                b.update(elapsedTime, timeSinceStart, keyPressed[0], entities);
 
                 // clears the canvas
                 gc.clearRect(0 , 0, canvas.getWidth(), canvas.getHeight());
 
                 for (Stuff[] entityRow: entities) {
                     for (Stuff entity: entityRow) {
-                        entity.renderBoundingBox(gc);
+                        entity.render(gc);
                     }
                 }
 
-                b.renderBoundingBox(gc);
+                b.render(gc);
             }
         }.start();
-        
+
         return scene;
     }
 

@@ -14,8 +14,8 @@ import java.io.FileNotFoundException;
 // 2. Render bounding box and try and error to find the correct dimension for the box
 
 public class Bomber extends Character {
-    // Number of sprites for each direction in the Image
-    // describing the walking motion of the character.
+    // number of sprites for each direction in the Image
+    // describing the walking motion of the character
     private static final int nWalkingSpritesPerDirection = 4;
     private static final double duration = 0.1;
     // UP RIGHT DOWN LEFT
@@ -34,8 +34,8 @@ public class Bomber extends Character {
     private static final double spriteWidth;
     private static final double spriteHeight;
 
-    private static final double boundaryWidth = 31;
-    private static final double boundaryHeight = 31;
+    private static final double boundaryWidth = 25;
+    private static final double boundaryHeight = 25;
     private static final double paddingBottom = 5;
     private static final double paddingTop = spriteHeight - boundaryHeight - paddingBottom;
     private static final double paddingLeft = (spriteWidth - boundaryWidth - 1) / 2;
@@ -59,7 +59,7 @@ public class Bomber extends Character {
      * @param direction the direction in which the character moves.
      */
     public void update(double elapsedTime, double timeSinceStart, String direction, Stuff[][] entities) {
-        if (velocityX > 0 || velocityY > 0)
+        if (velocityX != 0 || velocityY != 0)
             setPosition(positionX + elapsedTime * velocityX,
                 positionY + elapsedTime * velocityY, entities);
 
@@ -94,7 +94,7 @@ public class Bomber extends Character {
 
         for (int x = topLeftX; x <= bottomRightX; ++x) {
             for (int y = topLeftY; y <= bottomRightY; ++y) {
-                if (!(entities[y][x] instanceof Grass) && this.intersects(entities[y][x])) {
+                if (!(entities[y][x] instanceof Grass) && new Rectangle2D(positionX, positionY, boundaryWidth, boundaryHeight).intersects(entities[y][x].getBoundary())) {
                     return;
                 }
             }
