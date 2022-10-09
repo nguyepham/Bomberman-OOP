@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 
 public class Cell extends Entity {
     private int[] pos = new int[2];
+    private boolean grass;
     private char rawConfig;
     private Image sprite;
 
@@ -16,7 +17,16 @@ public class Cell extends Entity {
         pos[0] = x;
         pos[1] = y;
         this.rawConfig = rawConfig;
+        grass = false;
         hitBox = new HitBox(SIDE * x, SIDE * y, SIDE, SIDE);
+    }
+
+    public boolean isGrass() {
+        return grass;
+    }
+
+    public void setGrass() {
+        grass = true;
     }
 
     public double getWidth() {

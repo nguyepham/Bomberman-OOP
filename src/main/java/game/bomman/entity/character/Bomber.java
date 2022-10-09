@@ -54,20 +54,28 @@ public class Bomber extends Character {
 
         KeyCode command = commandStack.peek();
         switch (command) {
-            case UP ->
-                    moveTo(currentX, currentY - speed);
-            case DOWN ->
-                    moveTo(currentX, currentY + speed);
-            case LEFT ->
-                    moveTo(currentX - speed, currentY);
-            case RIGHT ->
-                    moveTo(currentX + speed, currentY);
+            case UP -> {
+                moveTo(currentX, currentY - speed);
+
+            }
+            case DOWN -> {
+                moveTo(currentX, currentY + speed);
+
+            }
+            case LEFT -> {
+                moveTo(currentX - speed, currentY);
+
+            }
+            case RIGHT -> {
+                moveTo(currentX + speed, currentY);
+
+            }
         }
     }
 
     @Override
     public void moveTo(double newX, double newY) {
-        gc.clearRect(SIDE, SIDE, SIDE * 31, SIDE * 13);
+        gc.clearRect(SIDE, SIDE, SIDE * 30, SIDE * 12);
         hitBox.setMinX(newX);
         hitBox.setMinY(newY);
         gc.drawImage(bomberStanding, newX, newY, WIDTH, HEIGHT);

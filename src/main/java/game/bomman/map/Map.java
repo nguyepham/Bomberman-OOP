@@ -13,7 +13,7 @@ public class Map {
     private double height;
     private Cell[][] cells;
 
-    public void initCells(int width, int height) {
+    private void initCells(int width, int height) {
         cells = new Cell[height][];
         for (int i = 0; i < height; ++i) {
             cells[i] = new Cell[width];
@@ -50,39 +50,44 @@ public class Map {
             for (int i = 0; i < width; ++i) {
                 char rawConfig = thisRow.charAt(i);
                 cells[j][i] = new Cell(i, j, rawConfig);
-                double[] pos = cells[j][i].getLoadingPosition();
+                Cell thisCell = cells[j][i];
+
+                if (thisCell.getRawConfig() == ' ') {
+                    thisCell.setGrass();
+                }
+                double[] pos = thisCell.getLoadingPosition();
 
                 if (j == height - 1) {
-                    cells[j][i].getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
-                    gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 5, 0, Entity.SIDE, Entity.SIDE,
+                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    gc.drawImage(thisCell.getSprite(), Entity.SIDE * 5, 0, Entity.SIDE, Entity.SIDE,
                             pos[0], pos[1], Entity.SIDE, Entity.SIDE);
                     continue;
                 }
 
                 if (j == 0) {
-                    cells[j][i].getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
                     if (i == 0) {
-                        gc.drawImage(cells[j][i].getSprite(), Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
+                        gc.drawImage(thisCell.getSprite(), Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
                                 pos[0], pos[1], Entity.SIDE, Entity.SIDE);
                         continue;
                     }
                     if (i == width - 1) {
-                        gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 3, 0, Entity.SIDE, Entity.SIDE,
+                        gc.drawImage(thisCell.getSprite(), Entity.SIDE * 3, 0, Entity.SIDE, Entity.SIDE,
                                 pos[0], pos[1], Entity.SIDE, Entity.SIDE);
                         continue;
                     }
-                    gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 2, 0, Entity.SIDE, Entity.SIDE,
+                    gc.drawImage(thisCell.getSprite(), Entity.SIDE * 2, 0, Entity.SIDE, Entity.SIDE,
                             pos[0], pos[1], Entity.SIDE, Entity.SIDE);
                     continue;
                 }
 
                 if (i == 0 || i == width - 1) {
-                    cells[j][i].getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
                     if (i == 0) {
-                        gc.drawImage(cells[j][i].getSprite(), 0, 0, Entity.SIDE, Entity.SIDE,
+                        gc.drawImage(thisCell.getSprite(), 0, 0, Entity.SIDE, Entity.SIDE,
                                 pos[0], pos[1], Entity.SIDE, Entity.SIDE);
                     } else {
-                        gc.drawImage(cells[j][i].getSprite(), Entity.SIDE * 4, 0, Entity.SIDE, Entity.SIDE,
+                        gc.drawImage(thisCell.getSprite(), Entity.SIDE * 4, 0, Entity.SIDE, Entity.SIDE,
                                 pos[0], pos[1], Entity.SIDE, Entity.SIDE);
                     }
                     continue;
@@ -90,22 +95,22 @@ public class Map {
 
                 switch (rawConfig) {
                     case '#' -> {
-                        cells[j][i].getSpriteFrom(
+                        thisCell.getSpriteFrom(
                                 Entity.IMAGES_PATH + "/map/steel.png");
                     }
                     case '*' -> {
-                        cells[j][i].getSpriteFrom(Entity.IMAGES_PATH + "/map/brick.png");
+                        thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/brick.png");
                     }
                     default -> {
                         if (j > 0
                                 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
-                            cells[j][i].getSpriteFrom(Entity.IMAGES_PATH + "/map/shaderGrass.png");
+                            thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/shaderGrass.png");
                         } else {
-                            cells[j][i].getSpriteFrom(Entity.IMAGES_PATH + "/map/grass.png");
+                            thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/grass.png");
                         }
                     }
                 }
-                gc.drawImage(cells[j][i].getSprite(), pos[0], pos[1], Entity.SIDE, Entity.SIDE);
+                gc.drawImage(thisCell.getSprite(), pos[0], pos[1], Entity.SIDE, Entity.SIDE);
             }
         }
 

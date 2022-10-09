@@ -10,24 +10,26 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class MovingController {
-    private Command moveLeft = new MoveLeft();
-    private Command moveDown = new MoveDown();
-    private Command moveRight = new MoveRight();
-    private Command moveUp = new MoveUp();
-    private Command removeLeft = new RemoveLeft();
-    private Command removeDown = new RemoveDown();
-    private Command removeRight = new RemoveRight();
-    private Command removeUp = new RemoveUp();
-    private Character bomber;
-    private Canvas canvas;
+    private static Command moveLeft = new MoveLeft();
+    private static Command moveDown = new MoveDown();
+    private static Command moveRight = new MoveRight();
+    private static Command moveUp = new MoveUp();
+    private static Command removeLeft = new RemoveLeft();
+    private static Command removeDown = new RemoveDown();
+    private static Command removeRight = new RemoveRight();
+    private static Command removeUp = new RemoveUp();
+    private static Character bomber;
+    private static Canvas canvas;
 
     public MovingController(Canvas v1, Character v2) {
         canvas = v1;
         bomber = v2;
     }
 
-    public void byKeyboard() {
+    public static void setUpForBomber() {
+//        System.out.println("byKeyboard invoked.");
         EventHandler<KeyEvent> moveByKey = (event) -> {
+//        System.out.println("Key event detected.");
             if (event.getEventType() == KeyEvent.KEY_PRESSED) {
                 switch (event.getCode()) {
                     case DOWN -> moveDown.executeOn(bomber);
