@@ -1,30 +1,14 @@
 package game.bomman;
 
-import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
-import game.bomman.entity.stuff.Brick;
-import game.bomman.entity.stuff.Grass;
-import game.bomman.entity.stuff.Stuff;
-import game.bomman.entity.stuff.Wall;
 import game.bomman.gameState.PlayingState;
-import game.bomman.inputHandler.MovingController;
 import game.bomman.map.Map;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-
-import static game.bomman.entity.character.Character.NOT_MOVING;
 
 public class MainApplication extends Application {
 //    public void loadBomberSample(Stage stage) {
@@ -91,18 +75,6 @@ public class MainApplication extends Application {
 ////        }.start();
 //    }
 
-    public Canvas setUpCharacters(Map map) {
-        Canvas canvas = new Canvas(map.getWidth(), map.getHeight());
-        canvas.requestFocus();
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        /// Init and load Bomber to the map.
-        double[] initialPos = map.getCell(1, 1).getLoadingPosition();
-        Bomber bomber = new Bomber(gc, initialPos[0], initialPos[1]);
-
-        return canvas;
-    }
-
     @Override
     public void start(Stage stage) throws FileNotFoundException {
         stage.setTitle("Bomberman");
@@ -111,29 +83,9 @@ public class MainApplication extends Application {
         PlayingState playingState = new PlayingState();
         playingState.setUp();
         playingState.run();
+
         stage.setScene(playingState.getScene());
         stage.show();
-
-//        Map map = new Map();
-//        Canvas mapCanvas = map.setUp();
-////        Canvas characterCanvas = setUpCharacters(map);
-//        /**
-//            Temporarily unwrap the setUpCharacters(Map map) method here
-//            before put it into the playingState.
-//         **/
-//        /******************************************************************/
-//        Canvas characterCanvas = new Canvas(map.getWidth(), map.getHeight());
-//        GraphicsContext gc = characterCanvas.getGraphicsContext2D();
-//
-//        /// Init and load Bomber to the map.
-//        double[] initialPos = map.getCell(1, 1).getLoadingPosition();
-//        Bomber bomber = new Bomber(gc, initialPos[0], initialPos[1]);
-//        /******************************************************************/
-//
-//        Group root = new Group(mapCanvas);
-//        root.getChildren().add(characterCanvas);
-//        Scene scene = new Scene(root);
-//        characterCanvas.requestFocus();
     }
 
     public static void main(String[] args) {

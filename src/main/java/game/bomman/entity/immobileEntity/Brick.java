@@ -1,24 +1,27 @@
-package game.bomman.entity.stuff;
+package game.bomman.entity.immobileEntity;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class Grass extends Stuff {
+public class Brick extends ImmobileEntity {
     private static final Image image;
 
     static {
         try {
-            image = loadImage(IMAGES_PATH + "/map/grass@2.png");
+            image = loadImage(IMAGES_PATH + "/map/brick.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Grass(double positionX, double positionY) {
-        super(positionX, positionY);
+    public Brick(GraphicsContext gc, double loadingPosX, double loadingPosY) {
+        super(loadingPosX, loadingPosY);
+        this.gc = gc;
+        gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
     }
+
 
     @Override
     public void render(GraphicsContext gc) {

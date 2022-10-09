@@ -1,4 +1,4 @@
-package game.bomman.entity.stuff;
+package game.bomman.entity.immobileEntity;
 
 import game.bomman.entity.Blocking;
 import javafx.scene.canvas.GraphicsContext;
@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class ActivatedBomb extends Stuff implements Blocking {
+public class ActivatedBomb extends ImmobileEntity implements Blocking {
     private static final Image image;
 
     static {
@@ -17,8 +17,9 @@ public class ActivatedBomb extends Stuff implements Blocking {
         }
     }
 
-    public ActivatedBomb() {
-
+    public ActivatedBomb(double loadingPosX, double loadingPosY) {
+        super(loadingPosX, loadingPosY);
+        gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
     @Override

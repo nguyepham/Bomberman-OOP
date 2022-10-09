@@ -14,6 +14,7 @@ public abstract class Entity {
 
    // Notes that X's coordinate here is the horizontal one
    // while Y's coordinate is the vertical one.
+   protected GraphicsContext gc;
    protected double positionX;
    protected double positionY;
    protected HitBox hitBox;

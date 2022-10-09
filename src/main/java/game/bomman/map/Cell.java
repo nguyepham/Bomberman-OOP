@@ -2,6 +2,7 @@ package game.bomman.map;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
+import game.bomman.entity.immobileEntity.ImmobileEntity;
 import javafx.geometry.BoundingBox;
 import javafx.scene.image.Image;
 
@@ -12,6 +13,7 @@ public class Cell extends Entity {
     private boolean grass;
     private char rawConfig;
     private Image sprite;
+    private ImmobileEntity entity;
 
     public Cell(int x, int y, char rawConfig) {
         pos[0] = x;
@@ -42,6 +44,10 @@ public class Cell extends Entity {
     }
 
     public Image getSprite() { return sprite; }
+
+    public void setEntity(ImmobileEntity value) {
+        entity = value;
+    }
 
     public int[] getPostitionInMap() {
         return pos;

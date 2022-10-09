@@ -1,6 +1,7 @@
 package game.bomman.map;
 
 import game.bomman.entity.Entity;
+import game.bomman.entity.immobileEntity.Brick;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -9,31 +10,15 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Map {
-    private double width;
-    private double height;
+    private int width;
+    private int height;
     private Cell[][] cells;
+    private Scanner mapScanner;
 
-    private void initCells(int width, int height) {
-        cells = new Cell[height][];
-        for (int i = 0; i < height; ++i) {
-            cells[i] = new Cell[width];
-        }
-        this.height = Entity.SIDE * height;
-        this.width = Entity.SIDE * width;
-    }
-
-    public double getWidth() { return width; }
-
-    public double getHeight() { return height; }
-
-    public Cell getCell(int i, int j) {
-        return cells[j][i];
-    }
-
-    public Canvas setUp() throws FileNotFoundException {
-        FileInputStream maps = new FileInputStream(
+    public Map() throws FileNotFoundException {
+        FileInputStream mapFile = new FileInputStream(
                 "src/main/resources/game/bomman/assets/map1.txt");
-        Scanner mapScanner = new Scanner(maps);
+        mapScanner = new Scanner(mapFile);
 
         int height = mapScanner.nextInt();
         int width = mapScanner.nextInt();
@@ -41,7 +26,26 @@ public class Map {
         mapScanner.useDelimiter("\n");
         mapScanner.next();
         this.initCells(width, height);
+    }
 
+    private void initCells(int width, int height) {
+        cells = new Cell[height][];
+        for (int i = 0; i < height; ++i) {
+            cells[i] = new Cell[width];
+        }
+        this.width = width;
+        this.height = height;
+    }
+
+    public int getWidth() { return width; }
+
+    public int getHeight() { return height; }
+
+    public Cell getCell(int i, int j) {
+        return cells[j][i];
+    }
+
+    public Canvas setUp(Canvas bombCanvas) throws FileNotFoundException {
         Canvas canvas = new Canvas(Entity.SIDE * width, Entity.SIDE * height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -99,11 +103,10 @@ public class Map {
                                 Entity.IMAGES_PATH + "/map/steel.png");
                     }
                     case '*' -> {
-                        thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/brick.png");
+                        thisCell.setEntity(new Brick(bombCanvas.getGraphicsContext2D(), pos[0], pos[1]));
                     }
                     default -> {
-                        if (j > 0
-                                && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
+                        if (j > 0 && cells[j - 1][i].getRawConfig() == '#') {
                             thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/shaderGrass.png");
                         } else {
                             thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/grass.png");
