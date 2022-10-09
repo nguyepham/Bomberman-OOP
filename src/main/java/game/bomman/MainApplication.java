@@ -82,8 +82,6 @@ public class MainApplication extends Application {
         // be able to pass into a lambda function
         final long[] lastNanoTime = {startTime};
 
-        double speed = 100;
-
         new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
@@ -93,12 +91,6 @@ public class MainApplication extends Application {
 
                 b.setVelocity(0,0);
                 if (!keyPressed.isEmpty()) {
-                    switch (keyPressed.getFirst()) {
-                        case "UP" -> b.addVelocity(0, -speed);
-                        case "DOWN" -> b.addVelocity(0, speed);
-                        case "LEFT" -> b.addVelocity(-speed, 0);
-                        case "RIGHT" -> b.addVelocity(speed, 0);
-                    }
                     b.update(elapsedTime, timeSinceStart, keyPressed.getFirst(), entities);
                 }
 

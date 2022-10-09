@@ -45,6 +45,8 @@ public class Bomber extends Character {
     private String currentDirection = "DOWN";
     private int index = 8;
 
+    private final double speed = 100;
+
     public Bomber(int row, int col) {
         positionX = col * Stuff.side + (Stuff.side - boundaryWidth) / 2;
         positionY = row * Stuff.side + (Stuff.side - boundaryHeight) / 2;
@@ -59,27 +61,36 @@ public class Bomber extends Character {
      * @param direction the direction in which the character moves.
      */
     public void update(double elapsedTime, double timeSinceStart, String direction, Stuff[][] entities) {
-        if (velocityX != 0 || velocityY != 0)
-            setPosition(positionX + elapsedTime * velocityX,
-                positionY + elapsedTime * velocityY, entities);
-
         // set the index of the sprite to be drawn to screen
-        if (!direction.equals(NOT_MOVING)) {
-            // the index of the frame of the direction in which we are moving at this moment in time.
-            int frameIndex = (int) ((timeSinceStart % (nWalkingSpritesPerDirection * duration)) / duration);
-            // the padding which we add to frame index to get the correct index
-            // of the sprite that we need to draw in the overall walking image
-            int padding = 0;
-            switch (direction) {
-                case "UP" -> padding += 0;
-                case "RIGHT" -> padding += nWalkingSpritesPerDirection;
-                case "DOWN" -> padding += nWalkingSpritesPerDirection * 2;
-                case "LEFT" -> padding += nWalkingSpritesPerDirection * 3;
+        // the index of the frame of the direction in which we are moving at this moment in time.
+        int frameIndex = (int) ((timeSinceStart % (nWalkingSpritesPerDirection * duration)) / duration);
+        // the padding which we add to frame index to get the correct index
+        // of the sprite that we need to draw in the overall walking image
+        int padding = 0;
+        switch (direction) {
+            case "UP" -> {
+                padding += 0;
+                velocityY -= speed;
             }
-            index = padding + frameIndex;
-
-            currentDirection = direction;
+            case "RIGHT" -> {
+                padding += nWalkingSpritesPerDirection;
+                velocityX += speed;
+            }
+            case "DOWN" -> {
+                padding += nWalkingSpritesPerDirection * 2;
+                velocityY += speed;
+            }
+            case "LEFT" -> {
+                padding += nWalkingSpritesPerDirection * 3;
+                velocityX -= speed;
+            }
         }
+        index = padding + frameIndex;
+
+        currentDirection = direction;
+
+        setPosition(positionX + elapsedTime * velocityX,
+                positionY + elapsedTime * velocityY, entities);
     }
 
     private void setPosition(double positionX, double positionY, Stuff[][] entities) {
@@ -88,13 +99,10 @@ public class Bomber extends Character {
         int bottomRightX = (int) ((positionX + boundaryWidth) / Stuff.side);
         int bottomRightY = (int) ((positionY + boundaryHeight) / Stuff.side);
 
-        System.out.println(topLeftY + " " + topLeftX + " " + bottomRightY + " " + bottomRightX + " "
-        + positionX / Stuff.side + " " + positionY / Stuff.side + " "
-        + (positionX + boundaryWidth) / Stuff.side + " " + (positionY + boundaryHeight) / Stuff.side);
-
-        for (int x = topLeftX; x <= bottomRightX; ++x) {
-            for (int y = topLeftY; y <= bottomRightY; ++y) {
-                if (!(entities[y][x] instanceof Grass) && new Rectangle2D(positionX, positionY, boundaryWidth, boundaryHeight).intersects(entities[y][x].getBoundary())) {
+        for (int y = topLeftY; y <= bottomRightY; ++y) {
+            for (int x = topLeftX; x <= bottomRightX; ++x) {
+                if (!(entities[y][x] instanceof Grass) &&
+                        new Rectangle2D(positionX, positionY, boundaryWidth, boundaryHeight).intersects(entities[y][x].getBoundary())) {
                     return;
                 }
             }
@@ -136,11 +144,6 @@ public class Bomber extends Character {
     public void setVelocity(double velocityX, double velocityY) {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-    }
-
-    public void addVelocity(double dX, double dY) {
-        velocityX += dX;
-        velocityY += dY;
     }
 
     public Rectangle2D getBoundary() {
