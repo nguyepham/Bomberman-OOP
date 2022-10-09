@@ -2,6 +2,16 @@ package game.bomman.entity.character.enemy;
 
 public class Balloon extends Enemy {
     @Override
+    public void update(double elapsedTime) {
+
+    }
+
+    @Override
+    public void moveTo(double x, double y) {
+
+    }
+
+    @Override
     public void moveDown() {
 
     }
@@ -38,11 +48,6 @@ public class Balloon extends Enemy {
 
     @Override
     public void removeUp() {
-
-    }
-
-    @Override
-    public void moveTo(double x, double y) {
 
     }
 }

@@ -56,5 +56,10 @@ public class Cell extends Entity {
     public void getSpriteFrom(String filePath) throws FileNotFoundException {
         sprite = loadImage(filePath);
     }
+
+    @Override
+    public void update(double elapsedTime) {
+
+    }
 }
 

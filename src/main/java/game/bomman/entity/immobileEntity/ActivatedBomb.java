@@ -1,12 +1,11 @@
 package game.bomman.entity.immobileEntity;
 
-import game.bomman.entity.Blocking;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class ActivatedBomb extends ImmobileEntity implements Blocking {
+public class ActivatedBomb extends ImmobileEntity {
     private static final Image image;
 
     static {
@@ -24,6 +23,11 @@ public class ActivatedBomb extends ImmobileEntity implements Blocking {
 
     @Override
     public void render(GraphicsContext gc) {
+
+    }
+
+    @Override
+    public void update(double elapsedTime) {
 
     }
 }

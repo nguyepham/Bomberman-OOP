@@ -2,12 +2,10 @@ package game.bomman.gameState;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
-import game.bomman.inputHandler.MovingController;
+import game.bomman.Controller.MovingController;
 import game.bomman.map.Map;
-import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 
 import java.io.FileNotFoundException;
 
@@ -42,11 +40,14 @@ public class PlayingState extends GameState {
         Bomber bomber = new Bomber(characterCanvas.getGraphicsContext2D(),
                                    bomberPosition[0] + 3.0f,
                                    bomberPosition[1]);
-        MovingController controller = new MovingController(characterCanvas, bomber);
+        MovingController.init(characterCanvas, bomber);
+        MovingController.activateInputReader();
+        MovingController.activateAI();
     }
 
     public void run() {
-        MovingController.setUpForBomber();
+        MovingController.run();
+
 //        new AnimationTimer() {
 //            @Override
 //            public void handle(long ) {

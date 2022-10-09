@@ -2,14 +2,34 @@ package game.bomman.entity.character;
 
 import game.bomman.entity.Blockable;
 import game.bomman.entity.Entity;
-import game.bomman.inputHandler.MovingController;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 public abstract class Character extends Entity implements Blockable {
     protected double velocityX;
     protected double velocityY;
+    protected double newLoadingX;
+    protected double newLoadingY;
     protected double speed;
+
+    public void setVelocity(double x, double y) {
+        velocityX = x;
+        velocityY = y;
+    }
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public void setVelocityX(double velocityX) {
+        this.velocityX = velocityX;
+    }
+
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
+    }
 
     public abstract void moveDown();
 

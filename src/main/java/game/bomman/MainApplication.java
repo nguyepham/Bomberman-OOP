@@ -1,11 +1,7 @@
 package game.bomman;
 
-import game.bomman.entity.character.Bomber;
 import game.bomman.gameState.PlayingState;
-import game.bomman.map.Map;
 import javafx.application.Application;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;

@@ -27,4 +27,9 @@ public class Brick extends ImmobileEntity {
     public void render(GraphicsContext gc) {
         gc.drawImage(image, 0, 0, side, side, positionX, positionY, side, side);
     }
+
+    @Override
+    public void update(double elapsedTime) {
+
+    }
 }

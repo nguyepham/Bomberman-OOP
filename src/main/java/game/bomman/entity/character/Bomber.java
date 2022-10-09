@@ -1,5 +1,6 @@
 package game.bomman.entity.character;
 
+import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
 import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,7 +19,9 @@ public class Bomber extends Character {
     private Stack<KeyCode> commandStack = new Stack<>();
 
     public Bomber(GraphicsContext gc, double targetMinX, double targetMinY) {
-        this.speed = 10;
+        this.newLoadingX = Entity.SIDE;
+        this.newLoadingY = Entity.SIDE;
+        this.speed = 100;
         this.numOfLife =3;
         this.gc = gc;
         this.gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, targetMinX, targetMinY, WIDTH, HEIGHT);
@@ -38,13 +41,7 @@ public class Bomber extends Character {
         }
     }
 
-    private void powerUpCommandHandler() {
-        while (numOfLife > 0) {
-            handleCommands();
-        }
-    }
-
-    private void handleCommands() {
+    private void handleCommands(double elapsedTime) {
         if (commandStack.empty()) {
             return;
         }
@@ -55,20 +52,24 @@ public class Bomber extends Character {
         KeyCode command = commandStack.peek();
         switch (command) {
             case UP -> {
-                moveTo(currentX, currentY - speed);
-
+//                moveTo(currentX, currentY - speed);
+                newLoadingX = currentX;
+                newLoadingY = currentY - speed * elapsedTime;
             }
             case DOWN -> {
-                moveTo(currentX, currentY + speed);
-
+//                moveTo(currentX, currentY + speed);
+                newLoadingX = currentX;
+                newLoadingY = currentY + speed * elapsedTime;
             }
             case LEFT -> {
-                moveTo(currentX - speed, currentY);
-
+//                moveTo(currentX - speed, currentY);
+                newLoadingX = currentX - speed * elapsedTime;
+                newLoadingY = currentY;
             }
             case RIGHT -> {
-                moveTo(currentX + speed, currentY);
-
+//                moveTo(currentX + speed, currentY);
+                newLoadingX = currentX + speed * elapsedTime;
+                newLoadingY = currentY;
             }
         }
     }
@@ -82,11 +83,17 @@ public class Bomber extends Character {
     }
 
     @Override
+    public void update(double elapsedTime) {
+        handleCommands(elapsedTime);
+        moveTo(newLoadingX, newLoadingY);
+    }
+
+    @Override
     public void moveDown() {
         if (commandStack.empty() || !commandStack.peek().equals(KeyCode.DOWN)) {
             commandStack.push(KeyCode.DOWN);
         }
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -94,7 +101,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || !commandStack.peek().equals(KeyCode.LEFT)) {
             commandStack.push(KeyCode.LEFT);
         }
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -102,7 +109,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || !commandStack.peek().equals(KeyCode.RIGHT)) {
             commandStack.push(KeyCode.RIGHT);
         }
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -110,7 +117,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || !commandStack.peek().equals(KeyCode.UP)) {
             commandStack.push(KeyCode.UP);
         }
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -128,7 +135,7 @@ public class Bomber extends Character {
             System.out.println(commandStack.get(i));
         }
 
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -146,7 +153,7 @@ public class Bomber extends Character {
             System.out.println(commandStack.get(i));
         }
 
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -158,7 +165,7 @@ public class Bomber extends Character {
             }
         }
         System.out.println("Right removed.");
-        handleCommands();
+        // handleCommands();
     }
 
     @Override
@@ -170,7 +177,7 @@ public class Bomber extends Character {
             }
         }
         System.out.println("Up removed.");
-        handleCommands();
+        // handleCommands();
     }
 
     // Number of sprites for each direction in the Image
@@ -200,7 +207,7 @@ public class Bomber extends Character {
 //    private int index = 8;
 //
 //    /**
-//     * Updates the position of the character.
+//     * Updates the Loading of the character.
 //     *
 //     * @param elapsedTime the time passed between the current
 //     *                    game iteration with the previous one.

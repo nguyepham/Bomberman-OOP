@@ -51,4 +51,6 @@ public abstract class Entity {
    public boolean gotInto(Entity other) {
       return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
    }
+
+   public abstract void update(double elapsedTime);
 }

@@ -4,6 +4,16 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Oneal extends Enemy {
     @Override
+    public void update(double elapsedTime) {
+
+    }
+
+    @Override
+    public void moveTo(double x, double y) {
+
+    }
+
+    @Override
     public void moveRight() {
 
     }
@@ -40,11 +50,6 @@ public class Oneal extends Enemy {
 
     @Override
     public void removeUp() {
-
-    }
-
-    @Override
-    public void moveTo(double x, double y) {
 
     }
 }
