@@ -1,10 +1,8 @@
 package game.bomman.entity.character.enemy;
 
-import javafx.scene.canvas.GraphicsContext;
-
 public class Oneal extends Enemy {
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 

@@ -27,7 +27,7 @@ public class ActivatedBomb extends ImmobileEntity {
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 }

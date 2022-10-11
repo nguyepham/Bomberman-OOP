@@ -1,6 +1,5 @@
 package game.bomman.entity;
 
-import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -60,5 +59,5 @@ public abstract class Entity {
       return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
    }
 
-   public abstract void update(double elapsedTime);
+   public abstract void update(double elapsedTime, double timeSinceStart);
 }

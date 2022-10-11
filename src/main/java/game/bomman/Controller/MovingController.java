@@ -1,7 +1,6 @@
 package game.bomman.Controller;
 
 import game.bomman.command.*;
-import game.bomman.entity.Entity;
 import game.bomman.entity.character.Character;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -64,8 +63,9 @@ public class MovingController {
                 double elapsedTime = (currentNanoTime - lastNanoTimestamp[0]) / 1000000000.0;
                 lastNanoTimestamp[0] = currentNanoTime;
                 double timeSinceStart = (currentNanoTime - startTimestamp) / 1000000000.0;
+
 //                canvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE, canvas.getWidth(), canvas.getHeight());
-                character.update(elapsedTime);
+                character.update(elapsedTime, timeSinceStart);
             }
         };
         bomberTimer.start();

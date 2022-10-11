@@ -3,7 +3,6 @@ package game.bomman.map;
 import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
-import javafx.geometry.BoundingBox;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -58,7 +57,7 @@ public class Cell extends Entity {
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 }
