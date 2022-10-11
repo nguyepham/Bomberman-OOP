@@ -1,145 +1,344 @@
 package game.bomman.entity.character;
 
-import game.bomman.entity.stuff.Grass;
-import game.bomman.entity.stuff.Stuff;
-import javafx.geometry.Rectangle2D;
+import game.bomman.entity.Entity;
+import game.bomman.entity.HitBox;
+import game.bomman.map.Cell;
+import game.bomman.map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.util.Stack;
 
 public class Bomber extends Character {
-    // Number of sprites for each direction in the Image
-    // describing the walking motion of the character.
-    private static final int nWalkingSpritesPerDirection = 4;
-    private static final double duration = 0.1;
-    // UP RIGHT DOWN LEFT
-    private static final Image walkingImage;
-    private static final Image idleImage;
+    public static final double WIDTH = 42;
+    public static final double HEIGHT = 48;
+    // Duration per sprite.
+    private static final double DURATION = 0.1;
+    private static final int N_SPRITES_PER_DIRECTION = 4;
+    private int index = 8;
+    private char lastDirection = 'd';
+
+    private static Image bomberWalking;
+    private static Image bomberStanding;
+    private int numOfLife;
+    private Stack<String> commandStack = new Stack<>();
+
+    public Bomber(Map map, double targetMinX, double targetMinY, GraphicsContext gc) {
+        this.map = map;
+        this.newLoadingX = Entity.SIDE;
+        this.newLoadingY = Entity.SIDE;
+        this.positionOnMapX = 1;
+        this.positionOnMapY = 1;
+        this.speed = 200;
+        this.numOfLife =3;
+        this.gc = gc;
+        this.gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, targetMinX, targetMinY, WIDTH, HEIGHT);
+        this.hitBox = new HitBox(targetMinX, targetMinY, WIDTH, HEIGHT);
+    }
+
+    public Image getWalkingImage() { return bomberWalking; }
+
+    public Image getStandingImage() { return bomberStanding; }
+
     static {
         try {
-            walkingImage = loadImage(IMAGES_PATH + "/player/walking@16.png");
-            idleImage = loadImage(IMAGES_PATH + "/player/idle@4.png");
-            spriteWidth = walkingImage.getWidth() / 16;
-            spriteHeight = walkingImage.getHeight();
+            bomberWalking = loadImage(IMAGES_PATH + "/player/walking.png");
+            bomberStanding = loadImage(IMAGES_PATH + "/player/idle.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-    private static final double spriteWidth;
-    private static final double spriteHeight;
 
-    private static final double boundaryWidth = 45;
-    private static final double boundaryHeight = 46;
-    private static final double paddingTop = 12;
-    private static final double paddingLeft = 3;
+    @Override
+    public void update(double elapsedTime, double timeSinceStart) {
+        Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
+        double cellMinX = currentCell.getHitBox().getMinX();
+        double cellMinY = currentCell.getHitBox().getMinY();
 
-    // In the beginning
-    // the character stands face to face with the user.
-    private String currentDirection = "DOWN";
-    private int index = 8;
+        double currentX = hitBox.getMinX();
+        double currentY = hitBox.getMinY();
 
-    public Bomber(int row, int col) {
-        positionX = col * Stuff.side + 1 - paddingLeft;
-        positionY = row * Stuff.side + 1 - paddingTop;
-    }
-
-    /**
-     * Updates the position of the character.
-     *
-     * @param elapsedTime the time passed between the current
-     *                    game iteration with the previous one.
-     * @param timeSinceStart the time passed since the game started.
-     * @param direction the direction in which the character moves.
-     */
-    public void update(double elapsedTime, double timeSinceStart, String direction, Stuff[][] entities) {
-        if (velocityX > 0 || velocityY > 0)
-            setPosition(positionX + elapsedTime * velocityX,
-                positionY + elapsedTime * velocityY, entities);
-
-        // set the index of the sprite to be drawn to screen
-        if (!direction.equals(NOT_MOVING)) {
-            // the index of the frame of the direction in which we are moving at this moment in time.
-            int frameIndex = (int) ((timeSinceStart % (nWalkingSpritesPerDirection * duration)) / duration);
-            // the padding which we add to frame index to get the correct index
-            // of the sprite that we need to draw in the overall walking image
-            int padding = 0;
-            switch (direction) {
-                case "UP" -> padding += 0;
-                case "RIGHT" -> padding += nWalkingSpritesPerDirection;
-                case "DOWN" -> padding += nWalkingSpritesPerDirection * 2;
-                case "LEFT" -> padding += nWalkingSpritesPerDirection * 3;
+        /// Remember to check this after handling interaction between entities.
+        if (commandStack.empty()) {
+            gc.clearRect(SIDE, SIDE, SIDE * 30, SIDE * 12);
+            switch (lastDirection) {
+                case 'u' -> gc.drawImage(bomberStanding,
+                        0, 0, WIDTH, HEIGHT,
+                        currentX, currentY, WIDTH, HEIGHT);
+                case 'r' -> gc.drawImage(bomberStanding,
+                        WIDTH, 0, WIDTH, HEIGHT,
+                        currentX, currentY, WIDTH, HEIGHT);
+                case 'd' -> gc.drawImage(bomberStanding,
+                        WIDTH * 2, 0, WIDTH, HEIGHT,
+                        currentX, currentY, WIDTH, HEIGHT);
+                case 'l' -> gc.drawImage(bomberStanding,
+                        WIDTH * 3, 0, WIDTH, HEIGHT,
+                        currentX, currentY, WIDTH, HEIGHT);
             }
-            index = padding + frameIndex;
 
-            currentDirection = direction;
-        }
-    }
-
-    private void setPosition(double positionX, double positionY, Stuff[][] entities) {
-        if (positionX < 0 || positionY < 0)
             return;
+        }
+        System.out.println("Position on map:");
+        System.out.println(positionOnMapX + " " +  positionOnMapY +  "\n");
 
-        double boxPosX = positionX + paddingLeft;
-        double boxPosY = positionY + paddingTop;
-        int topLeftX = (int) (boxPosX / Stuff.side);
-        int topLeftY = (int) (boxPosY / Stuff.side);
-        int bottomRightX = (int) ((boxPosX + boundaryWidth) / Stuff.side);
-        int bottomRightY = (int) ((boxPosY + boundaryHeight) / Stuff.side);
+        System.out.println("\n");
+        for (String s : commandStack) {
+            System.out.println(s);
+        }
 
-        System.out.println(topLeftY + " " + topLeftX + " " + bottomRightY + " " + bottomRightX);
+        /** Update the position of bomber **/
+        /// Handle the input commands.
+        String command = commandStack.peek();
+        boolean isBuffering = (command.charAt(0) == '1');
 
-        for (int x = topLeftX; x <= bottomRightX; ++x) {
-            for (int y = topLeftY; y <= bottomRightY; ++y) {
-                if (!(entities[y][x] instanceof Grass) && this.intersects(entities[x][y])) {
-                    return;
+        int frameIndex = (int) (timeSinceStart % (DURATION * N_SPRITES_PER_DIRECTION) / DURATION);
+        int padding = 0;
+        //lastDirection = command.charAt(1);
+
+        switch (command.charAt(1)) {
+            case 'u' -> {
+                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY - 1);
+
+                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    --positionOnMapY;
+                    break;
+                }
+
+                if (!aheadCell.isBlocking() && !isBuffering) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking()
+                            && currentX > cellMinX + 3) {
+                        commandStack.add("1left");
+                        break;
+                    }
+
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking()
+                            && currentX < cellMinX + 3) {
+                        commandStack.add("1right");
+                        break;
+                    }
+                }
+
+                newLoadingX = currentX;
+                newLoadingY = currentY - speed * elapsedTime;
+
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    if (newLoadingY < cellMinY) {
+                        newLoadingY = cellMinY;
+                    }
+                }
+                if (isBuffering && currentY <= cellMinY) {
+                    System.out.println("Up buffer removed.");
+                    commandStack.pop();
+                }
+            }
+            case 'd' -> {
+                padding = N_SPRITES_PER_DIRECTION * 2;
+
+                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY + 1);
+
+                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    ++positionOnMapY;
+                    break;
+                }
+
+                if (!aheadCell.isBlocking() && !isBuffering) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking()
+                            && currentX > cellMinX + 3) {
+                        commandStack.add("1left");
+                        break;
+                    }
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking()
+                            && currentX < cellMinX + 3) {
+                        commandStack.add("1right");
+                        break;
+                    }
+                }
+
+                newLoadingX = currentX;
+                newLoadingY = currentY + speed * elapsedTime;
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    if (newLoadingY > cellMinY) {
+                        newLoadingY = cellMinY;
+                    }
+                }
+                if (isBuffering && currentY >= cellMinY) {
+                    System.out.println("Down buffer removed.");
+                    commandStack.pop();
+                }
+            }
+            case 'l' -> {
+                padding = N_SPRITES_PER_DIRECTION * 3;
+
+                Cell aheadCell = map.getCell(positionOnMapX - 1, positionOnMapY);
+
+                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    --positionOnMapX;
+                    break;
+                }
+
+                if (!aheadCell.isBlocking() && !isBuffering) {
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking()
+                            && currentY < cellMinY) {
+                        commandStack.add("1down");
+                        break;
+                    }
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking()
+                            && currentY > cellMinY) {
+                        commandStack.add("1up");
+                        break;
+                    }
+                }
+
+                newLoadingX = currentX - speed * elapsedTime;
+                newLoadingY = currentY;
+
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    System.out.println("Left blocked.");
+                    if (newLoadingX < cellMinX + 3) {
+                        newLoadingX = cellMinX + 3;
+                    }
+                }
+                if (isBuffering && currentX <= cellMinX + 3) {
+                    System.out.println("Left buffer removed.");
+                    commandStack.pop();
+                }
+            }
+            case 'r' -> {
+                padding = N_SPRITES_PER_DIRECTION;
+
+                Cell aheadCell = map.getCell(positionOnMapX + 1, positionOnMapY);
+
+                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    ++positionOnMapX;
+                    break;
+                }
+
+                if (!aheadCell.isBlocking() && !isBuffering) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking()
+                            && currentY < cellMinY) {
+                        commandStack.add("1down");
+                        break;
+                    }
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking()
+                            && currentY > cellMinY) {
+                        commandStack.add("1up");
+                        break;
+                    }
+                }
+
+                newLoadingX = currentX + speed * elapsedTime;
+                newLoadingY = currentY;
+
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    if (newLoadingX > cellMinX + 3) {
+                        newLoadingX = cellMinX + 3;
+                    }
+                }
+                if (isBuffering && currentX >= cellMinX + 3) {
+                    System.out.println("Right buffer removed.");
+                    commandStack.pop();
                 }
             }
         }
 
-        this.positionX = positionX;
-        this.positionY = positionY;
+        index = padding + frameIndex;
+
+        /// Reload character position.
+        moveTo(newLoadingX, newLoadingY);
     }
 
-    // Renders the character to scene scaled to the dimension
-    // specified by the arguments width and height.
-    public void render(GraphicsContext gc) {
-        double imageX = 0;
-        Image outputImage;
-        // if currently not moving then draw the correct idle sprite
-        if (velocityX == 0 && velocityY == 0) {
-            switch (currentDirection) {
-                case "UP" -> imageX = 0;
-                case "RIGHT" -> imageX = spriteWidth;
-                case "DOWN" -> imageX = spriteWidth * 2;
-                case "LEFT" -> imageX = spriteWidth * 3;
+    @Override
+    public void moveTo(double newX, double newY) {
+        gc.clearRect(SIDE, SIDE, SIDE * 30, SIDE * 12);
+        hitBox.setMinX(newX);
+        hitBox.setMinY(newY);
+        gc.drawImage(bomberWalking,
+                index * WIDTH, 0, WIDTH, HEIGHT,
+                newX, newY, WIDTH, HEIGHT);
+    }
+
+    @Override
+    public void moveDown() {
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'd') {
+            commandStack.push("0down");
+            System.out.println("Moved down.");
+        }
+    }
+
+    @Override
+    public void moveLeft() {
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'l') {
+            commandStack.push("0left");
+            System.out.println("Moved left.");
+        }
+    }
+
+    @Override
+    public void moveRight() {
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'r') {
+            commandStack.push("0right");
+            System.out.println("Moved right.");
+        }
+    }
+
+    @Override
+    public void moveUp() {
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'u') {
+            commandStack.push("0up");
+            System.out.println("Moved up.");
+        }
+    }
+
+    @Override
+    public void removeDown() {
+        for (int i = commandStack.size() - 1; i >= 0; --i) {
+            if (commandStack.get(i).equals("0down")) {
+                commandStack.remove(i);
+                break;
             }
-            outputImage = idleImage;
         }
-        // else draw the correct walking spite corresponding to the current moving direction
-        else {
-            imageX = spriteWidth * index;
-            outputImage = walkingImage;
+        lastDirection = 'd';
+        System.out.println("reMoved down.");
+    }
+
+    @Override
+    public void removeLeft() {
+        for (int i = commandStack.size() - 1; i >= 0; --i) {
+            if (commandStack.get(i).equals("0left")) {
+                commandStack.remove(i);
+                break;
+            }
         }
-        gc.drawImage(outputImage, imageX, 0, spriteWidth, spriteHeight,
-                positionX, positionY, spriteWidth, spriteHeight);
+        lastDirection = 'l';
+        System.out.println("reMoved left.");
     }
 
-    public void setVelocity(double velocityX, double velocityY) {
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
+    @Override
+    public void removeRight() {
+        for (int i = commandStack.size() - 1; i >= 0; --i) {
+            if (commandStack.get(i).equals("0right")) {
+                commandStack.remove(i);
+                break;
+            }
+        }
+        lastDirection = 'r';
+        System.out.println("reMoved right.");
     }
 
-    public void addVelocity(double dX, double dY) {
-        velocityX += dX;
-        velocityY += dY;
-    }
-
-    public Rectangle2D getBoundary() {
-        return new Rectangle2D(positionX + paddingLeft, positionY + paddingTop, boundaryWidth, boundaryHeight);
-    }
-
-    public boolean intersects(Stuff stuff) {
-        return this.getBoundary().intersects(stuff.getBoundary());
+    @Override
+    public void removeUp() {
+        for (int i = commandStack.size() - 1; i >= 0; --i) {
+            if (commandStack.get(i).equals("0up")) {
+                commandStack.remove(i);
+                break;
+            }
+        }
+        lastDirection = 'u';
+        System.out.println("reMoved up.");
     }
 }
