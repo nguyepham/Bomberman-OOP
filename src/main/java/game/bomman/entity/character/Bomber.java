@@ -2,7 +2,8 @@ package game.bomman.entity.character;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
-import javafx.geometry.BoundingBox;
+import game.bomman.map.Cell;
+import game.bomman.map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -16,12 +17,15 @@ public class Bomber extends Character {
     private static Image bomberWalking;
     private static Image bomberStanding;
     private int numOfLife;
-    private Stack<KeyCode> commandStack = new Stack<>();
+    private Stack<String> commandStack = new Stack<>();
 
-    public Bomber(GraphicsContext gc, double targetMinX, double targetMinY) {
+    public Bomber(Map map, double targetMinX, double targetMinY, GraphicsContext gc) {
+        this.map = map;
         this.newLoadingX = Entity.SIDE;
         this.newLoadingY = Entity.SIDE;
-        this.speed = 100;
+        this.positionOnMapX = 1;
+        this.positionOnMapY = 1;
+        this.speed = 200;
         this.numOfLife =3;
         this.gc = gc;
         this.gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, targetMinX, targetMinY, WIDTH, HEIGHT);
@@ -41,37 +45,199 @@ public class Bomber extends Character {
         }
     }
 
-    private void handleCommands(double elapsedTime) {
+    @Override
+    public void update(double elapsedTime) {
+        Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
+        double cellMinX = currentCell.getHitBox().getMinX();
+        double cellMinY = currentCell.getHitBox().getMinY();
+
+        /// Remember to check this after handling interaction between entities.
         if (commandStack.empty()) {
+//            System.out.println("Empty.");
             return;
         }
+        System.out.println("Position on map:");
+        System.out.println(positionOnMapX + " " +  positionOnMapY +  "\n");
 
         double currentX = hitBox.getMinX();
         double currentY = hitBox.getMinY();
 
-        KeyCode command = commandStack.peek();
-        switch (command) {
-            case UP -> {
-//                moveTo(currentX, currentY - speed);
+        System.out.println("\n");
+        for (int i = 0; i < commandStack.size(); ++i) {
+            System.out.println(commandStack.get(i));
+        }
+
+        /** Update the position of bomber **/
+        /// Handle the input commands.
+        String command = commandStack.peek();
+        boolean isBuffering = (command.charAt(0) == '1');
+
+        switch (command.charAt(1)) {
+
+            case 'u' -> {
+                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY - 1);
+
+                if (this.gotInto(currentCell) == false && this.gotInto(aheadCell)) {
+                    --positionOnMapY;
+                    break;
+                }
+//                if (isBuffering && currentY <= cellMinY) {
+//                    isBuffering = false;
+//                    commandStack.pop();
+//                    break;
+//                }
+
+                if (aheadCell.isBlocking() == false && isBuffering == false) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking()
+                            && currentX > cellMinX + 3) {
+                        commandStack.add("1left");
+                        break;
+                    }
+
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking()
+                            && currentX < cellMinX + 3) {
+                        commandStack.add("1right");
+                        break;
+                    }
+                }
+
                 newLoadingX = currentX;
                 newLoadingY = currentY - speed * elapsedTime;
+
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    if (newLoadingY < cellMinY) {
+                        newLoadingY = cellMinY;
+                    }
+                }
+                if (isBuffering && currentY <= cellMinY) {
+                    System.out.println("Up buffer removed.");
+                    commandStack.pop();
+                }
             }
-            case DOWN -> {
-//                moveTo(currentX, currentY + speed);
+            case 'd' -> {
+                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY + 1);
+
+                if (this.gotInto(currentCell) == false && this.gotInto(aheadCell)) {
+                    ++positionOnMapY;
+                    break;
+                }
+//                if (isBuffering && currentY >= cellMinY) {
+//                    isBuffering = false;
+//                    commandStack.pop();
+//                    break;
+//                }
+
+                if (aheadCell.isBlocking() == false && isBuffering == false) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking()
+                            && currentX > cellMinX + 3) {
+                        commandStack.add("1left");
+                        break;
+                    }
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking()
+                            && currentX < cellMinX + 3) {
+                        commandStack.add("1right");
+                        break;
+                    }
+                }
+
                 newLoadingX = currentX;
                 newLoadingY = currentY + speed * elapsedTime;
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    if (newLoadingY > cellMinY) {
+                        newLoadingY = cellMinY;
+                    }
+                }
+                if (isBuffering && currentY >= cellMinY) {
+                    System.out.println("Down buffer removed.");
+                    commandStack.pop();
+                }
             }
-            case LEFT -> {
-//                moveTo(currentX - speed, currentY);
+            case 'l' -> {
+                Cell aheadCell = map.getCell(positionOnMapX - 1, positionOnMapY);
+
+                if (this.gotInto(currentCell) == false && this.gotInto(aheadCell)) {
+                    --positionOnMapX;
+                    break;
+                }
+//                if (isBuffering && currentX <= cellMinX + 3) {
+//                    isBuffering = false;
+//                    commandStack.pop();
+//                    break;
+//                }
+
+                if (aheadCell.isBlocking() == false && isBuffering == false) {
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking()
+                            && currentY < cellMinY) {
+                        commandStack.add("1down");
+                        break;
+                    }
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking()
+                            && currentY > cellMinY) {
+                        commandStack.add("1up");
+                        break;
+                    }
+                }
+
                 newLoadingX = currentX - speed * elapsedTime;
                 newLoadingY = currentY;
+
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    System.out.println("Left blocked.");
+                    if (newLoadingX < cellMinX + 3) {
+                        newLoadingX = cellMinX + 3;
+                    }
+                }
+                if (isBuffering && currentX <= cellMinX + 3) {
+                    System.out.println("Left buffer removed.");
+                    commandStack.pop();
+                }
             }
-            case RIGHT -> {
-//                moveTo(currentX + speed, currentY);
+            case 'r' -> {
+                Cell aheadCell = map.getCell(positionOnMapX + 1, positionOnMapY);
+
+                if (this.gotInto(currentCell) == false && this.gotInto(aheadCell)) {
+                    ++positionOnMapX;
+                    break;
+                }
+//                if (isBuffering && currentX >= cellMinX + 3) {
+//                    isBuffering = false;
+//                    commandStack.pop();
+//                    break;
+//                }
+
+                if (aheadCell.isBlocking() == false && isBuffering == false) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking()
+                            && currentY < cellMinY) {
+                        commandStack.add("1down");
+                        break;
+                    }
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking()
+                            && currentY > cellMinY) {
+                        commandStack.add("1up");
+                        break;
+                    }
+                }
+
                 newLoadingX = currentX + speed * elapsedTime;
                 newLoadingY = currentY;
+
+                /// Character blocked.
+                if (aheadCell.isBlocking() || isBuffering) {
+                    if (newLoadingX > cellMinX + 3) {
+                        newLoadingX = cellMinX + 3;
+                    }
+                }
+                if (isBuffering && currentX >= cellMinX + 3) {
+                    System.out.println("Right buffer removed.");
+                    commandStack.pop();
+                }
             }
         }
+        /// Reload character position.
+        moveTo(newLoadingX, newLoadingY);
     }
 
     @Override
@@ -82,102 +248,86 @@ public class Bomber extends Character {
         gc.drawImage(bomberStanding, newX, newY, WIDTH, HEIGHT);
     }
 
-    @Override
-    public void update(double elapsedTime) {
-        handleCommands(elapsedTime);
-        moveTo(newLoadingX, newLoadingY);
-    }
+//    public void update(double elapsedTime) {
+//        handleCommands(elapsedTime);
+//        moveTo(newLoadingX, newLoadingY);
+//    }
 
     @Override
     public void moveDown() {
-        if (commandStack.empty() || !commandStack.peek().equals(KeyCode.DOWN)) {
-            commandStack.push(KeyCode.DOWN);
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'd') {
+            commandStack.push("0down");
+            System.out.println("Moved down.");
         }
-        // handleCommands();
     }
 
     @Override
     public void moveLeft() {
-        if (commandStack.empty() || !commandStack.peek().equals(KeyCode.LEFT)) {
-            commandStack.push(KeyCode.LEFT);
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'l') {
+            commandStack.push("0left");
+            System.out.println("Moved left.");
         }
-        // handleCommands();
     }
 
     @Override
     public void moveRight() {
-        if (commandStack.empty() || !commandStack.peek().equals(KeyCode.RIGHT)) {
-            commandStack.push(KeyCode.RIGHT);
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'r') {
+            commandStack.push("0right");
+            System.out.println("Moved right.");
         }
-        // handleCommands();
     }
 
     @Override
     public void moveUp() {
-        if (commandStack.empty() || !commandStack.peek().equals(KeyCode.UP)) {
-            commandStack.push(KeyCode.UP);
+        if (commandStack.empty() || commandStack.peek().charAt(1) != 'u') {
+            commandStack.push("0up");
+            System.out.println("Moved up.");
         }
-        // handleCommands();
     }
 
     @Override
     public void removeDown() {
         for (int i = commandStack.size() - 1; i >= 0; --i) {
-            if (commandStack.get(i).equals(KeyCode.DOWN)) {
+            if (commandStack.get(i).equals("0down")) {
                 commandStack.remove(i);
                 break;
             }
         }
-        System.out.println("Down removed.");
-
-        /// Log to the standard output.
-        for (int i = 0; i < commandStack.size(); ++i) {
-            System.out.println(commandStack.get(i));
-        }
-
-        // handleCommands();
+        System.out.println("reMoved down.");
     }
 
     @Override
     public void removeLeft() {
         for (int i = commandStack.size() - 1; i >= 0; --i) {
-            if (commandStack.get(i).equals(KeyCode.LEFT)) {
+            if (commandStack.get(i).equals("0left")) {
                 commandStack.remove(i);
                 break;
             }
         }
-        System.out.println("left removed.");
-
-        /// Log to the standard output.
-        for (int i = 0; i < commandStack.size(); ++i) {
-            System.out.println(commandStack.get(i));
-        }
-
-        // handleCommands();
+        System.out.println("reMoved left.");
     }
 
     @Override
     public void removeRight() {
         for (int i = commandStack.size() - 1; i >= 0; --i) {
-            if (commandStack.get(i).equals(KeyCode.RIGHT)) {
+            if (commandStack.get(i).equals("0right")) {
                 commandStack.remove(i);
                 break;
             }
         }
-        System.out.println("Right removed.");
-        // handleCommands();
+        System.out.println("reMoved right.");
     }
 
     @Override
     public void removeUp() {
         for (int i = commandStack.size() - 1; i >= 0; --i) {
-            if (commandStack.get(i).equals(KeyCode.UP)) {
+            if (commandStack.get(i).equals("0up")) {
                 commandStack.remove(i);
                 break;
             }
         }
-        System.out.println("Up removed.");
-        // handleCommands();
+        System.out.println("reMoved up.");
+
     }
 
     // Number of sprites for each direction in the Image

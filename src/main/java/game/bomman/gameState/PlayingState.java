@@ -35,11 +35,14 @@ public class PlayingState extends GameState {
         root.getChildren().add(characterCanvas);
         characterCanvas.requestFocus();
 
-        double[] bomberPosition  = gameMap.getCell(1, 1).getLoadingPosition();
+        double bomberPositionX  = gameMap.getCell(1, 1).getLoadingPositionX();
+        double bomberPositionY  = gameMap.getCell(1, 1).getLoadingPositionY();
 
-        Bomber bomber = new Bomber(characterCanvas.getGraphicsContext2D(),
-                                   bomberPosition[0] + 3.0f,
-                                   bomberPosition[1]);
+        Bomber bomber = new Bomber(gameMap,
+                bomberPositionX + 3.0f,
+                bomberPositionY,
+                characterCanvas.getGraphicsContext2D());
+
         MovingController.init(characterCanvas, bomber);
         MovingController.activateInputReader();
         MovingController.activateAI();

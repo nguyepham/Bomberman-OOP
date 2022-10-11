@@ -44,8 +44,16 @@ public abstract class Entity {
       return new double[] {x, y};
    }
 
-   public double[] getLoadingPosition() {
-      return new double[] {hitBox.getMinX(), hitBox.getMinY()};
+   public HitBox getHitBox() {
+      return hitBox;
+   }
+
+   public double getLoadingPositionX() {
+      return hitBox.getMinX();
+   }
+
+   public double getLoadingPositionY() {
+      return hitBox.getMinY();
    }
 
    public boolean gotInto(Entity other) {

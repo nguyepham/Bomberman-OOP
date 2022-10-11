@@ -2,13 +2,17 @@ package game.bomman.entity.character;
 
 import game.bomman.entity.Blockable;
 import game.bomman.entity.Entity;
+import game.bomman.map.Map;
 
 public abstract class Character extends Entity implements Blockable {
     protected double velocityX;
     protected double velocityY;
     protected double newLoadingX;
     protected double newLoadingY;
+    protected int positionOnMapX;
+    protected int positionOnMapY;
     protected double speed;
+    protected Map map;
 
     public void setVelocity(double x, double y) {
         velocityX = x;
