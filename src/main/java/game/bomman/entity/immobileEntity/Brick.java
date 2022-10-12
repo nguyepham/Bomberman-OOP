@@ -16,20 +16,13 @@ public class Brick extends ImmobileEntity {
         }
     }
 
-    public Brick(GraphicsContext gc, double loadingPosX, double loadingPosY) {
-        super(loadingPosX, loadingPosY);
-        this.gc = gc;
+    public Brick(double loadingPosX, double loadingPosY) {
+        initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
         gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
-
     @Override
-    public void render(GraphicsContext gc) {
-        gc.drawImage(image, 0, 0, side, side, positionX, positionY, side, side);
-    }
-
-    @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 }

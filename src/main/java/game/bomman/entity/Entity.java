@@ -1,6 +1,5 @@
 package game.bomman.entity;
 
-import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -11,13 +10,11 @@ import java.io.IOException;
 public abstract class Entity {
    public static final String IMAGES_PATH = "src/main/resources/game/bomman/assets/sprites";
    public static final double SIDE = 48;
-
-   // Notes that X's coordinate here is the horizontal one
-   // while Y's coordinate is the vertical one.
-   protected GraphicsContext gc;
-   protected double positionX;
-   protected double positionY;
    protected HitBox hitBox;
+
+   protected void initHitBox(double loadingPosX, double loadingPosY, double width, double height) {
+      hitBox = new HitBox(loadingPosX, loadingPosY, width, height);
+   }
 
    // create a load Image method to encapsulate
    // the functionality of loading images so that
@@ -32,16 +29,6 @@ public abstract class Entity {
          throw new RuntimeException(e);
       }
       return image;
-   }
-
-//   public void getSpriteFrom(String filePath) throws FileNotFoundException {
-//      sprite = Entity.loadImage(filePath);
-//   }
-
-   public double[] getPosition() {
-      double x = hitBox.getCenterX();
-      double y = hitBox.getCenterY();
-      return new double[] {x, y};
    }
 
    public HitBox getHitBox() {
@@ -60,5 +47,5 @@ public abstract class Entity {
       return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
    }
 
-   public abstract void update(double elapsedTime);
+   public abstract void update(double elapsedTime, double timeSinceStart);
 }

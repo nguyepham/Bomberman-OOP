@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 
 public class ActivatedBomb extends ImmobileEntity {
     private static final Image image;
+    private double timer;
 
     static {
         try {
@@ -16,18 +17,22 @@ public class ActivatedBomb extends ImmobileEntity {
         }
     }
 
+    static void runTimer() {
+
+    }
+
     public ActivatedBomb(double loadingPosX, double loadingPosY) {
-        super(loadingPosX, loadingPosY);
+        timer = System.nanoTime() / 1000000000.0f;
+        initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
         gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
-    @Override
-    public void render(GraphicsContext gc) {
+    public void explode() {
 
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 }

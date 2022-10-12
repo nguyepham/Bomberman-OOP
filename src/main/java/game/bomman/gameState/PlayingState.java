@@ -2,9 +2,12 @@ package game.bomman.gameState;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
-import game.bomman.Controller.MovingController;
+import game.bomman.component.MovingController;
+import game.bomman.entity.character.Character;
+import game.bomman.entity.immobileEntity.ImmobileEntity;
 import game.bomman.map.Map;
 import javafx.scene.Scene;
+import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 
 import java.io.FileNotFoundException;
@@ -16,8 +19,6 @@ public class PlayingState extends GameState {
     private Map gameMap;
 
     public PlayingState() throws FileNotFoundException {
-//        root.getChildren().add(itemCanvas);
-//        root.getChildren().add(bombCanvas);
         scene = new Scene(root);
         gameMap = new Map();
         characterCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
@@ -27,8 +28,12 @@ public class PlayingState extends GameState {
     public Scene getScene() { return scene; }
 
     public void setUp() throws FileNotFoundException {
+        /// Set the graphic context for entities.
+        ImmobileEntity.setCanvas(bombCanvas.getGraphicsContext2D());
+        Character.setCanvas(characterCanvas.getGraphicsContext2D());
+
         /// Set up the game map.
-        root.getChildren().add(gameMap.setUp(bombCanvas));
+        root.getChildren().add(gameMap.setUp());
         root.getChildren().add(bombCanvas);
 
         /// Set up the characters.
@@ -40,8 +45,7 @@ public class PlayingState extends GameState {
 
         Bomber bomber = new Bomber(gameMap,
                 bomberPositionX + 3.0f,
-                bomberPositionY,
-                characterCanvas.getGraphicsContext2D());
+                bomberPositionY);
 
         MovingController.init(characterCanvas, bomber);
         MovingController.activateInputReader();
@@ -49,13 +53,20 @@ public class PlayingState extends GameState {
     }
 
     public void run() {
-        MovingController.run();
+        final long startTimestamp = System.nanoTime();
+        final long[] lastTimestamp = new long[] {startTimestamp};
 
-//        new AnimationTimer() {
-//            @Override
-//            public void handle(long ) {
-//
-//            }
-//        }.start();
+        AnimationTimer playingStateTimer = new AnimationTimer() {
+            @Override
+            public void handle(long currentTimestamp) {
+                double elapsedTime = (currentTimestamp - lastTimestamp[0]) / 1000000000.0;
+                lastTimestamp[0] = currentTimestamp;
+                double timeSinceStart = (currentTimestamp - startTimestamp) / 1000000000.0;
+
+                MovingController.update(elapsedTime, timeSinceStart);
+                MovingController.draw();
+            }
+        };
+        playingStateTimer.start();
     }
 }

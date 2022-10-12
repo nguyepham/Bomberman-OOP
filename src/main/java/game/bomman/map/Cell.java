@@ -2,18 +2,18 @@ package game.bomman.map;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
-import game.bomman.entity.immobileEntity.ImmobileEntity;
-import javafx.geometry.BoundingBox;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cell extends Entity {
     private int[] pos = new int[2];
     private boolean blocking;
     private char rawConfig;
-    private Image sprite;
-    private ImmobileEntity entity;
+    private Image staticSprite;
+    private List<Entity> entityList = new ArrayList<>();
 
     public Cell(int x, int y, char rawConfig) {
         pos[0] = x;
@@ -27,38 +27,35 @@ public class Cell extends Entity {
         return blocking;
     }
 
-    public void setBlocking() {
-        blocking = true;
-    }
-
-    public double getWidth() {
-        return hitBox.getWidth();
-    }
-
-    public double getHeight() {
-        return hitBox.getHeight();
+    public void setBlocking(boolean value) {
+        blocking = value;
     }
 
     public char getRawConfig() {
         return rawConfig;
     }
 
-    public Image getSprite() { return sprite; }
-
-    public void setEntity(ImmobileEntity value) {
-        entity = value;
-    }
-
-    public int[] getPostitionInMap() {
-        return pos;
-    }
+    public Image getSprite() { return staticSprite; }
 
     public void getSpriteFrom(String filePath) throws FileNotFoundException {
-        sprite = loadImage(filePath);
+        staticSprite = loadImage(filePath);
+    }
+
+    public void addEntity(Entity entity) {
+        entityList.add(entity);
+    }
+
+    public void removeEntity(Entity entity) {
+        for (int i = 0; i < entityList.size(); ++i) {
+            if (entity.equals(entityList.get(i))) {
+                entityList.remove(i);
+                break;
+            }
+        }
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 }

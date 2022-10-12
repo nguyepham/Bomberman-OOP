@@ -1,5 +1,6 @@
 package game.bomman.map;
 
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.Brick;
 import javafx.scene.canvas.Canvas;
@@ -7,6 +8,8 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Map {
@@ -45,7 +48,7 @@ public class Map {
         return cells[j][i];
     }
 
-    public Canvas setUp(Canvas bombCanvas) throws FileNotFoundException {
+    public Canvas setUp() throws FileNotFoundException {
         Canvas canvas = new Canvas(Entity.SIDE * width, Entity.SIDE * height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -57,7 +60,7 @@ public class Map {
                 Cell thisCell = cells[j][i];
 
                 if (thisCell.getRawConfig() == '#' || thisCell.getRawConfig() == '*') {
-                    thisCell.setBlocking();
+                    thisCell.setBlocking(true);
                 }
                 double posX = thisCell.getLoadingPositionX();
                 double posY = thisCell.getLoadingPositionY();
@@ -104,7 +107,7 @@ public class Map {
                                 Entity.IMAGES_PATH + "/map/steel.png");
                     }
                     case '*' -> {
-                        thisCell.setEntity(new Brick(bombCanvas.getGraphicsContext2D(), posX, posY));
+                        InteractionHandler.getImmobileEntityList().add(new Brick(posX, posY));
                     }
                     default -> {
                         if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {

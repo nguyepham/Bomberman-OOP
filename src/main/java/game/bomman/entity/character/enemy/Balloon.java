@@ -2,12 +2,17 @@ package game.bomman.entity.character.enemy;
 
 public class Balloon extends Enemy {
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime, double timeSinceStart) {
 
     }
 
     @Override
-    public void moveTo(double x, double y) {
+    public void draw() {
+
+    }
+
+    @Override
+    public void layingBomb() {
 
     }
 
