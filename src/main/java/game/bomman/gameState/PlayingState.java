@@ -1,10 +1,12 @@
 package game.bomman.gameState;
 
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.component.MovingController;
 import game.bomman.entity.character.Character;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
+import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.Scene;
 import javafx.animation.AnimationTimer;
@@ -40,31 +42,51 @@ public class PlayingState extends GameState {
         root.getChildren().add(characterCanvas);
         characterCanvas.requestFocus();
 
-        double bomberPositionX  = gameMap.getCell(1, 1).getLoadingPositionX();
-        double bomberPositionY  = gameMap.getCell(1, 1).getLoadingPositionY();
+        Cell firstCell = gameMap.getCell(1, 1);
+        double bomberPositionX  = firstCell.getLoadingPositionX();
+        double bomberPositionY  = firstCell.getLoadingPositionY();
 
-        Bomber bomber = new Bomber(gameMap,
+        Bomber bomber = new Bomber(
+                gameMap,
                 bomberPositionX + 3.0f,
-                bomberPositionY);
+                bomberPositionY
+        );
+        firstCell.addEntity(bomber);
 
+        /// Set up game components.
         MovingController.init(characterCanvas, bomber);
         MovingController.activateInputReader();
         MovingController.activateAI();
+
+        InteractionHandler.init(bombCanvas, characterCanvas, bomber);
+        InteractionHandler.activateInputReader();
     }
 
     public void run() {
-        final long startTimestamp = System.nanoTime();
-        final long[] lastTimestamp = new long[] {startTimestamp};
-
         AnimationTimer playingStateTimer = new AnimationTimer() {
+            long lastTimestamp = System.nanoTime();
+
             @Override
             public void handle(long currentTimestamp) {
-                double elapsedTime = (currentTimestamp - lastTimestamp[0]) / 1000000000.0;
-                lastTimestamp[0] = currentTimestamp;
-                double timeSinceStart = (currentTimestamp - startTimestamp) / 1000000000.0;
+                double elapsedTime = (currentTimestamp - lastTimestamp) / 1000000000.0;
+                lastTimestamp = currentTimestamp;
 
-                MovingController.update(elapsedTime, timeSinceStart);
+                try {
+                    this.update(elapsedTime);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                this.draw();
+            }
+
+            private void update(double elapsedTime) throws FileNotFoundException {
+                MovingController.update(elapsedTime);
+                InteractionHandler.update(elapsedTime);
+            }
+
+            private void draw() {
                 MovingController.draw();
+                InteractionHandler.draw();
             }
         };
         playingStateTimer.start();

@@ -2,6 +2,7 @@ package game.bomman.component;
 
 import game.bomman.command.*;
 import game.bomman.command.movingCommand.*;
+import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Character;
 import javafx.event.EventHandler;
@@ -32,6 +33,7 @@ public class MovingController {
 
     public static void activateInputReader() {
         EventHandler<KeyEvent> moveByKey = (event) -> {
+            canvas.requestFocus();
             if (event.getEventType() == KeyEvent.KEY_PRESSED) {
                 switch (event.getCode()) {
                     case DOWN -> moveDown.executeOn(bomber);
@@ -56,11 +58,13 @@ public class MovingController {
 
     }
 
-    public static void update(double elapsedTime, double timeSinceStart) {
-        bomber.update(elapsedTime, timeSinceStart);
+    public static void update(double elapsedTime) {
+        bomber.update(elapsedTime);
     }
 
     public static void draw() {
+        /// Transparently clear the canvas and draw everything on that canvas once again.
+        canvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE,canvas.getWidth(), canvas.getHeight());
         bomber.draw();
     }
 }

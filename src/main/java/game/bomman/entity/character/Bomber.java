@@ -3,6 +3,7 @@ package game.bomman.entity.character;
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.ActivatedBomb;
+import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,13 +16,15 @@ public class Bomber extends Character {
     public static final double WIDTH = 42;
     public static final double HEIGHT = 48;
     // Duration per sprite.
-    private static final double DURATION = 0.15;
+    private static final double SPRITE_DURATION = 0.15;
     private static final int N_SPRITES_PER_DIRECTION = 4;
-    private int index = 8;
     private int facingDirectionIndex = 2;
+    private int padding = 0;
     private boolean isMoving = false;
     private static Image bomberWalking;
     private static Image bomberStanding;
+    private static Image bomberDying;
+    private static Image bomberLevelUp;
     private int numOfLife;
     private Stack<String> commandStack = new Stack<>();
 
@@ -37,21 +40,44 @@ public class Bomber extends Character {
         initHitBox(targetMinX, targetMinY, WIDTH, HEIGHT);
     }
 
-    public Image getWalkingImage() { return bomberWalking; }
-
-    public Image getStandingImage() { return bomberStanding; }
-
     static {
         try {
+            bomberStanding = loadImage(IMAGES_PATH + "/player/idle.png") ;
             bomberWalking = loadImage(IMAGES_PATH + "/player/walking.png");
-            bomberStanding = loadImage(IMAGES_PATH + "/player/idle.png");
+            bomberDying = loadImage(IMAGES_PATH + "/player/die@11.png");
+            bomberLevelUp = loadImage(IMAGES_PATH + "/player/white@4.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void update(double elapsedTime, double timeSinceStart) {
+    public void update(double elapsedTime) {
+
+
+
+        if (commandStack.empty()) {
+            isMoving = false;
+            return;
+        }
+        isMoving = true;
+
+        /// Update sprite timer.
+        timer += elapsedTime;
+        if (timer >= SPRITE_DURATION) {
+            timer = 0;
+            ++frameIndex;
+            if (frameIndex == N_SPRITES_PER_DIRECTION) {
+                frameIndex = 0;
+            }
+        }
+
+        /// Update bomber's position.
+        updatePosition(elapsedTime);
+    }
+
+    private void updatePosition(double elapsedTime) {
+
         Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
         double cellMinX = currentCell.getHitBox().getMinX();
         double cellMinY = currentCell.getHitBox().getMinY();
@@ -59,26 +85,8 @@ public class Bomber extends Character {
         double currentX = hitBox.getMinX();
         double currentY = hitBox.getMinY();
 
-        if (commandStack.empty()) {
-            isMoving = false;
-            return;
-        }
-        System.out.println("Position on map:");
-        System.out.println(positionOnMapX + " " +  positionOnMapY);
-        System.out.println("\n");
-        for (String s : commandStack) {
-            System.out.println(s);
-        }
-
-        isMoving = true;
-
-        /** Update the position of bomber **/
-        /// Handle the input commands.
         String command = commandStack.peek();
         boolean isBuffering = (command.charAt(0) == '1');
-
-        int frameIndex = (int)(timeSinceStart % (DURATION * N_SPRITES_PER_DIRECTION) / DURATION);
-        int padding = 0;
 
         switch (command.charAt(1)) {
             case 'u' -> {
@@ -144,6 +152,7 @@ public class Bomber extends Character {
 
                 newLoadingX = currentX;
                 newLoadingY = currentY + speed * elapsedTime;
+
                 /// Character blocked.
                 if (aheadCell.isBlocking() || isBuffering) {
                     if (newLoadingY > cellMinY) {
@@ -229,21 +238,26 @@ public class Bomber extends Character {
                     System.out.println("Right buffer removed.");
                     commandStack.pop();
                 }
+
+                /// Test the breaking of bricks.
+                if (aheadCell.isBlocking() && currentX >= cellMinX + 3) {
+                    if (aheadCell.getRawConfig() == '*') {
+                        Brick brick = (Brick) aheadCell.getEntity(0);
+                        brick.explode();
+                    }
+                }
             }
         }
-        index = padding + frameIndex;
     }
 
     @Override
     public void draw() {
-        /// Transparently clear the canvas and draw everything on that canvas once again.
-        gc.clearRect(SIDE, SIDE, SIDE * 30, SIDE * 12);
         hitBox.setMinX(newLoadingX);
         hitBox.setMinY(newLoadingY);
 
         if (isMoving) {
             gc.drawImage(bomberWalking,
-                    index * WIDTH, 0, WIDTH, HEIGHT,
+                    (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
                     newLoadingX, newLoadingY, WIDTH, HEIGHT);
         } else {
             gc.drawImage(bomberStanding,
@@ -255,9 +269,15 @@ public class Bomber extends Character {
     @Override
     public void layingBomb() {
         Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
-        ActivatedBomb newBomb = new ActivatedBomb(currentCell.getLoadingPositionX(), currentCell.getLoadingPositionY());
+        ActivatedBomb newBomb = new ActivatedBomb(
+                map,
+                currentCell.getLoadingPositionX(),
+                currentCell.getLoadingPositionY(),
+                positionOnMapX,
+                positionOnMapY
+        );
         currentCell.addEntity(newBomb);
-        InteractionHandler.getImmobileEntityList().add(newBomb);
+        InteractionHandler.addImmobileEntity(newBomb);
     }
 
     @Override

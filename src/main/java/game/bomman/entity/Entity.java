@@ -1,5 +1,7 @@
 package game.bomman.entity;
 
+import game.bomman.map.Cell;
+import game.bomman.map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -10,10 +12,19 @@ import java.io.IOException;
 public abstract class Entity {
    public static final String IMAGES_PATH = "src/main/resources/game/bomman/assets/sprites";
    public static final double SIDE = 48;
+   protected int positionOnMapX;
+   protected int positionOnMapY;
+   protected Map map;
+   protected int frameIndex = 0;
+   protected double timer = 0;
    protected HitBox hitBox;
 
    protected void initHitBox(double loadingPosX, double loadingPosY, double width, double height) {
       hitBox = new HitBox(loadingPosX, loadingPosY, width, height);
+   }
+
+   protected void removeFromCell(int i, int j) {
+      map.getCell(i, j).removeEntity(this);
    }
 
    // create a load Image method to encapsulate
@@ -47,5 +58,7 @@ public abstract class Entity {
       return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
    }
 
-   public abstract void update(double elapsedTime, double timeSinceStart);
+   public abstract void update(double elapsedTime) throws FileNotFoundException;
+
+   public abstract void draw();
 }

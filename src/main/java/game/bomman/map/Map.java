@@ -66,14 +66,14 @@ public class Map {
                 double posY = thisCell.getLoadingPositionY();
 
                 if (j == height - 1) {
-                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.setWall();
                     gc.drawImage(thisCell.getSprite(), Entity.SIDE * 5, 0, Entity.SIDE, Entity.SIDE,
                             posX, posY, Entity.SIDE, Entity.SIDE);
                     continue;
                 }
 
                 if (j == 0) {
-                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.setWall();
                     if (i == 0) {
                         gc.drawImage(thisCell.getSprite(), Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
                                 posX, posY, Entity.SIDE, Entity.SIDE);
@@ -90,7 +90,7 @@ public class Map {
                 }
 
                 if (i == 0 || i == width - 1) {
-                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.setWall();
                     if (i == 0) {
                         gc.drawImage(thisCell.getSprite(), 0, 0, Entity.SIDE, Entity.SIDE,
                                 posX, posY, Entity.SIDE, Entity.SIDE);
@@ -101,22 +101,21 @@ public class Map {
                     continue;
                 }
 
-                switch (rawConfig) {
-                    case '#' -> {
-                        thisCell.getSpriteFrom(
-                                Entity.IMAGES_PATH + "/map/steel.png");
+                if (rawConfig == '#') {
+                    thisCell.setSteel();
+                } else {
+                    if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
+                        thisCell.setShaderGrass();
+                    } else {
+                        thisCell.setGrass();
                     }
-                    case '*' -> {
-                        InteractionHandler.getImmobileEntityList().add(new Brick(posX, posY));
-                    }
-                    default -> {
-                        if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
-                            thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/shaderGrass.png");
-                        } else {
-                            thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/grass.png");
-                        }
+                    if (rawConfig == '*') {
+                        Brick newBrick = new Brick(this, posX, posY, i, j);
+                        InteractionHandler.addImmobileEntity(newBrick);
+                        thisCell.addEntity(newBrick);
                     }
                 }
+
                 gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
             }
         }

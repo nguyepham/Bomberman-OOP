@@ -41,6 +41,26 @@ public class Cell extends Entity {
         staticSprite = loadImage(filePath);
     }
 
+    public void setGrass() throws FileNotFoundException {
+        staticSprite = loadImage(IMAGES_PATH + "/map/grass.png");
+    }
+
+    public void setShaderGrass() throws FileNotFoundException {
+        staticSprite = loadImage(IMAGES_PATH + "/map/shaderGrass.png");
+    }
+
+    public void setSteel() throws FileNotFoundException {
+        staticSprite = loadImage(IMAGES_PATH + "/map/steel.png");
+    }
+
+    public void setWall() throws FileNotFoundException {
+        staticSprite = loadImage(IMAGES_PATH + "/map/walls@10.png");
+    }
+
+    public Entity getEntity(int index) {
+        return entityList.get(index);
+    }
+
     public void addEntity(Entity entity) {
         entityList.add(entity);
     }
@@ -55,7 +75,12 @@ public class Cell extends Entity {
     }
 
     @Override
-    public void update(double elapsedTime, double timeSinceStart) {
+    public void update(double elapsedTime) {
+
+    }
+
+    @Override
+    public void draw() {
 
     }
 }

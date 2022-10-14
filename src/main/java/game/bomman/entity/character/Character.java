@@ -9,10 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 public abstract class Character extends Entity implements Blockable {
     protected double newLoadingX;
     protected double newLoadingY;
-    protected int positionOnMapX;
-    protected int positionOnMapY;
     protected double speed;
-    protected Map map;
     protected static GraphicsContext gc;
 
     public static void setCanvas(GraphicsContext value) {
@@ -36,6 +33,4 @@ public abstract class Character extends Entity implements Blockable {
     public abstract void removeRight();
 
     public abstract void removeUp();
-
-    public abstract void draw();
 }
