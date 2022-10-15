@@ -4,6 +4,7 @@ import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.ActivatedBomb;
 import game.bomman.entity.immobileEntity.Brick;
+import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,17 +16,26 @@ import java.util.Stack;
 public class Bomber extends Character {
     public static final double WIDTH = 42;
     public static final double HEIGHT = 48;
-    // Duration per sprite.
-    private static final double SPRITE_DURATION = 0.15;
+    private static final double WALKING_SPRITE_DURATION = 0.15f;
     private static final int N_SPRITES_PER_DIRECTION = 4;
+    private static final double LEVEL_UP_SPRITE_DURATION = 0.2f;
+    private static final int N_LEVEL_UP_SPRITES = 4;
+    private static final double DYING_SPRITE_DURATION = 0.15;
+    private static final int N_DYING_SPRITES = 11;
+    private double levelUpTimer = 0;
+    private int levelUpFrameIndex = 0;
+    private double dyingtimer = 0;
+    private int dyingFrameIndex = 0;
     private int facingDirectionIndex = 2;
     private int padding = 0;
     private boolean isMoving = false;
+    private boolean exited = false;
     private static Image bomberWalking;
     private static Image bomberStanding;
     private static Image bomberDying;
     private static Image bomberLevelUp;
-    private int numOfLife;
+    private int numOfLives;
+    private int numOfBombs;
     private Stack<String> commandStack = new Stack<>();
 
     public Bomber(Map map, double targetMinX, double targetMinY) {
@@ -35,7 +45,8 @@ public class Bomber extends Character {
         this.positionOnMapX = 1;
         this.positionOnMapY = 1;
         this.speed = 200;
-        this.numOfLife = 3;
+        this.numOfLives = 3;
+        this.numOfBombs = 2;
         gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, targetMinX, targetMinY, WIDTH, HEIGHT);
         initHitBox(targetMinX, targetMinY, WIDTH, HEIGHT);
     }
@@ -51,10 +62,19 @@ public class Bomber extends Character {
         }
     }
 
+    public void levelUp(double elapsedTime) {
+        levelUpTimer += elapsedTime;
+        if (levelUpTimer >= LEVEL_UP_SPRITE_DURATION) {
+            levelUpTimer = 0;
+            ++levelUpFrameIndex;
+            if (levelUpFrameIndex == N_LEVEL_UP_SPRITES) {
+                exited = true;
+            }
+        }
+    }
+
     @Override
     public void update(double elapsedTime) {
-
-
 
         if (commandStack.empty()) {
             isMoving = false;
@@ -64,7 +84,7 @@ public class Bomber extends Character {
 
         /// Update sprite timer.
         timer += elapsedTime;
-        if (timer >= SPRITE_DURATION) {
+        if (timer >= WALKING_SPRITE_DURATION) {
             timer = 0;
             ++frameIndex;
             if (frameIndex == N_SPRITES_PER_DIRECTION) {
@@ -126,6 +146,14 @@ public class Bomber extends Character {
                     System.out.println("Up buffer removed.");
                     commandStack.pop();
                 }
+
+                /// Test the breaking of bricks.
+                if (aheadCell.isBlocking() && currentY <= cellMinY) {
+                    if (aheadCell.getRawConfig() == '*') {
+                        Brick brick = (Brick) aheadCell.getEntity(0);
+                        brick.explode();
+                    }
+                }
             }
             case 'd' -> {
                 padding = N_SPRITES_PER_DIRECTION * 2;
@@ -162,6 +190,14 @@ public class Bomber extends Character {
                 if (isBuffering && currentY >= cellMinY) {
                     System.out.println("Down buffer removed.");
                     commandStack.pop();
+                }
+
+                /// Test the breaking of bricks.
+                if (aheadCell.isBlocking() && currentY >= cellMinY) {
+                    if (aheadCell.getRawConfig() == '*') {
+                        Brick brick = (Brick) aheadCell.getEntity(0);
+                        brick.explode();
+                    }
                 }
             }
             case 'l' -> {
@@ -201,6 +237,14 @@ public class Bomber extends Character {
                     System.out.println("Left buffer removed.");
                     commandStack.pop();
                 }
+
+                /// Test the breaking of bricks.
+                if (aheadCell.isBlocking() && currentX <= cellMinX + 3) {
+                    if (aheadCell.getRawConfig() == '*') {
+                        Brick brick = (Brick) aheadCell.getEntity(0);
+                        brick.explode();
+                    }
+                }
             }
             case 'r' -> {
                 padding = N_SPRITES_PER_DIRECTION;
@@ -239,7 +283,7 @@ public class Bomber extends Character {
                     commandStack.pop();
                 }
 
-                /// Test the breaking of bricks.
+                /// Test the sparking of bricks.
                 if (aheadCell.isBlocking() && currentX >= cellMinX + 3) {
                     if (aheadCell.getRawConfig() == '*') {
                         Brick brick = (Brick) aheadCell.getEntity(0);
@@ -252,6 +296,10 @@ public class Bomber extends Character {
 
     @Override
     public void draw() {
+        if (exited == true) {
+            return;
+        }
+
         hitBox.setMinX(newLoadingX);
         hitBox.setMinY(newLoadingY);
 
@@ -268,16 +316,34 @@ public class Bomber extends Character {
 
     @Override
     public void layingBomb() {
-        Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
+        if (numOfBombs == 0) {
+            /// The game is going to be over, all enemies killed.
+            Portal portal = InteractionHandler.getPortal();
+            if (InteractionHandler.portalAppeared()) {
+                portal.activate();
+            } else {
+                Cell portalCell = map.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
+                Brick brick = (Brick) portalCell.getEntity(0);
+                brick.spark();
+            }
+            return;
+        }
+        --numOfBombs;
+
+        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
         ActivatedBomb newBomb = new ActivatedBomb(
-                map,
-                currentCell.getLoadingPositionX(),
-                currentCell.getLoadingPositionY(),
+                map, this,
+                thisCell.getLoadingPositionX(),
+                thisCell.getLoadingPositionY(),
                 positionOnMapX,
                 positionOnMapY
         );
-        currentCell.addEntity(newBomb);
+        thisCell.addEntity(newBomb);
         InteractionHandler.addImmobileEntity(newBomb);
+    }
+
+    public void retakeBomb() {
+        ++numOfBombs;
     }
 
     @Override

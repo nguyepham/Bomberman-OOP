@@ -71,15 +71,11 @@ public class PlayingState extends GameState {
                 double elapsedTime = (currentTimestamp - lastTimestamp) / 1000000000.0;
                 lastTimestamp = currentTimestamp;
 
-                try {
-                    this.update(elapsedTime);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+                this.update(elapsedTime);
                 this.draw();
             }
 
-            private void update(double elapsedTime) throws FileNotFoundException {
+            private void update(double elapsedTime) {
                 MovingController.update(elapsedTime);
                 InteractionHandler.update(elapsedTime);
             }

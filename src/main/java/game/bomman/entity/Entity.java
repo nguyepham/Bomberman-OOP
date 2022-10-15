@@ -1,8 +1,6 @@
 package game.bomman.entity;
 
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileInputStream;
@@ -46,19 +44,25 @@ public abstract class Entity {
       return hitBox;
    }
 
-   public double getLoadingPositionX() {
-      return hitBox.getMinX();
-   }
+   public double getLoadingPositionX() { return hitBox.getMinX(); }
 
    public double getLoadingPositionY() {
       return hitBox.getMinY();
    }
 
+   public int getPosOnMapX() { return positionOnMapX; }
+
+   public int getPosOnMapY() { return positionOnMapY; }
+
    public boolean gotInto(Entity other) {
       return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
    }
 
-   public abstract void update(double elapsedTime) throws FileNotFoundException;
+   public boolean collidesWith(Entity other) {
+      return false;
+   }
+
+   public abstract void update(double elapsedTime);
 
    public abstract void draw();
 }

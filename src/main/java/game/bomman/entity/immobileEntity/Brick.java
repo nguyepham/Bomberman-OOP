@@ -1,7 +1,6 @@
 package game.bomman.entity.immobileEntity;
 
 import game.bomman.component.InteractionHandler;
-import game.bomman.entity.Entity;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -12,9 +11,13 @@ public class Brick extends ImmobileEntity {
     private static final Image image;
     private static final Image breakingImage;
     private static final Image sparkyImage;
+    private double sparkyTimer = 0;
+    private int sparkyFrameIndex = 1;
+    private boolean sparked = false;
     private boolean isBreaking = false;
     private boolean broken = false;
-    private static final double SPRITE_DURATION = 0.08;
+    private static final double SPRITE_DURATION = 0.08f;
+    private static final double SPARKING_DURATION = 0.5f;
     private static final int N_SPRITES = 7;
 
     static {
@@ -35,8 +38,12 @@ public class Brick extends ImmobileEntity {
         gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
-    public void explode() {
-        isBreaking = true;
+    private void sparking(double elapsedTime) {
+        sparkyTimer += elapsedTime;
+        if (sparkyTimer >= SPARKING_DURATION) {
+            sparkyTimer = 0;
+            sparkyFrameIndex = 1 - sparkyFrameIndex;
+        }
     }
 
     private void beingBroken(double elapsedTime) {
@@ -51,20 +58,46 @@ public class Brick extends ImmobileEntity {
         }
     }
 
+    public void spark() { sparked = true; }
+
+    public void explode() {
+        isBreaking = true;
+    }
+
     @Override
-    public void update(double elapsedTime) throws FileNotFoundException {
+    public void update(double elapsedTime) {
         if (isBreaking == true) {
             beingBroken(elapsedTime);
         }
         if (broken == true) {
+            /// Remove the brick from the game.
             removeFromCell(positionOnMapX, positionOnMapY);
             InteractionHandler.removeImmobileEntity(this);
             map.getCell(positionOnMapX, positionOnMapY).setBlocking(false);
 
+            /// Change the shader grass below the brick into grass.
             Cell belowCell = map.getCell(positionOnMapX, positionOnMapY + 1);
             if (belowCell.getRawConfig() != '#') {
-                belowCell.setGrass();
+                belowCell.reloadGrass();
             }
+
+            /// Reveal the portal if it is hidden under the broken brick.
+            if (map.getCell(positionOnMapX - 1, positionOnMapY).getRawConfig() == 'x') {
+                Portal portal = InteractionHandler.getPortal();
+
+                /// Actually put the portal into the game.
+                portal.appear();
+                Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+                thisCell.addEntity(portal);
+                InteractionHandler.addImmobileEntity(portal);
+
+                if (sparked == true) {
+                    portal.activate();
+                }
+            }
+        }
+        if (sparked == true) {
+            sparking(elapsedTime);
         }
     }
 
@@ -74,7 +107,14 @@ public class Brick extends ImmobileEntity {
         double loadingPosY = hitBox.getMinY();
 
         if (isBreaking == false && broken == false) {
-            gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
+            if (sparked == true) {
+                gc.drawImage(
+                        sparkyImage, SIDE * sparkyFrameIndex, 0, SIDE, SIDE,
+                        loadingPosX, loadingPosY, SIDE, SIDE
+                );
+            } else {
+                gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
+            }
             return;
         }
         if (isBreaking == true && broken == false) {

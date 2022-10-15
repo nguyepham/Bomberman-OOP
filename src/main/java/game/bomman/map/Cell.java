@@ -2,6 +2,7 @@ package game.bomman.map;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -9,18 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cell extends Entity {
+    private static GraphicsContext gc;
     private int[] pos = new int[2];
     private boolean blocking;
     private char rawConfig;
     private Image staticSprite;
     private List<Entity> entityList = new ArrayList<>();
 
-    public Cell(int x, int y, char rawConfig) {
+    public Cell(GraphicsContext gc_, int x, int y, char rawConfig_) {
+        gc = gc_;
         pos[0] = x;
         pos[1] = y;
-        this.rawConfig = rawConfig;
+        rawConfig = rawConfig_;
         blocking = false;
-        hitBox = new HitBox(SIDE * x, SIDE * y, SIDE, SIDE);
+        initHitBox(SIDE * x, SIDE * y, SIDE, SIDE);
     }
 
     public boolean isBlocking() {
@@ -37,24 +40,26 @@ public class Cell extends Entity {
 
     public Image getSprite() { return staticSprite; }
 
-    public void getSpriteFrom(String filePath) throws FileNotFoundException {
-        staticSprite = loadImage(filePath);
+    public void reloadGrass() {
+        gc.drawImage(
+                staticSprite,
+                0, 0, Entity.SIDE, Entity.SIDE,
+                getLoadingPositionX(), getLoadingPositionY(), Entity.SIDE, Entity.SIDE
+        );
     }
 
     public void setGrass() throws FileNotFoundException {
-        staticSprite = loadImage(IMAGES_PATH + "/map/grass.png");
-    }
-
-    public void setShaderGrass() throws FileNotFoundException {
-        staticSprite = loadImage(IMAGES_PATH + "/map/shaderGrass.png");
+        staticSprite = loadImage(IMAGES_PATH + "/map/grass@2.png");
     }
 
     public void setSteel() throws FileNotFoundException {
         staticSprite = loadImage(IMAGES_PATH + "/map/steel.png");
+        setBlocking(true);
     }
 
     public void setWall() throws FileNotFoundException {
         staticSprite = loadImage(IMAGES_PATH + "/map/walls@10.png");
+        setBlocking(true);
     }
 
     public Entity getEntity(int index) {

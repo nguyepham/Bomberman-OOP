@@ -6,11 +6,11 @@ import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Character;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
+import game.bomman.entity.immobileEntity.Portal;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +19,7 @@ public class InteractionHandler {
     private static Canvas characterCanvas;
     private static Canvas bombCanvas;
     private static Bomber bomber;
+    private static Portal portal;
     private static List<Character> characterList = new ArrayList<>();
     private static List<ImmobileEntity> immobileEntityList = new ArrayList<>();
 
@@ -26,6 +27,18 @@ public class InteractionHandler {
         bombCanvas = bombCanvas_;
         characterCanvas = characterCanvas_;
         bomber = bomber_;
+    }
+
+    public static void addPortal(Portal portal_) {
+        portal = portal_;
+    }
+
+    public static Portal getPortal() {
+        return portal;
+    }
+
+    public static boolean portalAppeared() {
+        return portal.hasAppeared();
     }
 
     public static void addCharacter(Character character) {
@@ -73,7 +86,7 @@ public class InteractionHandler {
 //        characterCanvas.addEventHandler(KeyEvent.KEY_RELEASED, layingBombEvent);
     }
 
-    public static void update(double elapsedTime) throws FileNotFoundException {
+    public static void update(double elapsedTime) {
         for (int i = 0; i < immobileEntityList.size(); ++i) {
             ImmobileEntity entity = immobileEntityList.get(i);
             entity.update(elapsedTime);

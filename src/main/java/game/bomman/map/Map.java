@@ -3,6 +3,7 @@ package game.bomman.map;
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.Brick;
+import game.bomman.entity.immobileEntity.Portal;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -56,12 +57,9 @@ public class Map {
             String thisRow = mapScanner.next();
             for (int i = 0; i < width; ++i) {
                 char rawConfig = thisRow.charAt(i);
-                cells[j][i] = new Cell(i, j, rawConfig);
+                cells[j][i] = new Cell(gc, i, j, rawConfig);
                 Cell thisCell = cells[j][i];
 
-                if (thisCell.getRawConfig() == '#' || thisCell.getRawConfig() == '*') {
-                    thisCell.setBlocking(true);
-                }
                 double posX = thisCell.getLoadingPositionX();
                 double posY = thisCell.getLoadingPositionY();
 
@@ -103,20 +101,36 @@ public class Map {
 
                 if (rawConfig == '#') {
                     thisCell.setSteel();
+                    gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
                 } else {
+                    thisCell.setGrass();
+
                     if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
-                        thisCell.setShaderGrass();
+                        gc.drawImage(
+                                thisCell.getSprite(),
+                                Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
+                                posX, posY, Entity.SIDE, Entity.SIDE
+                        );
                     } else {
-                        thisCell.setGrass();
+                        gc.drawImage(
+                                thisCell.getSprite(),
+                                0, 0, Entity.SIDE, Entity.SIDE,
+                                posX, posY, Entity.SIDE, Entity.SIDE
+                        );
                     }
                     if (rawConfig == '*') {
+                        thisCell.setBlocking(true);
                         Brick newBrick = new Brick(this, posX, posY, i, j);
                         InteractionHandler.addImmobileEntity(newBrick);
                         thisCell.addEntity(newBrick);
+
+                        /// Initialize the portal but not actually put it into the game yet.
+                        if (this.getCell(i - 1, j).getRawConfig() == 'x') {
+                            Portal portal = new Portal(this, posX, posY, i, j);
+                            InteractionHandler.addPortal(portal);
+                        }
                     }
                 }
-
-                gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
             }
         }
 
