@@ -5,4 +5,9 @@ public class Frame extends Item {
     public void update(double elapsedTime, double timeSinceStart) {
 
     }
+
+    @Override
+    public void draw() {
+
+    }
 }

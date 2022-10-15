@@ -3,37 +3,20 @@ package game.bomman.entity.character;
 import game.bomman.entity.Blockable;
 import game.bomman.entity.Entity;
 import game.bomman.map.Map;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Character extends Entity implements Blockable {
-    protected double velocityX;
-    protected double velocityY;
     protected double newLoadingX;
     protected double newLoadingY;
-    protected int positionOnMapX;
-    protected int positionOnMapY;
     protected double speed;
-    protected Map map;
+    protected static GraphicsContext gc;
 
-    public void setVelocity(double x, double y) {
-        velocityX = x;
-        velocityY = y;
+    public static void setCanvas(GraphicsContext value) {
+        gc = value;
     }
 
-    public double getVelocityX() {
-        return velocityX;
-    }
-
-    public double getVelocityY() {
-        return velocityY;
-    }
-
-    public void setVelocityX(double velocityX) {
-        this.velocityX = velocityX;
-    }
-
-    public void setVelocityY(double velocityY) {
-        this.velocityY = velocityY;
-    }
+    public abstract void layingBomb();
 
     public abstract void moveDown();
 
@@ -50,12 +33,4 @@ public abstract class Character extends Entity implements Blockable {
     public abstract void removeRight();
 
     public abstract void removeUp();
-
-    public abstract void moveTo(double x, double y);
-
-    public static final String NOT_MOVING = "nm";
-
-    public void beTouched() {
-        System.out.println("Character touched.");
-    }
 }

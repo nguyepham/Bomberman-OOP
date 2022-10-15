@@ -7,7 +7,12 @@ public class Oneal extends Enemy {
     }
 
     @Override
-    public void moveTo(double x, double y) {
+    public void draw() {
+
+    }
+
+    @Override
+    public void layingBomb() {
 
     }
 
