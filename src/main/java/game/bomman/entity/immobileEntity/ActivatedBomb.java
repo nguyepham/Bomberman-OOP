@@ -50,7 +50,7 @@ public class ActivatedBomb extends ImmobileEntity {
     }
 
     @Override
-    public void update(double elapsedTime, double timeSinceStart) {
+    public void update(double elapsedTime) {
 
         timer += elapsedTime;
         if (timer >= SPRITE_DURATION) {
