@@ -1,6 +1,13 @@
 package game.bomman.entity.item;
 
-public class Frame extends Item {
+import game.bomman.entity.Entity;
+
+public class FrameItem extends Item {
+    @Override
+    public void interactWith(Entity other) {
+
+    }
+
     @Override
     public void update(double elapsedTime) {
 

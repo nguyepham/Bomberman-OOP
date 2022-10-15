@@ -2,6 +2,7 @@ package game.bomman.map;
 
 import game.bomman.entity.Entity;
 import game.bomman.entity.HitBox;
+import game.bomman.entity.immobileEntity.Brick;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -62,8 +63,17 @@ public class Cell extends Entity {
         setBlocking(true);
     }
 
-    public Entity getEntity(int index) {
-        return entityList.get(index);
+    public int numOfEntities() {return entityList.size(); }
+
+    public Entity getEntity(int index) { return entityList.get(index); }
+
+    public Brick getBrick() {
+        for (Entity entity : entityList) {
+            if (entity instanceof Brick) {
+                return (Brick) entity;
+            }
+        }
+        return null;
     }
 
     public void addEntity(Entity entity) {
@@ -77,6 +87,11 @@ public class Cell extends Entity {
                 break;
             }
         }
+    }
+
+    @Override
+    public void interactWith(Entity other) {
+
     }
 
     @Override

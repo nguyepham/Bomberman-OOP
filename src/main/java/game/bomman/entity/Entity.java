@@ -62,6 +62,8 @@ public abstract class Entity {
       return false;
    }
 
+   public abstract void interactWith(Entity other);
+
    public abstract void update(double elapsedTime);
 
    public abstract void draw();

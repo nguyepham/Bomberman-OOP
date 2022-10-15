@@ -1,5 +1,7 @@
 package game.bomman.entity.character.enemy;
 
+import game.bomman.entity.Entity;
+
 public class Oneal extends Enemy {
     @Override
     public void update(double elapsedTime) {
@@ -8,6 +10,11 @@ public class Oneal extends Enemy {
 
     @Override
     public void draw() {
+
+    }
+
+    @Override
+    public void interactWith(Entity other) {
 
     }
 

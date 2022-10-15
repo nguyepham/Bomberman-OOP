@@ -1,14 +1,14 @@
 package game.bomman.entity.immobileEntity;
 
-import game.bomman.component.InteractionHandler;
+import game.bomman.component.EntityManager;
+import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class ActivatedBomb extends ImmobileEntity {
+public class Bomb extends ImmobileEntity {
     private static final Image image;
     private static Bomber bomber;
     private double explodingTimer = 2.0f;
@@ -25,7 +25,7 @@ public class ActivatedBomb extends ImmobileEntity {
         }
     }
 
-    public ActivatedBomb(Map map_, Bomber bomber_, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
+    public Bomb(Map map_, Bomber bomber_, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
         map = map_;
         bomber = bomber_;
         positionOnMapX = posOnMapX;
@@ -46,7 +46,12 @@ public class ActivatedBomb extends ImmobileEntity {
         map.getCell(positionOnMapX, positionOnMapY).setBlocking(false);
         bomber.retakeBomb();
         removeFromCell(positionOnMapX, positionOnMapY);
-        InteractionHandler.removeImmobileEntity(this);
+        EntityManager.removeImmobileEntity(this);
+    }
+
+    @Override
+    public void interactWith(Entity other) {
+
     }
 
     @Override

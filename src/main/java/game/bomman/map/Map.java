@@ -1,6 +1,6 @@
 package game.bomman.map;
 
-import game.bomman.component.InteractionHandler;
+import game.bomman.component.EntityManager;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
@@ -9,8 +9,6 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Map {
@@ -105,7 +103,9 @@ public class Map {
                 } else {
                     thisCell.setGrass();
 
-                    if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
+                    if (j > 0 && (cells[j - 1][i].getRawConfig() == '#'
+                            || cells[j - 1][i].getRawConfig() == '*')
+                            || cells[j - 1][i].getRawConfig() == 'x') {
                         gc.drawImage(
                                 thisCell.getSprite(),
                                 Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
@@ -118,16 +118,16 @@ public class Map {
                                 posX, posY, Entity.SIDE, Entity.SIDE
                         );
                     }
-                    if (rawConfig == '*') {
+                    if (rawConfig == '*' || rawConfig == 'x') {
                         thisCell.setBlocking(true);
                         Brick newBrick = new Brick(this, posX, posY, i, j);
-                        InteractionHandler.addImmobileEntity(newBrick);
+                        EntityManager.addImmobileEntity(newBrick);
                         thisCell.addEntity(newBrick);
 
-                        /// Initialize the portal but not actually put it into the game yet.
-                        if (this.getCell(i - 1, j).getRawConfig() == 'x') {
+                        if (rawConfig == 'x') {
+                            /// Initialize the portal but not actually put it into the game yet.
                             Portal portal = new Portal(this, posX, posY, i, j);
-                            InteractionHandler.addPortal(portal);
+                            EntityManager.addPortal(portal);
                         }
                     }
                 }

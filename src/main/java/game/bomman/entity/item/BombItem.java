@@ -1,6 +1,13 @@
 package game.bomman.entity.item;
 
-public class Bomb extends Item {
+import game.bomman.entity.Entity;
+
+public class BombItem extends Item {
+    @Override
+    public void interactWith(Entity other) {
+
+    }
+
     @Override
     public void update(double elapsedTime) {
 

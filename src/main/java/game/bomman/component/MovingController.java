@@ -3,17 +3,11 @@ package game.bomman.component;
 import game.bomman.command.*;
 import game.bomman.command.movingCommand.*;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.Bomber;
-import game.bomman.entity.character.Character;
+import game.bomman.entity.character.enemy.Enemy;
 import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-public class MovingController {
+public class MovingController extends Component {
     private static Command moveLeft = new MoveLeft();
     private static Command moveDown = new MoveDown();
     private static Command moveRight = new MoveRight();
@@ -22,18 +16,10 @@ public class MovingController {
     private static Command removeDown = new RemoveDown();
     private static Command removeRight = new RemoveRight();
     private static Command removeUp = new RemoveUp();
-    private static Bomber bomber;
-    private static List<Character> characterList = new ArrayList<>();
-    private static Canvas canvas;
-
-    public static void init(Canvas v1, Bomber v2) {
-        canvas = v1;
-        bomber = v2;
-    }
 
     public static void activateInputReader() {
         EventHandler<KeyEvent> moveByKey = (event) -> {
-            canvas.requestFocus();
+            characterCanvas.requestFocus();
             if (event.getEventType() == KeyEvent.KEY_PRESSED) {
                 switch (event.getCode()) {
                     case DOWN -> moveDown.executeOn(bomber);
@@ -50,8 +36,8 @@ public class MovingController {
                 }
             }
         };
-        canvas.addEventHandler(KeyEvent.KEY_PRESSED, moveByKey);
-        canvas.addEventHandler(KeyEvent.KEY_RELEASED, moveByKey);
+        characterCanvas.addEventHandler(KeyEvent.KEY_PRESSED, moveByKey);
+        characterCanvas.addEventHandler(KeyEvent.KEY_RELEASED, moveByKey);
     }
 
     public static void activateAI() {
@@ -60,11 +46,19 @@ public class MovingController {
 
     public static void update(double elapsedTime) {
         bomber.update(elapsedTime);
+        for (int i = 0; i < enemyList.size(); ++i) {
+            Enemy enemy = enemyList.get(i);
+            enemy.update(elapsedTime);
+        }
     }
 
     public static void draw() {
-        /// Transparently clear the canvas and draw everything on that canvas once again.
-        canvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE,canvas.getWidth(), canvas.getHeight());
+        /// Transparently clear the characterCanvas and draw everything on that characterCanvas once again.
+        characterCanvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE,characterCanvas.getWidth(), characterCanvas.getHeight());
         bomber.draw();
+        for (int i = 0; i < enemyList.size(); ++i) {
+            Enemy enemy = enemyList.get(i);
+            enemy.draw();
+        }
     }
 }

@@ -1,12 +1,9 @@
 package game.bomman.entity.character;
 
-import game.bomman.entity.Blockable;
 import game.bomman.entity.Entity;
-import game.bomman.map.Map;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Character extends Entity implements Blockable {
+public abstract class Character extends Entity {
     protected double newLoadingX;
     protected double newLoadingY;
     protected double speed;

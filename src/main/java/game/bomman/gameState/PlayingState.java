@@ -1,6 +1,7 @@
 package game.bomman.gameState;
 
-import game.bomman.component.InteractionHandler;
+import game.bomman.component.Component;
+import game.bomman.component.EntityManager;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.component.MovingController;
@@ -54,12 +55,11 @@ public class PlayingState extends GameState {
         firstCell.addEntity(bomber);
 
         /// Set up game components.
-        MovingController.init(characterCanvas, bomber);
+        Component.init(characterCanvas, bomber);
         MovingController.activateInputReader();
         MovingController.activateAI();
-
-        InteractionHandler.init(bombCanvas, characterCanvas, bomber);
-        InteractionHandler.activateInputReader();
+        EntityManager.init(bombCanvas);
+        EntityManager.activateInputReader();
     }
 
     public void run() {
@@ -77,12 +77,12 @@ public class PlayingState extends GameState {
 
             private void update(double elapsedTime) {
                 MovingController.update(elapsedTime);
-                InteractionHandler.update(elapsedTime);
+                EntityManager.update(elapsedTime);
             }
 
             private void draw() {
                 MovingController.draw();
-                InteractionHandler.draw();
+                EntityManager.draw();
             }
         };
         playingStateTimer.start();

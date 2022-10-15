@@ -1,5 +1,6 @@
 package game.bomman.entity.immobileEntity;
 
+import game.bomman.entity.Entity;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -20,6 +21,14 @@ public class Portal extends ImmobileEntity {
         }
     }
 
+    private void running(double elapsedTime) {
+        timer += elapsedTime;
+        if (timer >= SPRITE_DURATION) {
+            timer = 0;
+            frameIndex = 1 - frameIndex;
+        }
+    }
+
     public Portal(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
         positionOnMapX = posOnMapX;
         positionOnMapY = posOnMapY;
@@ -29,16 +38,15 @@ public class Portal extends ImmobileEntity {
 
     public void activate() { activated = true; }
 
+    public boolean isActivated() {return activated; }
+
     public void appear() { appeared = true; }
 
     public boolean hasAppeared() { return appeared; }
 
-    private void running(double elapsedTime) {
-        timer += elapsedTime;
-        if (timer >= SPRITE_DURATION) {
-            timer = 0;
-            frameIndex = 1 - frameIndex;
-        }
+    @Override
+    public void interactWith(Entity other) {
+
     }
 
     @Override
