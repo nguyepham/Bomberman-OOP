@@ -4,7 +4,7 @@ import game.bomman.entity.Entity;
 
 public class Balloon extends Enemy {
     @Override
-    public void update(double elapsedTime, double timeSinceStart) {
+    public void update(double elapsedTime) {
 
     }
 

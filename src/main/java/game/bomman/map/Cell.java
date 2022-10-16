@@ -95,7 +95,7 @@ public class Cell extends Entity {
     }
 
     @Override
-    public void update(double elapsedTime, double timeSinceStart) {
+    public void update(double elapsedTime) {
 
     }
 

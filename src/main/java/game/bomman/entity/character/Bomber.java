@@ -384,6 +384,15 @@ public class Bomber extends Character {
         }
 
         Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+
+        Portal portal = EntityManager.getPortal();
+        if (portal != null) {
+            if (portal.getLoadingPositionX() == thisCell.getLoadingPositionX()
+                    && portal.getLoadingPositionY() == thisCell.getLoadingPositionY()) {
+                return;
+            }
+        }
+
         if (thisCell.isBlocking()) {
             return;
         }
