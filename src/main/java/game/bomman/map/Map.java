@@ -1,7 +1,9 @@
 package game.bomman.map;
 
+import game.bomman.component.EntityManager;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.Brick;
+import game.bomman.entity.immobileEntity.Portal;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -45,7 +47,7 @@ public class Map {
         return cells[j][i];
     }
 
-    public Canvas setUp(Canvas bombCanvas) throws FileNotFoundException {
+    public Canvas setUp() throws FileNotFoundException {
         Canvas canvas = new Canvas(Entity.SIDE * width, Entity.SIDE * height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -53,24 +55,21 @@ public class Map {
             String thisRow = mapScanner.next();
             for (int i = 0; i < width; ++i) {
                 char rawConfig = thisRow.charAt(i);
-                cells[j][i] = new Cell(i, j, rawConfig);
+                cells[j][i] = new Cell(gc, i, j, rawConfig);
                 Cell thisCell = cells[j][i];
 
-                if (thisCell.getRawConfig() == '#' || thisCell.getRawConfig() == '*') {
-                    thisCell.setBlocking();
-                }
                 double posX = thisCell.getLoadingPositionX();
                 double posY = thisCell.getLoadingPositionY();
 
                 if (j == height - 1) {
-                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.setWall();
                     gc.drawImage(thisCell.getSprite(), Entity.SIDE * 5, 0, Entity.SIDE, Entity.SIDE,
                             posX, posY, Entity.SIDE, Entity.SIDE);
                     continue;
                 }
 
                 if (j == 0) {
-                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.setWall();
                     if (i == 0) {
                         gc.drawImage(thisCell.getSprite(), Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
                                 posX, posY, Entity.SIDE, Entity.SIDE);
@@ -87,7 +86,7 @@ public class Map {
                 }
 
                 if (i == 0 || i == width - 1) {
-                    thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/walls@10.png");
+                    thisCell.setWall();
                     if (i == 0) {
                         gc.drawImage(thisCell.getSprite(), 0, 0, Entity.SIDE, Entity.SIDE,
                                 posX, posY, Entity.SIDE, Entity.SIDE);
@@ -98,23 +97,40 @@ public class Map {
                     continue;
                 }
 
-                switch (rawConfig) {
-                    case '#' -> {
-                        thisCell.getSpriteFrom(
-                                Entity.IMAGES_PATH + "/map/steel.png");
+                if (rawConfig == '#') {
+                    thisCell.setSteel();
+                    gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
+                } else {
+                    thisCell.setGrass();
+
+                    if (j > 0 && (cells[j - 1][i].getRawConfig() == '#'
+                            || cells[j - 1][i].getRawConfig() == '*')
+                            || cells[j - 1][i].getRawConfig() == 'x') {
+                        gc.drawImage(
+                                thisCell.getSprite(),
+                                Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
+                                posX, posY, Entity.SIDE, Entity.SIDE
+                        );
+                    } else {
+                        gc.drawImage(
+                                thisCell.getSprite(),
+                                0, 0, Entity.SIDE, Entity.SIDE,
+                                posX, posY, Entity.SIDE, Entity.SIDE
+                        );
                     }
-                    case '*' -> {
-                        thisCell.setEntity(new Brick(bombCanvas.getGraphicsContext2D(), posX, posY));
-                    }
-                    default -> {
-                        if (j > 0 && (cells[j - 1][i].getRawConfig() == '#' || cells[j - 1][i].getRawConfig() == '*')) {
-                            thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/shaderGrass.png");
-                        } else {
-                            thisCell.getSpriteFrom(Entity.IMAGES_PATH + "/map/grass.png");
+                    if (rawConfig == '*' || rawConfig == 'x') {
+                        thisCell.setBlocking(true);
+                        Brick newBrick = new Brick(this, posX, posY, i, j);
+                        EntityManager.addImmobileEntity(newBrick);
+                        thisCell.addEntity(newBrick);
+
+                        if (rawConfig == 'x') {
+                            /// Initialize the portal but not actually put it into the game yet.
+                            Portal portal = new Portal(this, posX, posY, i, j);
+                            EntityManager.addPortal(portal);
                         }
                     }
                 }
-                gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
             }
         }
 
