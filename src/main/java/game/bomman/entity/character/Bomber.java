@@ -7,7 +7,6 @@ import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -30,13 +29,13 @@ public class Bomber extends Character {
     private int padding = 0;
     private boolean isMoving = false;
     private boolean exited = false;
-    private static Image bomberWalking;
-    private static Image bomberStanding;
-    private static Image bomberDying;
-    private static Image bomberLevelUp;
+    private static final Image bomberWalking;
+    private static final Image bomberStanding;
+    private static final Image bomberDying;
+    private static final Image bomberLevelUp;
     private int numOfLives;
     private int numOfBombs;
-    private Stack<String> commandStack = new Stack<>();
+    private final Stack<String> commandStack = new Stack<>();
 
     public Bomber(Map map, double targetMinX, double targetMinY) {
         this.map = map;
@@ -110,7 +109,7 @@ public class Bomber extends Character {
 
         switch (command.charAt(1)) {
             case 'u' -> {
-                padding = N_SPRITES_PER_DIRECTION * 0;
+                padding = 0;
 
                 Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY - 1);
 
@@ -296,7 +295,7 @@ public class Bomber extends Character {
 
     @Override
     public void draw() {
-        if (exited == true) {
+        if (exited) {
             return;
         }
 
@@ -424,5 +423,9 @@ public class Bomber extends Character {
         }
         facingDirectionIndex = 0;
         System.out.println("reMoved up.");
+    }
+
+    public Map getMap() {
+        return map;
     }
 }

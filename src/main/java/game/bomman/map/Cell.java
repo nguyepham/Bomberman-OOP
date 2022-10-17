@@ -1,7 +1,6 @@
 package game.bomman.map;
 
 import game.bomman.entity.Entity;
-import game.bomman.entity.HitBox;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -87,6 +86,16 @@ public class Cell extends Entity {
     @Override
     public void draw() {
 
+    }
+
+    @Override
+    public int getPosOnMapX() {
+        return pos[0];
+    }
+
+    @Override
+    public int getPosOnMapY() {
+        return pos[1];
     }
 }
 

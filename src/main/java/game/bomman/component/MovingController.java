@@ -5,12 +5,12 @@ import game.bomman.command.movingCommand.*;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Character;
+import game.bomman.entity.character.enemy.Balloon;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MovingController {
@@ -54,17 +54,25 @@ public class MovingController {
         canvas.addEventHandler(KeyEvent.KEY_RELEASED, moveByKey);
     }
 
+    // activates the enemy moving feature of the game
     public static void activateAI() {
-
+        Balloon balloon = new Balloon(5, 5, canvas.getGraphicsContext2D(), bomber.getMap());
+        characterList.add(balloon);
     }
 
     public static void update(double elapsedTime) {
         bomber.update(elapsedTime);
+        for (Character character: characterList) {
+            character.update(elapsedTime);
+        }
     }
 
     public static void draw() {
         /// Transparently clear the canvas and draw everything on that canvas once again.
         canvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE,canvas.getWidth(), canvas.getHeight());
         bomber.draw();
+        for (Character character: characterList) {
+            character.draw();
+        }
     }
 }
