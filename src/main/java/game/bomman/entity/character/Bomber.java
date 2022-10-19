@@ -1,6 +1,6 @@
 package game.bomman.entity.character;
 
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.Flame;
 import game.bomman.entity.character.enemy.Enemy;
@@ -25,33 +25,29 @@ public class Bomber extends Character {
     private static final int N_DYING_SPRITES = 11;
     private double levelUpTimer = 0;
     private int levelUpFrameIndex = 0;
-    private double dyingtimer = 0;
+    private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
-    private int facingDirectionIndex = 2;
     private int padding = 0;
     private boolean isMoving = false;
     private boolean exited = false;
     private boolean gotIntoPortal = false;
-    private boolean isAlive = true;
-    private static Image bomberWalking;
-    private static Image bomberStanding;
-    private static Image bomberDying;
-    private static Image bomberLevelUp;
+    private static final Image bomberWalking;
+    private static final Image bomberStanding;
+    private static final Image bomberDying;
+    private static final Image bomberLevelUp;
     private int numOfLives;
     private int numOfBombs;
     private Stack<String> commandStack = new Stack<>();
 
-    public Bomber(Map map, double targetMinX, double targetMinY) {
+    public Bomber(Map map) {
         this.map = map;
-        this.newLoadingX = Entity.SIDE;
-        this.newLoadingY = Entity.SIDE;
         this.positionOnMapX = 1;
         this.positionOnMapY = 1;
         this.speed = 200;
         this.numOfLives = 3;
         this.numOfBombs = 2;
-        gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, targetMinX, targetMinY, WIDTH, HEIGHT);
-        initHitBox(targetMinX, targetMinY, WIDTH, HEIGHT);
+        gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, SIDE + 3.0f, SIDE, WIDTH, HEIGHT);
+        initHitBox(SIDE + 3.0f, SIDE, WIDTH, HEIGHT);
     }
 
     static {
@@ -69,13 +65,16 @@ public class Bomber extends Character {
 
     @Override
     public void update(double elapsedTime) {
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
-        EntityManager.handleInteraction(this, thisCell);
 
         if (isAlive == false) {
-//            dyingtimer += elapsedTime;
-
+            dyingTimer += elapsedTime;
+            dying();
+            return;
         }
+
+        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+        /// Handle interaction between Bomber and other entities.
+        InteractionHandler.handleInteraction(this, thisCell);
 
         if (gotIntoPortal == true) {
             levelUpTimer += elapsedTime;
@@ -106,6 +105,7 @@ public class Bomber extends Character {
     private void updatePosition(double elapsedTime) {
 
         Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
+        Cell aheadCell = currentCell;
         double cellMinX = currentCell.getHitBox().getMinX();
         double cellMinY = currentCell.getHitBox().getMinY();
 
@@ -119,9 +119,11 @@ public class Bomber extends Character {
             case 'u' -> {
                 padding = N_SPRITES_PER_DIRECTION * 0;
 
-                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY - 1);
+                aheadCell = map.getCell(positionOnMapX, positionOnMapY - 1);
 
                 if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    currentCell.removeEntity(this);
+                    aheadCell.addEntity(this);
                     --positionOnMapY;
                     break;
                 }
@@ -167,9 +169,11 @@ public class Bomber extends Character {
             case 'd' -> {
                 padding = N_SPRITES_PER_DIRECTION * 2;
 
-                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY + 1);
+                aheadCell = map.getCell(positionOnMapX, positionOnMapY + 1);
 
                 if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    currentCell.removeEntity(this);
+                    aheadCell.addEntity(this);
                     ++positionOnMapY;
                     break;
                 }
@@ -214,9 +218,11 @@ public class Bomber extends Character {
             case 'l' -> {
                 padding = N_SPRITES_PER_DIRECTION * 3;
 
-                Cell aheadCell = map.getCell(positionOnMapX - 1, positionOnMapY);
+                aheadCell = map.getCell(positionOnMapX - 1, positionOnMapY);
 
                 if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    currentCell.removeEntity(this);
+                    aheadCell.addEntity(this);
                     --positionOnMapX;
                     break;
                 }
@@ -261,9 +267,11 @@ public class Bomber extends Character {
             case 'r' -> {
                 padding = N_SPRITES_PER_DIRECTION;
 
-                Cell aheadCell = map.getCell(positionOnMapX + 1, positionOnMapY);
+                aheadCell = map.getCell(positionOnMapX + 1, positionOnMapY);
 
                 if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
+                    currentCell.removeEntity(this);
+                    aheadCell.addEntity(this);
                     ++positionOnMapX;
                     break;
                 }
@@ -314,6 +322,13 @@ public class Bomber extends Character {
             return;
         }
 
+        if (isAlive == false) {
+            gc.drawImage(bomberDying,
+                    53 * dyingFrameIndex, 0, 53, HEIGHT,
+                    hitBox.getMinX(), hitBox.getMinY(), 53, HEIGHT);
+            return;
+        }
+
         if (gotIntoPortal == true) {
             gc.drawImage(bomberLevelUp,
                     WIDTH * levelUpFrameIndex, 0, WIDTH, HEIGHT,
@@ -321,10 +336,10 @@ public class Bomber extends Character {
             return;
         }
 
-        hitBox.setMinX(newLoadingX);
-        hitBox.setMinY(newLoadingY);
-
         if (isMoving) {
+            hitBox.setMinX(newLoadingX);
+            hitBox.setMinY(newLoadingY);
+
             gc.drawImage(bomberWalking,
                     (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
                     newLoadingX, newLoadingY, WIDTH, HEIGHT);
@@ -346,7 +361,34 @@ public class Bomber extends Character {
     }
 
     private void dying() {
+        if (dyingTimer >= DYING_SPRITE_DURATION) {
+            dyingTimer = 0;
+            ++dyingFrameIndex;
+            if (dyingFrameIndex == N_DYING_SPRITES) {
+                this.respawn();
+            }
+        }
+    }
 
+    @Override
+    protected void die() {
+        super.die();
+        isMoving = false;
+        while (commandStack.isEmpty() == false) { commandStack.pop(); }
+    }
+
+    private void respawn() {
+        --numOfLives;
+        isAlive = true;
+        hitBox.setMinX(SIDE);
+        hitBox.setMinY(SIDE);
+        newLoadingX = SIDE;
+        newLoadingY = SIDE;
+        positionOnMapX = 1;
+        positionOnMapY = 1;
+        isMoving = false;
+        facingDirectionIndex = 2;
+        dyingFrameIndex = 0;
     }
 
     @Override
@@ -363,7 +405,7 @@ public class Bomber extends Character {
             return;
         }
         if (other instanceof Enemy || other instanceof Flame) {
-
+            this.die();
         }
     }
 
@@ -372,8 +414,8 @@ public class Bomber extends Character {
 
         if (numOfBombs == 0) {
             /// The game is going to be over, all enemies killed.
-            Portal portal = EntityManager.getPortal();
-            if (EntityManager.portalAppeared()) {
+            Portal portal = InteractionHandler.getPortal();
+            if (InteractionHandler.portalAppeared()) {
                 portal.activate();
             } else {
                 Cell portalCell = map.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
@@ -384,6 +426,15 @@ public class Bomber extends Character {
         }
 
         Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+
+        Portal portal = InteractionHandler.getPortal();
+        if (portal != null) {
+            if (portal.getLoadingPositionX() == thisCell.getLoadingPositionX()
+                    && portal.getLoadingPositionY() == thisCell.getLoadingPositionY()) {
+                return;
+            }
+        }
+
         if (thisCell.isBlocking()) {
             return;
         }
@@ -398,7 +449,7 @@ public class Bomber extends Character {
                 positionOnMapY
         );
         thisCell.addEntity(newBomb);
-        EntityManager.addImmobileEntity(newBomb);
+        InteractionHandler.addImmobileEntity(newBomb);
     }
 
     public void retakeBomb() {

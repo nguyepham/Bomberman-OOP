@@ -4,6 +4,7 @@ import game.bomman.command.Command;
 import game.bomman.command.interactingCommand.*;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.enemy.Enemy;
+import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
 import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.map.Cell;
@@ -14,8 +15,8 @@ import javafx.scene.input.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityManager extends Component {
-    private static Command layingBomb = new LayingBomb();
+public class InteractionHandler extends Component {
+    public static Command layingBomb = new LayingBomb();
     private static Canvas bombCanvas;
     private static Canvas itemCanvas;
     private static Portal portal;
@@ -23,6 +24,7 @@ public class EntityManager extends Component {
 
     public static void init(Canvas bombCanvas_) {
         bombCanvas = bombCanvas_;
+        ImmobileEntity.setCanvas(bombCanvas.getGraphicsContext2D());
     }
 
     public static void addPortal(Portal portal_) {
@@ -46,6 +48,16 @@ public class EntityManager extends Component {
     }
 
     public static void removeEnemy(Enemy enemy) {
+        if (enemyList.isEmpty()) {
+            if (portal.hasAppeared()) {
+                portal.activate();
+            } else {
+                Cell portalCell = gameMap.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
+                Brick brick = portalCell.getBrick();
+                brick.spark();
+            }
+        }
+
         for (int i = 0; i < enemyList.size(); ++i) {
             if (enemyList.get(i).equals(enemy)) {
                 enemyList.remove(i);
@@ -97,7 +109,6 @@ public class EntityManager extends Component {
 
     public static void draw() {
         bombCanvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE, bombCanvas.getWidth(), bombCanvas.getHeight());
-
         for (ImmobileEntity entity : immobileEntityList) {
             entity.draw();
         }

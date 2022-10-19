@@ -1,6 +1,6 @@
 package game.bomman.entity.immobileEntity;
 
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
@@ -77,8 +77,8 @@ public class Brick extends ImmobileEntity {
         }
         if (broken == true) {
             /// Remove the brick from the game.
-            removeFromCell(positionOnMapX, positionOnMapY);
-            EntityManager.removeImmobileEntity(this);
+            this.removeFromCell(positionOnMapX, positionOnMapY);
+            InteractionHandler.removeImmobileEntity(this);
             map.getCell(positionOnMapX, positionOnMapY).setBlocking(false);
 
             /// Change the shader grass below the brick into grass.
@@ -89,13 +89,13 @@ public class Brick extends ImmobileEntity {
 
             /// Reveal the portal if it is hidden under the broken brick.
             if (map.getCell(positionOnMapX, positionOnMapY).getRawConfig() == 'x') {
-                Portal portal = EntityManager.getPortal();
+                Portal portal = InteractionHandler.getPortal();
 
                 /// Actually put the portal into the game.
                 portal.appear();
                 Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
                 thisCell.addEntity(portal);
-                EntityManager.addImmobileEntity(portal);
+                InteractionHandler.addImmobileEntity(portal);
 
                 if (sparked == true) {
                     portal.activate();

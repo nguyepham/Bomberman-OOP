@@ -1,7 +1,8 @@
 package game.bomman.map;
 
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
+import game.bomman.entity.character.enemy.Balloon;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import javafx.scene.canvas.Canvas;
@@ -118,24 +119,43 @@ public class Map {
                                 posX, posY, Entity.SIDE, Entity.SIDE
                         );
                     }
-                    if (rawConfig == '*' || rawConfig == 'x') {
-                        thisCell.setBlocking(true);
-                        Brick newBrick = new Brick(this, posX, posY, i, j);
-                        EntityManager.addImmobileEntity(newBrick);
-                        thisCell.addEntity(newBrick);
-
-                        if (rawConfig == 'x') {
-                            /// Initialize the portal but not actually put it into the game yet.
-                            Portal portal = new Portal(this, posX, posY, i, j);
-                            EntityManager.addPortal(portal);
-                        }
-                    }
                 }
             }
         }
 
         mapScanner.close();
         return canvas;
+    }
+
+    public void loadEntities() {
+        for (int j = 0; j < height; ++j) {
+            for (int i = 0; i < width; ++i) {
+                Cell thisCell = cells[j][i];
+                char rawConfig = thisCell.getRawConfig();
+                double posX = thisCell.getLoadingPositionX();
+                double posY = thisCell.getLoadingPositionY();
+
+                if (rawConfig == '*' || rawConfig == 'x') {
+                    thisCell.setBlocking(true);
+                    Brick newBrick = new Brick(this, posX, posY, i, j);
+                    InteractionHandler.addImmobileEntity(newBrick);
+                    thisCell.addEntity(newBrick);
+
+                    if (rawConfig == 'x') {
+                        /// Initialize the portal but not actually put it into the game yet.
+                        Portal portal = new Portal(this, posX, posY, i, j);
+                        InteractionHandler.addPortal(portal);
+                    }
+                    continue;
+                }
+                if (rawConfig == '1') {
+                    Balloon balloon = new Balloon(this, posX, posY, i, j);
+                    InteractionHandler.addEnemy(balloon);
+                    thisCell.addEntity(balloon);
+                    continue;
+                }
+            }
+        }
     }
 
     public int[] getPositionOf(Entity entity) {

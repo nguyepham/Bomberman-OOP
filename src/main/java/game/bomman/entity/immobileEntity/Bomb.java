@@ -1,6 +1,6 @@
 package game.bomman.entity.immobileEntity;
 
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.map.Map;
@@ -45,8 +45,8 @@ public class Bomb extends ImmobileEntity {
         isExploding = true;
         map.getCell(positionOnMapX, positionOnMapY).setBlocking(false);
         bomber.retakeBomb();
-        removeFromCell(positionOnMapX, positionOnMapY);
-        EntityManager.removeImmobileEntity(this);
+        this.removeFromCell(positionOnMapX, positionOnMapY);
+        InteractionHandler.removeImmobileEntity(this);
     }
 
     @Override
