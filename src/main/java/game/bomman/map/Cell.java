@@ -12,7 +12,6 @@ import java.util.List;
 
 public class Cell extends Entity {
     private static GraphicsContext gc;
-    private int[] pos = new int[2];
     private boolean blocking;
     private char rawConfig;
     private Image staticSprite;
@@ -20,8 +19,8 @@ public class Cell extends Entity {
 
     public Cell(GraphicsContext gc_, int x, int y, char rawConfig_) {
         gc = gc_;
-        pos[0] = x;
-        pos[1] = y;
+        positionOnMapX = x;
+        positionOnMapY = y;
         rawConfig = rawConfig_;
         blocking = false;
         initHitBox(SIDE * x, SIDE * y, SIDE, SIDE);

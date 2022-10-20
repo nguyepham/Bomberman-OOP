@@ -2,7 +2,7 @@ package game.bomman.entity.character;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
-import game.bomman.entity.Flame;
+import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Brick;
@@ -157,14 +157,6 @@ public class Bomber extends Character {
                     System.out.println("Up buffer removed.");
                     commandStack.pop();
                 }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentY <= cellMinY) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
-                }
             }
             case 'd' -> {
                 padding = N_SPRITES_PER_DIRECTION * 2;
@@ -205,14 +197,6 @@ public class Bomber extends Character {
                 if (isBuffering && currentY >= cellMinY) {
                     System.out.println("Down buffer removed.");
                     commandStack.pop();
-                }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentY >= cellMinY) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
                 }
             }
             case 'l' -> {
@@ -255,14 +239,6 @@ public class Bomber extends Character {
                     System.out.println("Left buffer removed.");
                     commandStack.pop();
                 }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentX <= cellMinX + 3) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
-                }
             }
             case 'r' -> {
                 padding = N_SPRITES_PER_DIRECTION;
@@ -303,14 +279,6 @@ public class Bomber extends Character {
                 if (isBuffering && currentX >= cellMinX + 3) {
                     System.out.println("Right buffer removed.");
                     commandStack.pop();
-                }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentX >= cellMinX + 3) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
                 }
             }
         }
@@ -413,15 +381,6 @@ public class Bomber extends Character {
     public void layingBomb() {
 
         if (numOfBombs == 0) {
-            /// The game is going to be over, all enemies killed.
-            Portal portal = InteractionHandler.getPortal();
-            if (InteractionHandler.portalAppeared()) {
-                portal.activate();
-            } else {
-                Cell portalCell = map.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
-                Brick brick = portalCell.getBrick();
-                brick.spark();
-            }
             return;
         }
 

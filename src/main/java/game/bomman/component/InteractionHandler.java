@@ -48,7 +48,7 @@ public class InteractionHandler extends Component {
     }
 
     public static void removeEnemy(Enemy enemy) {
-        if (enemyList.isEmpty()) {
+        if (enemyList.size() == 1) {
             if (portal.hasAppeared()) {
                 portal.activate();
             } else {
@@ -56,6 +56,7 @@ public class InteractionHandler extends Component {
                 Brick brick = portalCell.getBrick();
                 brick.spark();
             }
+            return;
         }
 
         for (int i = 0; i < enemyList.size(); ++i) {

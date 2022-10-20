@@ -5,6 +5,7 @@ import game.bomman.command.movingCommand.*;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.enemy.Balloon;
 import game.bomman.entity.character.enemy.Enemy;
+import game.bomman.entity.character.enemy.Fire;
 import game.bomman.map.Cell;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
@@ -45,32 +46,41 @@ public class CharacterController extends Component {
     }
 
     private static void changeMovingDirection(Enemy enemy) {
+        if (enemy instanceof Fire) {
+            getNewDirection(enemy);
+            return;
+        }
+
         int cnt = 0;
         while (enemy.isBlocked()) {
+            getNewDirection(enemy);
+            ++cnt;
             if (cnt == 120) {
                 break;
             }
-            int newIndex = enemyMovingCommand.nextInt(4);
-            while (newIndex == enemy.getFacingDirectionIndex()) {
-                newIndex = enemyMovingCommand.nextInt(4);
-            }
-            enemy.setFacingDirectionIndex(newIndex);
+        }
+    }
 
-            switch (newIndex) {
-                case 0 -> {
-                    enemy.setMovingCommand(moveUp);
-                }
-                case 1 -> {
-                    enemy.setMovingCommand(moveRight);
-                }
-                case 2 -> {
-                    enemy.setMovingCommand(moveDown);
-                }
-                case 3 -> {
-                    enemy.setMovingCommand(moveLeft);
-                }
+    private static void getNewDirection(Enemy enemy) {
+        int newIndex = enemyMovingCommand.nextInt(4);
+        while (newIndex == enemy.getFacingDirectionIndex()) {
+            newIndex = enemyMovingCommand.nextInt(4);
+        }
+        enemy.setFacingDirectionIndex(newIndex);
+
+        switch (newIndex) {
+            case 0 -> {
+                enemy.setMovingCommand(moveUp);
             }
-            ++cnt;
+            case 1 -> {
+                enemy.setMovingCommand(moveRight);
+            }
+            case 2 -> {
+                enemy.setMovingCommand(moveDown);
+            }
+            case 3 -> {
+                enemy.setMovingCommand(moveLeft);
+            }
         }
     }
 
@@ -82,16 +92,25 @@ public class CharacterController extends Component {
                 }
                 continue;
             }
+            if (enemy instanceof Fire) {
+                enemy.addGoAheadTimer(elapsedTime);
+                if (enemy.reachedMapEege() || (enemy.timerUp() && enemy.fitInThatCell())) {
+                    changeMovingDirection(enemy);
+                    if (enemy.timerUp()) {
+                        enemy.resetGoAheadTimer();
+                    }
+                }
+                continue;
+            }
         }
     }
 
     public static void update(double elapsedTime) {
-        runAI(elapsedTime);
-
         for (int i = 0; i < enemyList.size(); ++i) {
             Enemy enemy = enemyList.get(i);
             enemy.update(elapsedTime);
         }
+        runAI(elapsedTime);
         bomber.update(elapsedTime);
     }
 

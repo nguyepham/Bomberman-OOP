@@ -3,6 +3,7 @@ package game.bomman.map;
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.enemy.Balloon;
+import game.bomman.entity.character.enemy.Fire;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import javafx.scene.canvas.Canvas;
@@ -152,6 +153,12 @@ public class Map {
                     Balloon balloon = new Balloon(this, posX, posY, i, j);
                     InteractionHandler.addEnemy(balloon);
                     thisCell.addEntity(balloon);
+                    continue;
+                }
+                if (rawConfig == '3') {
+                    Fire fire = new Fire(this, posX, posY, i, j);
+                    InteractionHandler.addEnemy(fire);
+                    thisCell.addEntity(fire);
                     continue;
                 }
             }
