@@ -14,7 +14,8 @@ public abstract class Enemy extends Character {
     public void addGoAheadTimer(double time) { goAheadTimer += time; }
 
     public boolean timerUp() {
-        System.out.println(goAheadTimer); return goAheadTimer >= 3f; }
+        return goAheadTimer >= 3f;
+    }
 
     public int getFacingDirectionIndex() { return facingDirectionIndex; }
 

@@ -12,8 +12,7 @@ import java.io.FileNotFoundException;
 public class Bomb extends ImmobileEntity {
     private static final Image image;
     private static Bomber bomber;
-    private double countDownTimer = 2.0f;
-    private static int flameLength = 3;
+    private double countdownTimer = 2.0f;
     private static final double SPRITE_DURATION = 0.15;
     private static final int N_SPRITES = 4;
 
@@ -25,8 +24,6 @@ public class Bomb extends ImmobileEntity {
         }
     }
 
-    public void increaseFlameLength() { ++flameLength; }
-
     public Bomb(Map map_, Bomber bomber_, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
         map = map_;
         bomber = bomber_;
@@ -37,14 +34,15 @@ public class Bomb extends ImmobileEntity {
     }
 
     private void countDown(double elapsedTime) {
-        countDownTimer -= elapsedTime;
-        if (countDownTimer <= 0) {
+        countdownTimer -= elapsedTime;
+        if (countdownTimer <= 0) {
             explode();
         }
     }
 
     private void explode() {
         Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+        int flameLength = bomber.getFlameLength();
 
         thisCell.setBlocking(false);
         bomber.retakeBomb();
@@ -58,6 +56,8 @@ public class Bomb extends ImmobileEntity {
             if (nextCell.isBlocking() == true) {
                 if (nextCell.getBrick() != null) {
                     nextCell.getBrick().explode();
+                } else if (nextCell.getBomb() != null) {
+                    nextCell.getBomb().explode();
                 }
                 break;
             }
@@ -72,6 +72,8 @@ public class Bomb extends ImmobileEntity {
             if (nextCell.isBlocking() == true) {
                 if (nextCell.getBrick() != null) {
                     nextCell.getBrick().explode();
+                } else if (nextCell.getBomb() != null) {
+                    nextCell.getBomb().explode();
                 }
                 break;
             }
@@ -87,6 +89,8 @@ public class Bomb extends ImmobileEntity {
             if (nextCell.isBlocking() == true) {
                 if (nextCell.getBrick() != null) {
                     nextCell.getBrick().explode();
+                } else if (nextCell.getBomb() != null) {
+                    nextCell.getBomb().explode();
                 }
                 break;
             }
@@ -102,6 +106,8 @@ public class Bomb extends ImmobileEntity {
             if (nextCell.isBlocking() == true) {
                 if (nextCell.getBrick() != null) {
                     nextCell.getBrick().explode();
+                } else if (nextCell.getBomb() != null) {
+                    nextCell.getBomb().explode();
                 }
                 break;
             }

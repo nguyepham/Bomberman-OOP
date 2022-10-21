@@ -1,8 +1,9 @@
 package game.bomman.map;
 
 import game.bomman.entity.Entity;
-import game.bomman.entity.HitBox;
+import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Brick;
+import game.bomman.entity.item.Item;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -70,6 +71,15 @@ public class Cell extends Entity {
         for (Entity entity : entityList) {
             if (entity instanceof Brick) {
                 return (Brick) entity;
+            }
+        }
+        return null;
+    }
+
+    public Bomb getBomb() {
+        for (Entity entity : entityList) {
+            if (entity instanceof Bomb) {
+                return (Bomb) entity;
             }
         }
         return null;

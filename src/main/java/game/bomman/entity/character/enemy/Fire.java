@@ -56,7 +56,7 @@ public class Fire extends Enemy {
 
     @Override
     public void interactWith(Entity other) {
-        if (other instanceof Bomber || other instanceof Flame) {
+        if (other instanceof Flame) {
             this.die();
         }
     }

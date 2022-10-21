@@ -6,6 +6,9 @@ import game.bomman.entity.character.enemy.Balloon;
 import game.bomman.entity.character.enemy.Fire;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
+import game.bomman.entity.item.BombItem;
+import game.bomman.entity.item.FlameItem;
+import game.bomman.entity.item.SpeedItem;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -136,16 +139,33 @@ public class Map {
                 double posX = thisCell.getLoadingPositionX();
                 double posY = thisCell.getLoadingPositionY();
 
-                if (rawConfig == '*' || rawConfig == 'x') {
+                if (rawConfig == '*' || rawConfig == 'x' || rawConfig == 'f' || rawConfig == 's' || rawConfig == 'b') {
                     thisCell.setBlocking(true);
                     Brick newBrick = new Brick(this, posX, posY, i, j);
                     InteractionHandler.addImmobileEntity(newBrick);
                     thisCell.addEntity(newBrick);
 
-                    if (rawConfig == 'x') {
-                        /// Initialize the portal but not actually put it into the game yet.
-                        Portal portal = new Portal(this, posX, posY, i, j);
-                        InteractionHandler.addPortal(portal);
+                    switch (rawConfig) {
+                        case 'x' -> {
+                            /// Initialize the portal but not actually put it into the game yet.
+                            Portal portal = new Portal(this, posX, posY, i, j);
+                            InteractionHandler.addPortal(portal);
+                        }
+                        case 'f' -> {
+                            FlameItem flame = new FlameItem(this, posX, posY, i, j);
+                            InteractionHandler.addItem(flame);
+                            thisCell.addEntity(flame);
+                        }
+                        case 'b' -> {
+                            BombItem bomb = new BombItem(this, posX, posY, i, j);
+                            InteractionHandler.addItem(bomb);
+                            thisCell.addEntity(bomb);
+                        }
+                        case 's' -> {
+                            SpeedItem speed = new SpeedItem(this, posX, posY, i, j);
+                            InteractionHandler.addItem(speed);
+                            thisCell.addEntity(speed);
+                        }
                     }
                     continue;
                 }

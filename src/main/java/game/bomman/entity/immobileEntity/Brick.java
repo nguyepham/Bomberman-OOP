@@ -2,6 +2,7 @@ package game.bomman.entity.immobileEntity;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
+import game.bomman.entity.item.Item;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -87,19 +88,25 @@ public class Brick extends ImmobileEntity {
                 belowCell.reloadGrass();
             }
 
+            Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
             /// Reveal the portal if it is hidden under the broken brick.
-            if (map.getCell(positionOnMapX, positionOnMapY).getRawConfig() == 'x') {
+            if (thisCell.getRawConfig() == 'x') {
                 Portal portal = InteractionHandler.getPortal();
 
                 /// Actually put the portal into the game.
                 portal.appear();
-                Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
                 thisCell.addEntity(portal);
                 InteractionHandler.addImmobileEntity(portal);
 
                 if (sparked == true) {
                     portal.activate();
                 }
+            }
+
+            /// Reveal the item hidden under the broken brick if any.
+            char rawConfig = thisCell.getRawConfig();
+            if (rawConfig == 'f' || rawConfig == 's' || rawConfig == 'b') {
+                Item.startCountdownTimer((Item) thisCell.getEntity(0));
             }
         }
         if (sparked == true) {

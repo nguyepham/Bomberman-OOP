@@ -9,18 +9,18 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class BombItem extends Item {
+public class FlameItem extends Item {
     private static final Image image;
 
     static {
         try {
-            image = loadImage(IMAGES_PATH + "/item/bonus_bomb@2.png");
+            image = loadImage(IMAGES_PATH + "/item/bonus_flames@2.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public BombItem(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
+    public FlameItem(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
         this.map = map;
         positionOnMapX = posOnMapX;
         positionOnMapY = posOnMapY;
@@ -32,7 +32,7 @@ public class BombItem extends Item {
         if (other instanceof Bomber || other instanceof Flame) {
             disappear();
             if (other instanceof Bomber) {
-                ((Bomber) other).increaseNumOfBombs();
+                ((Bomber) other).increaseFlameLength();
             }
         }
     }

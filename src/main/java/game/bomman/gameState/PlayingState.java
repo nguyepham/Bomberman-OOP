@@ -22,6 +22,7 @@ public class PlayingState extends GameState {
         gameMap = new Map();
         characterCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
         bombCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
+        itemCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
     }
 
     public Scene getScene() { return scene; }
@@ -30,6 +31,7 @@ public class PlayingState extends GameState {
 
         /// Set up game canvases.
         root.getChildren().add(gameMap.setUp());
+        root.getChildren().add(itemCanvas);
         root.getChildren().add(bombCanvas);
         root.getChildren().add(characterCanvas);
         characterCanvas.requestFocus();
@@ -37,7 +39,7 @@ public class PlayingState extends GameState {
         /// Set up game components.
         Component.init(characterCanvas, gameMap);
         CharacterController.activateInputReader();
-        InteractionHandler.init(bombCanvas);
+        InteractionHandler.init(bombCanvas, itemCanvas);
         InteractionHandler.activateInputReader();
         gameMap.loadEntities();
     }

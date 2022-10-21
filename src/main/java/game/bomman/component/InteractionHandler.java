@@ -7,6 +7,7 @@ import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
 import game.bomman.entity.immobileEntity.Portal;
+import game.bomman.entity.item.Item;
 import game.bomman.map.Cell;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
@@ -21,10 +22,13 @@ public class InteractionHandler extends Component {
     private static Canvas itemCanvas;
     private static Portal portal;
     private static List<ImmobileEntity> immobileEntityList = new ArrayList<>();
+    private static List<Item> itemList = new ArrayList<>();
 
-    public static void init(Canvas bombCanvas_) {
+    public static void init(Canvas bombCanvas_, Canvas itemCanvas_) {
         bombCanvas = bombCanvas_;
+        itemCanvas = itemCanvas_;
         ImmobileEntity.setCanvas(bombCanvas.getGraphicsContext2D());
+        Item.setCanvas(itemCanvas.getGraphicsContext2D());
     }
 
     public static void addPortal(Portal portal_) {
@@ -35,13 +39,11 @@ public class InteractionHandler extends Component {
         return portal;
     }
 
-    public static boolean portalAppeared() {
-        return portal.hasAppeared();
-    }
-
     public static void addEnemy(Enemy enemy) {
         enemyList.add(enemy);
     }
+
+    public static void addItem(Item item) { itemList.add(item); }
 
     public static void addImmobileEntity(ImmobileEntity entity) {
         immobileEntityList.add(entity);
@@ -71,6 +73,15 @@ public class InteractionHandler extends Component {
         for (int i = 0; i < immobileEntityList.size(); ++i) {
             if (immobileEntityList.get(i).equals(entity)) {
                 immobileEntityList.remove(i);
+                break;
+            }
+        }
+    }
+
+    public static void removeItem(Item item) {
+        for (int i = 0; i < itemList.size(); ++i) {
+            if (itemList.get(i).equals(item)) {
+                itemList.remove(i);
                 break;
             }
         }
@@ -106,12 +117,20 @@ public class InteractionHandler extends Component {
             ImmobileEntity entity = immobileEntityList.get(i);
             entity.update(elapsedTime);
         }
+        for (int i = 0; i < itemList.size(); ++i) {
+            Item item = itemList.get(i);
+            item.update(elapsedTime);
+        }
     }
 
     public static void draw() {
         bombCanvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE, bombCanvas.getWidth(), bombCanvas.getHeight());
         for (ImmobileEntity entity : immobileEntityList) {
             entity.draw();
+        }
+        itemCanvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE, itemCanvas.getWidth(), itemCanvas.getHeight());
+        for (Item item : itemList) {
+            item.draw();
         }
     }
 }

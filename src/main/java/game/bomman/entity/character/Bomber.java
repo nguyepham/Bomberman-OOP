@@ -7,6 +7,7 @@ import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
+import game.bomman.entity.item.FlameItem;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -37,15 +38,17 @@ public class Bomber extends Character {
     private static final Image bomberLevelUp;
     private int numOfLives;
     private int numOfBombs;
+    private int flameLength;
     private Stack<String> commandStack = new Stack<>();
 
     public Bomber(Map map) {
         this.map = map;
         this.positionOnMapX = 1;
         this.positionOnMapY = 1;
-        this.speed = 200;
+        this.speed = 180;
         this.numOfLives = 3;
-        this.numOfBombs = 2;
+        this.numOfBombs = 1;
+        this.flameLength = 1;
         gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, SIDE + 3.0f, SIDE, WIDTH, HEIGHT);
         initHitBox(SIDE + 3.0f, SIDE, WIDTH, HEIGHT);
     }
@@ -60,6 +63,14 @@ public class Bomber extends Character {
             throw new RuntimeException(e);
         }
     }
+
+    public int getFlameLength() { return flameLength; }
+
+    public void increaseFlameLength() { ++flameLength; }
+
+    public void increaseNumOfBombs() { ++numOfBombs; }
+
+    public void increaseSpeed() { speed += 60; }
 
     public void getIntoPortal() { gotIntoPortal = true; }
 
@@ -373,7 +384,8 @@ public class Bomber extends Character {
             return;
         }
         if (other instanceof Enemy || other instanceof Flame) {
-            this.die();
+            die();
+            return;
         }
     }
 
