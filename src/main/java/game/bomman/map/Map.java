@@ -107,10 +107,14 @@ public class Map {
                     gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
                 } else {
                     thisCell.setGrass();
+                    char  bellowRawConfig = cells[j - 1][i].getRawConfig();
 
-                    if (j > 0 && (cells[j - 1][i].getRawConfig() == '#'
-                            || cells[j - 1][i].getRawConfig() == '*')
-                            || cells[j - 1][i].getRawConfig() == 'x') {
+                    if (j > 0 && (bellowRawConfig == '#'
+                            || bellowRawConfig == '*')
+                            || bellowRawConfig == 'x'
+                            || bellowRawConfig == 'f'
+                            || bellowRawConfig == 's'
+                            || bellowRawConfig == 'b') {
                         gc.drawImage(
                                 thisCell.getSprite(),
                                 Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,

@@ -28,39 +28,11 @@ public class FlameItem extends Item {
     }
 
     @Override
-    public void interactWith(Entity other) {
-        if (other instanceof Bomber || other instanceof Flame) {
-            disappear();
-            if (other instanceof Bomber) {
-                ((Bomber) other).increaseFlameLength();
-            }
-        }
-    }
-
-    @Override
-    public void update(double elapsedTime) {
-        InteractionHandler.handleInteraction(this, map.getCell(positionOnMapX, positionOnMapY));
-
-        timer += elapsedTime;
-        if (timer >= SPRITE_DURATION) {
-            timer = 0;
-            ++frameIndex;
-            if (frameIndex == N_SPRITE) {
-                frameIndex = 0;
-            }
-        }
-        if (countdownStarted == false) {
+    public void draw() {
+        if (isExploding == true) {
+            super.draw();
             return;
         }
-
-        countdownTimer -= elapsedTime;
-        if (countdownTimer <= 0) {
-            disappear();
-        }
-    }
-
-    @Override
-    public void draw() {
         gc.drawImage(image,
                 SIDE * frameIndex, 0, SIDE, SIDE,
                 hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);

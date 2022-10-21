@@ -55,8 +55,8 @@ public class Bomber extends Character {
 
     static {
         try {
-            bomberStanding = loadImage(IMAGES_PATH + "/player/idle.png") ;
-            bomberWalking = loadImage(IMAGES_PATH + "/player/walking.png");
+            bomberStanding = loadImage(IMAGES_PATH + "/player/idle_tran.png") ;
+            bomberWalking = loadImage(IMAGES_PATH + "/player/walking_tran.png");
             bomberDying = loadImage(IMAGES_PATH + "/player/die@11.png");
             bomberLevelUp = loadImage(IMAGES_PATH + "/player/white@4.png");
         } catch (FileNotFoundException e) {

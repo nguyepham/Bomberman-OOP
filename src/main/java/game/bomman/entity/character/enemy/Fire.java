@@ -109,6 +109,7 @@ public class Fire extends Enemy {
 
     @Override
     public boolean isBlocked() {
+        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
         return reachedMapEege();
     }
 
