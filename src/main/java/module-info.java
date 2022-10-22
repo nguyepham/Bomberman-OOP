@@ -16,4 +16,6 @@ module game.bomman {
     opens game.bomman.entity to javafx.fxml;
     exports game.bomman.command.movingCommand;
     opens game.bomman.command.movingCommand to javafx.fxml;
+    exports game.bomman.entity.immobileEntity;
+    opens game.bomman.entity.immobileEntity to javafx.fxml;
 }

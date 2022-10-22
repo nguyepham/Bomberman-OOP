@@ -1,15 +1,15 @@
 package game.bomman.entity.character;
 
-import game.bomman.entity.Blockable;
 import game.bomman.entity.Entity;
-import game.bomman.map.Map;
-import javafx.scene.canvas.Canvas;
+import game.bomman.map.Cell;
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Character extends Entity implements Blockable {
+public abstract class Character extends Entity {
     protected double newLoadingX;
     protected double newLoadingY;
+    protected int facingDirectionIndex = 2;
     protected double speed;
+    protected boolean isAlive = true;
     protected static GraphicsContext gc;
 
     public static void setCanvas(GraphicsContext value) {
@@ -33,4 +33,6 @@ public abstract class Character extends Entity implements Blockable {
     public abstract void removeRight();
 
     public abstract void removeUp();
+
+    protected void die() { isAlive = false; }
 }

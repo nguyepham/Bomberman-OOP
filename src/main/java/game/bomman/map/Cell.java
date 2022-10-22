@@ -1,6 +1,9 @@
 package game.bomman.map;
 
 import game.bomman.entity.Entity;
+import game.bomman.entity.immobileEntity.Bomb;
+import game.bomman.entity.immobileEntity.Brick;
+import game.bomman.entity.item.Item;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -10,7 +13,6 @@ import java.util.List;
 
 public class Cell extends Entity {
     private static GraphicsContext gc;
-    private int[] pos = new int[2];
     private boolean blocking;
     private char rawConfig;
     private Image staticSprite;
@@ -18,8 +20,8 @@ public class Cell extends Entity {
 
     public Cell(GraphicsContext gc_, int x, int y, char rawConfig_) {
         gc = gc_;
-        pos[0] = x;
-        pos[1] = y;
+        positionOnMapX = x;
+        positionOnMapY = y;
         rawConfig = rawConfig_;
         blocking = false;
         initHitBox(SIDE * x, SIDE * y, SIDE, SIDE);
@@ -61,8 +63,26 @@ public class Cell extends Entity {
         setBlocking(true);
     }
 
-    public Entity getEntity(int index) {
-        return entityList.get(index);
+    public int numOfEntities() {return entityList.size(); }
+
+    public Entity getEntity(int index) { return entityList.get(index); }
+
+    public Brick getBrick() {
+        for (Entity entity : entityList) {
+            if (entity instanceof Brick) {
+                return (Brick) entity;
+            }
+        }
+        return null;
+    }
+
+    public Bomb getBomb() {
+        for (Entity entity : entityList) {
+            if (entity instanceof Bomb) {
+                return (Bomb) entity;
+            }
+        }
+        return null;
     }
 
     public void addEntity(Entity entity) {
@@ -79,6 +99,11 @@ public class Cell extends Entity {
     }
 
     @Override
+    public void interactWith(Entity other) {
+
+    }
+
+    @Override
     public void update(double elapsedTime) {
 
     }
@@ -86,16 +111,6 @@ public class Cell extends Entity {
     @Override
     public void draw() {
 
-    }
-
-    @Override
-    public int getPosOnMapX() {
-        return pos[0];
-    }
-
-    @Override
-    public int getPosOnMapY() {
-        return pos[1];
     }
 }
 

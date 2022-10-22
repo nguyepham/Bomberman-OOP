@@ -12,33 +12,33 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
-public class Balloon extends Enemy {
-    private static final double MOVING_SPRITE_DURATION = 0.3f;
-    private static final int N_MOVING_SPRITES = 3;
-    private static final double DYING_SPRITE_DURATION = 0.25f;
-    private static final int N_DYING_SPRITES = 5;
+public class Fire extends Enemy {
+    private static final double MOVING_SPRITE_DURATION = 0.2f;
+    private static final int N_MOVING_SPRITES = 4;
+    private static final double DYING_SPRITE_DURATION = 0.16f;
+    private static final int N_DYING_SPRITES = 7;
     private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
-    private static final Image balloonWalking;
-    private static final Image balloonDying;
+    private static final Image fireWalking;
+    private static final Image fireDying;
 
     static {
         try {
-            balloonWalking = loadImage(IMAGES_PATH + "/enemy/balloon.png") ;
-            balloonDying = loadImage(IMAGES_PATH + "/enemy/balloonDying.png");
+            fireWalking = loadImage(IMAGES_PATH + "/enemy/fire@4.png") ;
+            fireDying = loadImage(IMAGES_PATH + "/enemy/fire_die@7.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Balloon(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
-        movingCommand = CharacterController.moveUp;
+    public Fire(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
+        movingCommand = CharacterController.moveDown;
         timer = new Random().nextDouble(MOVING_SPRITE_DURATION);
         positionOnMapX = posOnMapX;
         positionOnMapY = posOnMapY;
         newLoadingX = loadingPosX;
         newLoadingY = loadingPosY;
-        speed = 90;
+        speed = 120;
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -81,14 +81,14 @@ public class Balloon extends Enemy {
                 frameIndex = 0;
             }
         }
-
         updatePosition(elapsedTime);
+
     }
 
     @Override
     public void draw() {
         if (isAlive == false) {
-            gc.drawImage(balloonDying,
+            gc.drawImage(fireDying,
                     SIDE * dyingFrameIndex, 0, SIDE, SIDE,
                     hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
             return;
@@ -97,7 +97,7 @@ public class Balloon extends Enemy {
         hitBox.setMinX(newLoadingX);
         hitBox.setMinY(newLoadingY);
 
-        gc.drawImage(balloonWalking,
+        gc.drawImage(fireWalking,
                 SIDE * frameIndex, 0, SIDE, SIDE,
                 newLoadingX, newLoadingY, SIDE, SIDE);
     }
@@ -105,6 +105,12 @@ public class Balloon extends Enemy {
     @Override
     public void layingBomb() {
 
+    }
+
+    @Override
+    public boolean isBlocked() {
+        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+        return reachedMapEege();
     }
 
     @Override

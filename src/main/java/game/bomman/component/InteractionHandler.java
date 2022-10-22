@@ -3,10 +3,12 @@ package game.bomman.component;
 import game.bomman.command.Command;
 import game.bomman.command.interactingCommand.*;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.Bomber;
-import game.bomman.entity.character.Character;
+import game.bomman.entity.character.enemy.Enemy;
+import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
 import game.bomman.entity.immobileEntity.Portal;
+import game.bomman.entity.item.Item;
+import game.bomman.map.Cell;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
@@ -14,19 +16,19 @@ import javafx.scene.input.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InteractionHandler {
-    private static Command layingBomb = new LayingBomb();
-    private static Canvas characterCanvas;
+public class InteractionHandler extends Component {
+    public static Command layingBomb = new LayingBomb();
     private static Canvas bombCanvas;
-    private static Bomber bomber;
+    private static Canvas itemCanvas;
     private static Portal portal;
-    private static List<Character> characterList = new ArrayList<>();
     private static List<ImmobileEntity> immobileEntityList = new ArrayList<>();
+    private static List<Item> itemList = new ArrayList<>();
 
-    public static void init(Canvas bombCanvas_, Canvas characterCanvas_, Bomber bomber_) {
+    public static void init(Canvas bombCanvas_, Canvas itemCanvas_) {
         bombCanvas = bombCanvas_;
-        characterCanvas = characterCanvas_;
-        bomber = bomber_;
+        itemCanvas = itemCanvas_;
+        ImmobileEntity.setCanvas(bombCanvas.getGraphicsContext2D());
+        Item.setCanvas(itemCanvas.getGraphicsContext2D());
     }
 
     public static void addPortal(Portal portal_) {
@@ -37,22 +39,31 @@ public class InteractionHandler {
         return portal;
     }
 
-    public static boolean portalAppeared() {
-        return portal.hasAppeared();
+    public static void addEnemy(Enemy enemy) {
+        enemyList.add(enemy);
     }
 
-    public static void addCharacter(Character character) {
-        characterList.add(character);
-    }
+    public static void addItem(Item item) { itemList.add(item); }
 
     public static void addImmobileEntity(ImmobileEntity entity) {
         immobileEntityList.add(entity);
     }
 
-    public static void removeCharacter(Character character) {
-        for (int i = 0; i < characterList.size(); ++i) {
-            if (characterList.get(i).equals(character)) {
-                characterList.remove(i);
+    public static void removeEnemy(Enemy enemy) {
+        if (enemyList.size() == 1) {
+            if (portal.hasAppeared()) {
+                portal.activate();
+            } else {
+                Cell portalCell = gameMap.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
+                Brick brick = portalCell.getBrick();
+                brick.spark();
+            }
+            return;
+        }
+
+        for (int i = 0; i < enemyList.size(); ++i) {
+            if (enemyList.get(i).equals(enemy)) {
+                enemyList.remove(i);
                 break;
             }
         }
@@ -64,6 +75,21 @@ public class InteractionHandler {
                 immobileEntityList.remove(i);
                 break;
             }
+        }
+    }
+
+    public static void removeItem(Item item) {
+        for (int i = 0; i < itemList.size(); ++i) {
+            if (itemList.get(i).equals(item)) {
+                itemList.remove(i);
+                break;
+            }
+        }
+    }
+
+    public static void handleInteraction(Entity entity, Cell cell) {
+        for (int i = 0; i < cell.numOfEntities(); ++i) {
+            entity.interactWith(cell.getEntity(i));
         }
     }
 
@@ -91,13 +117,20 @@ public class InteractionHandler {
             ImmobileEntity entity = immobileEntityList.get(i);
             entity.update(elapsedTime);
         }
+        for (int i = 0; i < itemList.size(); ++i) {
+            Item item = itemList.get(i);
+            item.update(elapsedTime);
+        }
     }
 
     public static void draw() {
         bombCanvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE, bombCanvas.getWidth(), bombCanvas.getHeight());
-
         for (ImmobileEntity entity : immobileEntityList) {
             entity.draw();
+        }
+        itemCanvas.getGraphicsContext2D().clearRect(Entity.SIDE, Entity.SIDE, itemCanvas.getWidth(), itemCanvas.getHeight());
+        for (Item item : itemList) {
+            item.draw();
         }
     }
 }
