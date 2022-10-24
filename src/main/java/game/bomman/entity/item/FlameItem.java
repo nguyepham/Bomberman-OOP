@@ -7,18 +7,18 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class SpeedItem extends Item {
+public class FlameItem extends Item {
     private static final Image image;
 
     static {
         try {
-            image = loadImage(IMAGES_PATH + "/item/bonus_speed@2.png");
+            image = loadImage(IMAGES_PATH + "/item/bonus_flames@2.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public SpeedItem(Map map, double loadingPosX, double loadingPosY) {
+    public FlameItem(Map map, double loadingPosX, double loadingPosY) {
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -30,7 +30,7 @@ public class SpeedItem extends Item {
         }
         super.interactWith(other);
         if (other instanceof Bomber) {
-            ((Bomber) other).increaseSpeed();
+            ((Bomber) other).increaseFlameLength();
             disappear();
         }
     }

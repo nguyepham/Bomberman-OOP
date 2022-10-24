@@ -1,8 +1,6 @@
 package game.bomman.entity.character.enemy;
 
 import game.bomman.component.InteractionHandler;
-import game.bomman.entity.Entity;
-import game.bomman.entity.character.Bomber;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -10,28 +8,30 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
-public class Oneal extends Enemy {
-    private static final double MOVING_SPRITE_DURATION = 0.3f;
+public class Fire extends Enemy {
+    private static final double MOVING_SPRITE_DURATION = 0.2f;
     private static final int N_MOVING_SPRITES = 4;
-    private static final double DYING_SPRITE_DURATION = 0.2f;
-    private static final int N_DYING_SPRITES = 5;
+    private static final double DYING_SPRITE_DURATION = 0.142f;
+    private static final int N_DYING_SPRITES = 7;
     private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
-    private static final Image onealWalking;
-    private static final Image onealDying;
+    private static final Image fireWalking;
+    private static final Image fireDying;
 
     static {
         try {
-            onealWalking = loadImage(IMAGES_PATH + "/enemy/oneal.png") ;
-            onealDying = loadImage(IMAGES_PATH + "/enemy/onealDying.png");
+            fireWalking = loadImage(IMAGES_PATH + "/enemy/fire@4.png") ;
+            fireDying = loadImage(IMAGES_PATH + "/enemy/fire_die@7.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Oneal(Map map, double loadingPosX, double loadingPosY) {
+    public Fire(Map map, double loadingPosX, double loadingPosY) {
+        brickPassing = true;
+        steelPassing = true;
         timer = new Random().nextDouble(MOVING_SPRITE_DURATION);
-        speed = 120;
+        speed = 80;
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -42,16 +42,6 @@ public class Oneal extends Enemy {
             ++dyingFrameIndex;
             if (dyingFrameIndex == N_DYING_SPRITES) {
                 InteractionHandler.removeEnemy(this);
-            }
-        }
-    }
-
-    @Override
-    public void interactWith(Entity other) {
-        super.interactWith(other);
-        if (other instanceof Bomber) {
-            if (((Bomber) other).isAlive()) {
-                die();
             }
         }
     }
@@ -76,20 +66,20 @@ public class Oneal extends Enemy {
                 frameIndex = 0;
             }
         }
-
         updatePosition(elapsedTime);
+
     }
 
     @Override
     public void draw() {
         if (isAlive == false) {
-            gc.drawImage(onealDying,
+            gc.drawImage(fireDying,
                     SIDE * dyingFrameIndex, 0, SIDE, SIDE,
                     hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
             return;
         }
 
-        gc.drawImage(onealWalking,
+        gc.drawImage(fireWalking,
                 SIDE * frameIndex, 0, SIDE, SIDE,
                 hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
     }
@@ -105,9 +95,7 @@ public class Oneal extends Enemy {
     }
 
     @Override
-    public void moveLeft() {
-        facingDirectionIndex = 3;
-    }
+    public void moveLeft() { facingDirectionIndex = 3; }
 
     @Override
     public void moveRight() {

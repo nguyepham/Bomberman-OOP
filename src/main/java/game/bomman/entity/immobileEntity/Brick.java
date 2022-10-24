@@ -1,7 +1,8 @@
 package game.bomman.entity.immobileEntity;
 
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
+import game.bomman.entity.item.Item;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -31,9 +32,7 @@ public class Brick extends ImmobileEntity {
         }
     }
 
-    public Brick(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
+    public Brick(Map map, double loadingPosX, double loadingPosY) {
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
         gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
@@ -61,6 +60,7 @@ public class Brick extends ImmobileEntity {
 
     public void spark() { sparked = true; }
 
+    @Override
     public void explode() {
         isBreaking = true;
     }
@@ -72,14 +72,15 @@ public class Brick extends ImmobileEntity {
 
     @Override
     public void update(double elapsedTime) {
+        int positionOnMapX = getPosOnMapX();
+        int positionOnMapY = getPosOnMapY();
+
         if (isBreaking == true) {
             beingBroken(elapsedTime);
         }
         if (broken == true) {
             /// Remove the brick from the game.
-            removeFromCell(positionOnMapX, positionOnMapY);
-            EntityManager.removeImmobileEntity(this);
-            map.getCell(positionOnMapX, positionOnMapY).setBlocking(false);
+            InteractionHandler.removeImmobileEntity(this);
 
             /// Change the shader grass below the brick into grass.
             Cell belowCell = map.getCell(positionOnMapX, positionOnMapY + 1);
@@ -87,19 +88,29 @@ public class Brick extends ImmobileEntity {
                 belowCell.reloadGrass();
             }
 
+            Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
             /// Reveal the portal if it is hidden under the broken brick.
-            if (map.getCell(positionOnMapX, positionOnMapY).getRawConfig() == 'x') {
-                Portal portal = EntityManager.getPortal();
+            if (thisCell.getRawConfig() == 'x') {
+                Portal portal = InteractionHandler.getPortal();
 
                 /// Actually put the portal into the game.
                 portal.appear();
-                Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
-                thisCell.addEntity(portal);
-                EntityManager.addImmobileEntity(portal);
+                InteractionHandler.addImmobileEntity(portal);
 
                 if (sparked == true) {
                     portal.activate();
                 }
+            }
+
+            /// Reveal the item hidden under the broken brick if any.
+            char rawConfig = thisCell.getRawConfig();
+            if (rawConfig == 'f'
+                    || rawConfig == 's'
+                    || rawConfig == 'b'
+                    || rawConfig == 'l'
+                    || rawConfig == 'i'
+                    || rawConfig == 'j') {
+                Item.startCountdownTimer(InteractionHandler.getItem(thisCell));
             }
         }
         if (sparked == true) {

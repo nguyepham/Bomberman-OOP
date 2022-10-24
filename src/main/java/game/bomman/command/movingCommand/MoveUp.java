@@ -6,8 +6,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class MoveUp extends Command {
+    public MoveUp() { label = "u"; }
+
     @Override
     public void executeOn(Character obj) {
-        obj.moveUp();
+        if (obj.isAlive()) {
+            obj.moveUp();
+        }
     }
 }
