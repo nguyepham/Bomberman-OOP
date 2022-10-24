@@ -10,8 +10,6 @@ import java.io.IOException;
 public abstract class Entity {
    public static final String IMAGES_PATH = "src/main/resources/game/bomman/assets/sprites";
    public static final double SIDE = 48;
-   protected int positionOnMapX;
-   protected int positionOnMapY;
    protected Map map;
    protected int frameIndex = 0;
    protected double timer = 0;
@@ -50,9 +48,13 @@ public abstract class Entity {
       return hitBox.getMinY();
    }
 
-   public int getPosOnMapX() { return positionOnMapX; }
+   public int getPosOnMapX() {
+      return (int) (hitBox.getCenterX() / SIDE);
+   }
 
-   public int getPosOnMapY() { return positionOnMapY; }
+   public int getPosOnMapY() {
+      return (int) (hitBox.getCenterY() / SIDE);
+   }
 
    public boolean gotInto(Entity other) {
       return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
@@ -64,7 +66,7 @@ public abstract class Entity {
 
    public abstract void interactWith(Entity other);
 
-   public abstract void update(double elapsedTime);
+   public abstract void update(double elapsedTime) throws FileNotFoundException;
 
    public abstract void draw();
 }

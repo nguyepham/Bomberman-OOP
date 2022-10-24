@@ -1,11 +1,11 @@
 package game.bomman.entity.character;
 
-import game.bomman.component.EntityManager;
+import game.bomman.Game;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
-import game.bomman.entity.Flame;
+import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Bomb;
-import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
@@ -21,43 +21,42 @@ public class Bomber extends Character {
     private static final int N_SPRITES_PER_DIRECTION = 4;
     private static final double LEVEL_UP_SPRITE_DURATION = 0.4f;
     private static final int N_LEVEL_UP_SPRITES = 4;
-    private static final double DYING_SPRITE_DURATION = 0.15;
+    private static final double DYING_SPRITE_DURATION = 0.12;
     private static final int N_DYING_SPRITES = 11;
     private double levelUpTimer = 0;
     private int levelUpFrameIndex = 0;
-    private double dyingtimer = 0;
+    private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
-    private int facingDirectionIndex = 2;
     private int padding = 0;
     private boolean isMoving = false;
-    private boolean exited = false;
-    private boolean gotIntoPortal = false;
-    private boolean isAlive = true;
-    private static Image bomberWalking;
-    private static Image bomberStanding;
-    private static Image bomberDying;
-    private static Image bomberLevelUp;
+    private boolean insidePortal = false;
+    private static final Image bomberWalking;
+    private static final Image bomberStanding;
+    private static final Image effectedWalking;
+    private static final Image effectedStanding;
+    private static final Image bomberDying;
+    private static final Image bomberLevelUp;
     private int numOfLives;
     private int numOfBombs;
+    private int flameLength;
     private Stack<String> commandStack = new Stack<>();
 
-    public Bomber(Map map, double targetMinX, double targetMinY) {
+    public Bomber(Map map) {
         this.map = map;
-        this.newLoadingX = Entity.SIDE;
-        this.newLoadingY = Entity.SIDE;
-        this.positionOnMapX = 1;
-        this.positionOnMapY = 1;
-        this.speed = 200;
+        this.speed = 180;
         this.numOfLives = 3;
-        this.numOfBombs = 2;
-        gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, targetMinX, targetMinY, WIDTH, HEIGHT);
-        initHitBox(targetMinX, targetMinY, WIDTH, HEIGHT);
+        this.numOfBombs = 1;
+        this.flameLength = 1;
+        gc.drawImage(bomberStanding, 0, 0, WIDTH, HEIGHT, SIDE + 3.0f, SIDE, WIDTH, HEIGHT);
+        initHitBox(SIDE + 3.0f, SIDE, WIDTH, HEIGHT);
     }
 
     static {
         try {
             bomberStanding = loadImage(IMAGES_PATH + "/player/idle.png") ;
             bomberWalking = loadImage(IMAGES_PATH + "/player/walking.png");
+            effectedStanding = loadImage(IMAGES_PATH + "/player/idle_tran.png") ;
+            effectedWalking = loadImage(IMAGES_PATH + "/player/walking_tran.png");
             bomberDying = loadImage(IMAGES_PATH + "/player/die@11.png");
             bomberLevelUp = loadImage(IMAGES_PATH + "/player/white@4.png");
         } catch (FileNotFoundException e) {
@@ -65,19 +64,45 @@ public class Bomber extends Character {
         }
     }
 
-    public void getIntoPortal() { gotIntoPortal = true; }
+    public int getFlameLength() { return flameLength; }
+
+    public void increaseFlameLength() { ++flameLength; }
+
+    public void increaseNumOfBombs() { ++numOfBombs; }
+
+    public void increaseSpeed() { speed += 60; }
+
+    public void increaseNumOfLives() { ++numOfLives; }
+
+    public void getIntoPortal() { insidePortal = true; }
 
     @Override
-    public void update(double elapsedTime) {
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
-        EntityManager.handleInteraction(this, thisCell);
+    public void update(double elapsedTime) throws FileNotFoundException {
 
         if (isAlive == false) {
-//            dyingtimer += elapsedTime;
-
+            dyingTimer += elapsedTime;
+            dying();
+            return;
         }
 
-        if (gotIntoPortal == true) {
+        if (bombPassingTimer > 0) {
+            bombPassingTimer -= elapsedTime;
+        } else {
+            bombPassingTimer = 0;
+            bombPassing = false;
+        }
+        if (brickPassingTimer > 0) {
+            brickPassingTimer -= elapsedTime;
+        } else {
+            brickPassingTimer = 0;
+            brickPassing = false;
+        }
+
+        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
+        /// Handle interaction between Bomber and other entities.
+        InteractionHandler.handleInteraction(this, thisCell);
+
+        if (insidePortal == true) {
             levelUpTimer += elapsedTime;
             levelUp();
             return;
@@ -104,6 +129,8 @@ public class Bomber extends Character {
     }
 
     private void updatePosition(double elapsedTime) {
+        int positionOnMapX = getPosOnMapX();
+        int positionOnMapY = getPosOnMapY();
 
         Cell currentCell = map.getCell(positionOnMapX, positionOnMapY);
         double cellMinX = currentCell.getHitBox().getMinX();
@@ -117,24 +144,21 @@ public class Bomber extends Character {
 
         switch (command.charAt(1)) {
             case 'u' -> {
+                facingDirectionIndex = 0;
                 padding = N_SPRITES_PER_DIRECTION * 0;
 
-                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY - 1);
+                Cell aheadCell = getAheadCell();
+                boolean isBlocked = aheadCell.isBlocking(this);
 
-                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
-                    --positionOnMapY;
-                    break;
-                }
-
-                if (!aheadCell.isBlocking() && !isBuffering) {
-                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking()
+                if (!isBlocked && !isBuffering) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking(this)
                             && currentX > cellMinX + 3) {
                         commandStack.add("1left");
                         System.out.println("Left buffered.");
                         break;
                     }
 
-                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking()
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking(this)
                             && currentX < cellMinX + 3) {
                         commandStack.add("1right");
                         System.out.println("Right buffered.");
@@ -142,46 +166,34 @@ public class Bomber extends Character {
                     }
                 }
 
-                newLoadingX = currentX;
-                newLoadingY = currentY - speed * elapsedTime;
+                hitBox.setMinY(currentY - speed * elapsedTime);
 
                 /// Character blocked.
-                if (aheadCell.isBlocking() || isBuffering) {
-                    if (newLoadingY < cellMinY) {
-                        newLoadingY = cellMinY;
+                if (isBlocked || isBuffering || currentY > cellMinY) {
+                    if (hitBox.getMinY() < cellMinY) {
+                        hitBox.setMinY(cellMinY);
                     }
                 }
                 if (isBuffering && currentY <= cellMinY) {
                     System.out.println("Up buffer removed.");
                     commandStack.pop();
                 }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentY <= cellMinY) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
-                }
             }
             case 'd' -> {
+                facingDirectionIndex = 2;
                 padding = N_SPRITES_PER_DIRECTION * 2;
 
-                Cell aheadCell = map.getCell(positionOnMapX, positionOnMapY + 1);
+                Cell aheadCell = getAheadCell();
+                boolean isBlocked = aheadCell.isBlocking(this);
 
-                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
-                    ++positionOnMapY;
-                    break;
-                }
-
-                if (!aheadCell.isBlocking() && !isBuffering) {
-                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking()
+                if (!isBlocked && !isBuffering) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking(this)
                             && currentX > cellMinX + 3) {
                         commandStack.add("1left");
                         System.out.println("Left buffered.");
                         break;
                     }
-                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking()
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentX < cellMinX + 3) {
                         commandStack.add("1right");
                         System.out.println("Right buffered.");
@@ -189,93 +201,72 @@ public class Bomber extends Character {
                     }
                 }
 
-                newLoadingX = currentX;
-                newLoadingY = currentY + speed * elapsedTime;
+                hitBox.setMinY(currentY + speed * elapsedTime);
 
                 /// Character blocked.
-                if (aheadCell.isBlocking() || isBuffering) {
-                    if (newLoadingY > cellMinY) {
-                        newLoadingY = cellMinY;
+                if (isBlocked || isBuffering || currentY < cellMinY) {
+                    System.out.println(aheadCell.getRawConfig());
+                    if (hitBox.getMinY() > cellMinY) {
+                        hitBox.setMinY(cellMinY);
                     }
                 }
                 if (isBuffering && currentY >= cellMinY) {
                     System.out.println("Down buffer removed.");
                     commandStack.pop();
                 }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentY >= cellMinY) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
-                }
             }
             case 'l' -> {
+                facingDirectionIndex = 3;
                 padding = N_SPRITES_PER_DIRECTION * 3;
 
-                Cell aheadCell = map.getCell(positionOnMapX - 1, positionOnMapY);
+                Cell aheadCell = getAheadCell();
+                boolean isBlocked = aheadCell.isBlocking(this);
 
-                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
-                    --positionOnMapX;
-                    break;
-                }
-
-                if (!aheadCell.isBlocking() && !isBuffering) {
-                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking()
+                if (!isBlocked && !isBuffering) {
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking(this)
                             && currentY < cellMinY) {
                         commandStack.add("1down");
                         System.out.println("Down buffered.");
                         break;
                     }
-                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking()
+                    if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
+                        System.out.println("Ahead cell: " + aheadCell.getPosOnMapY() + " " + getPosOnMapY());
                         commandStack.add("1up");
                         System.out.println("Up buffered.");
                         break;
                     }
                 }
 
-                newLoadingX = currentX - speed * elapsedTime;
-                newLoadingY = currentY;
+                hitBox.setMinX(currentX - speed * elapsedTime);
 
                 /// Character blocked.
-                if (aheadCell.isBlocking() || isBuffering) {
-                    if (newLoadingX < cellMinX + 3) {
-                        newLoadingX = cellMinX + 3;
+                if (isBlocked || isBuffering || currentX > cellMinX + 3) {
+                    System.out.println(aheadCell.getRawConfig());
+                    if (hitBox.getMinX() < cellMinX + 3) {
+                        hitBox.setMinX(cellMinX + 3);
                     }
                 }
                 if (isBuffering && currentX <= cellMinX + 3) {
                     System.out.println("Left buffer removed.");
                     commandStack.pop();
                 }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentX <= cellMinX + 3) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
-                }
             }
             case 'r' -> {
+                facingDirectionIndex = 1;
                 padding = N_SPRITES_PER_DIRECTION;
 
-                Cell aheadCell = map.getCell(positionOnMapX + 1, positionOnMapY);
+                Cell aheadCell = getAheadCell();
+                boolean isBlocked = aheadCell.isBlocking(this);
 
-                if (!this.gotInto(currentCell) && this.gotInto(aheadCell)) {
-                    ++positionOnMapX;
-                    break;
-                }
-
-                if (!aheadCell.isBlocking() && !isBuffering) {
-                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking()
+                if (!isBlocked && !isBuffering) {
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking(this)
                             && currentY < cellMinY) {
                         commandStack.add("1down");
                         System.out.println("Down buffered.");
                         break;
                     }
-                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking()
+                    if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
                         commandStack.add("1up");
                         System.out.println("Up buffered.");
@@ -283,26 +274,18 @@ public class Bomber extends Character {
                     }
                 }
 
-                newLoadingX = currentX + speed * elapsedTime;
-                newLoadingY = currentY;
+                hitBox.setMinX(currentX + speed * elapsedTime);
 
                 /// Character blocked.
-                if (aheadCell.isBlocking() || isBuffering) {
-                    if (newLoadingX > cellMinX + 3) {
-                        newLoadingX = cellMinX + 3;
+                if (isBlocked || isBuffering || currentX < cellMinX + 3) {
+                    System.out.println(aheadCell.getRawConfig());
+                    if (hitBox.getMinX() > cellMinX + 3) {
+                        hitBox.setMinX(cellMinX + 3);
                     }
                 }
                 if (isBuffering && currentX >= cellMinX + 3) {
                     System.out.println("Right buffer removed.");
                     commandStack.pop();
-                }
-
-                /// Test the explosion of bricks.
-                if (aheadCell.isBlocking() && currentX >= cellMinX + 3) {
-                    if (aheadCell.getRawConfig() == '*' || aheadCell.getRawConfig() == 'x') {
-                        Brick brick = aheadCell.getBrick();
-                        brick.explode();
-                    }
                 }
             }
         }
@@ -310,49 +293,96 @@ public class Bomber extends Character {
 
     @Override
     public void draw() {
-        if (exited == true) {
+
+        if (isAlive == false) {
+            gc.drawImage(bomberDying,
+                    53 * dyingFrameIndex, 0, 53, HEIGHT,
+                    hitBox.getMinX(), hitBox.getMinY(), 53, HEIGHT);
             return;
         }
 
-        if (gotIntoPortal == true) {
+        if (insidePortal == true) {
             gc.drawImage(bomberLevelUp,
                     WIDTH * levelUpFrameIndex, 0, WIDTH, HEIGHT,
                     hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
             return;
         }
 
-        hitBox.setMinX(newLoadingX);
-        hitBox.setMinY(newLoadingY);
-
         if (isMoving) {
-            gc.drawImage(bomberWalking,
-                    (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
-                    newLoadingX, newLoadingY, WIDTH, HEIGHT);
+            if (bombPassing == true || brickPassing == true) {
+                gc.drawImage(effectedWalking,
+                        (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
+                        hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+            } else {
+                gc.drawImage(bomberWalking,
+                        (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
+                        hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+            }
+
         } else {
-            gc.drawImage(bomberStanding,
-                    WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
-                    hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+            if (bombPassing == true || brickPassing == true) {
+                gc.drawImage(effectedStanding,
+                        WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
+                        hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+            } else {
+                gc.drawImage(bomberStanding,
+                        WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
+                        hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+            }
         }
     }
 
-    private void levelUp() {
+    private void levelUp() throws FileNotFoundException {
         if (levelUpTimer >= LEVEL_UP_SPRITE_DURATION) {
             levelUpTimer = 0;
             ++levelUpFrameIndex;
             if (levelUpFrameIndex == N_LEVEL_UP_SPRITES) {
-                exited = true;
+                insidePortal = false;
+                Game.levelUp();
             }
         }
     }
 
     private void dying() {
+        if (dyingTimer >= DYING_SPRITE_DURATION) {
+            dyingTimer = 0;
+            ++dyingFrameIndex;
+            if (dyingFrameIndex == N_DYING_SPRITES) {
+                respawn();
+            }
+        }
+    }
 
+    @Override
+    protected void die() {
+        super.die();
+        isMoving = false;
+        while (commandStack.isEmpty() == false) { commandStack.pop(); }
+    }
+
+    private void respawn() {
+        --numOfLives;
+        if (flameLength > 1) {
+            --flameLength;
+        }
+        isAlive = true;
+        dyingFrameIndex = 0;
+        bombPassing = false;
+        brickPassing = false;
+        resetPosition();
+    }
+
+    public void resetPosition() {
+        hitBox.setMinX(SIDE);
+        hitBox.setMinY(SIDE);
+        isMoving = false;
+        facingDirectionIndex = 2;
     }
 
     @Override
     public void interactWith(Entity other) {
         if (other instanceof Portal) {
-            Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+            Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
             if (Math.abs(hitBox.getCenterX() - thisCell.getHitBox().getCenterX()) <= 0.3
                     && Math.abs(hitBox.getCenterY() - thisCell.getHitBox().getCenterY()) <= 0.3) {
                 Portal portal = (Portal) other;
@@ -363,7 +393,8 @@ public class Bomber extends Character {
             return;
         }
         if (other instanceof Enemy || other instanceof Flame) {
-
+            die();
+            return;
         }
     }
 
@@ -371,21 +402,12 @@ public class Bomber extends Character {
     public void layingBomb() {
 
         if (numOfBombs == 0) {
-            /// The game is going to be over, all enemies killed.
-            Portal portal = EntityManager.getPortal();
-            if (EntityManager.portalAppeared()) {
-                portal.activate();
-            } else {
-                Cell portalCell = map.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
-                Brick brick = portalCell.getBrick();
-                brick.spark();
-            }
             return;
         }
 
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
 
-        Portal portal = EntityManager.getPortal();
+        Portal portal = InteractionHandler.getPortal();
         if (portal != null) {
             if (portal.getLoadingPositionX() == thisCell.getLoadingPositionX()
                     && portal.getLoadingPositionY() == thisCell.getLoadingPositionY()) {
@@ -393,7 +415,7 @@ public class Bomber extends Character {
             }
         }
 
-        if (thisCell.isBlocking()) {
+        if (thisCell.getImmobileEntity() != null) {
             return;
         }
 
@@ -402,12 +424,9 @@ public class Bomber extends Character {
         Bomb newBomb = new Bomb(
                 map, this,
                 thisCell.getLoadingPositionX(),
-                thisCell.getLoadingPositionY(),
-                positionOnMapX,
-                positionOnMapY
+                thisCell.getLoadingPositionY()
         );
-        thisCell.addEntity(newBomb);
-        EntityManager.addImmobileEntity(newBomb);
+        InteractionHandler.addImmobileEntity(newBomb);
     }
 
     public void retakeBomb() {
@@ -419,6 +438,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'd') {
             commandStack.push("0down");
             System.out.println("Moved down.");
+            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -427,6 +447,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'l') {
             commandStack.push("0left");
             System.out.println("Moved left.");
+            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -435,6 +456,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'r') {
             commandStack.push("0right");
             System.out.println("Moved right.");
+            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -443,6 +465,7 @@ public class Bomber extends Character {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'u') {
             commandStack.push("0up");
             System.out.println("Moved up.");
+            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -454,8 +477,8 @@ public class Bomber extends Character {
                 break;
             }
         }
-        facingDirectionIndex = 2;
         System.out.println("reMoved down.");
+        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -466,8 +489,8 @@ public class Bomber extends Character {
                 break;
             }
         }
-        facingDirectionIndex = 3;
         System.out.println("reMoved left.");
+        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -478,8 +501,8 @@ public class Bomber extends Character {
                 break;
             }
         }
-        facingDirectionIndex = 1;
         System.out.println("reMoved right.");
+        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -490,7 +513,7 @@ public class Bomber extends Character {
                 break;
             }
         }
-        facingDirectionIndex = 0;
         System.out.println("reMoved up.");
+        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 }

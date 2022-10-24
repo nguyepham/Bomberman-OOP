@@ -1,14 +1,12 @@
 package game.bomman.gameState;
 
+import game.bomman.Game;
 import game.bomman.component.Component;
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.Bomber;
-import game.bomman.component.MovingController;
-import game.bomman.entity.character.Character;
-import game.bomman.entity.immobileEntity.ImmobileEntity;
-import game.bomman.map.Cell;
+import game.bomman.component.CharacterController;
 import game.bomman.map.Map;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -16,50 +14,76 @@ import javafx.scene.canvas.Canvas;
 import java.io.FileNotFoundException;
 
 public class PlayingState extends GameState {
+    private Canvas mapCanvas = new Canvas();
     private Canvas characterCanvas;
     private Canvas bombCanvas;
     private Canvas itemCanvas;
-    private Map gameMap;
+    private static Map gameMap;
 
     public PlayingState() throws FileNotFoundException {
-        scene = new Scene(root);
         gameMap = new Map();
+        gameMap.readFromFile(Game.LEVEL_1_MAP);
         characterCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
         bombCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
+        itemCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
     }
 
     public Scene getScene() { return scene; }
 
-    public void setUp() throws FileNotFoundException {
-        /// Set the graphic context for entities.
-        ImmobileEntity.setCanvas(bombCanvas.getGraphicsContext2D());
-        Character.setCanvas(characterCanvas.getGraphicsContext2D());
+    public void loadNextLevelMap() throws FileNotFoundException {
+        characterCanvas.getGraphicsContext2D().clearRect(
+                Entity.SIDE, Entity.SIDE,
+                Entity.SIDE * gameMap.getWidth(),
+                Entity.SIDE * gameMap.getHeight()
+        );
+        bombCanvas.getGraphicsContext2D().clearRect(
+                Entity.SIDE, Entity.SIDE,
+                Entity.SIDE * gameMap.getWidth(),
+                Entity.SIDE * gameMap.getHeight()
+        );
+        itemCanvas.getGraphicsContext2D().clearRect(
+                Entity.SIDE, Entity.SIDE,
+                Entity.SIDE * gameMap.getWidth(),
+                Entity.SIDE * gameMap.getHeight()
+        );
 
-        /// Set up the game map.
-        root.getChildren().add(gameMap.setUp());
+        Component.resetBomberPosition();
+        Component.clearEnemyList();
+        InteractionHandler.clearEntityList();
+        gameMap.readFromFile(Game.LEVEL_2_MAP);
+        gameMap.setUp(mapCanvas);
+        characterCanvas.setWidth(Entity.SIDE * gameMap.getWidth());
+        characterCanvas.setHeight(Entity.SIDE * gameMap.getHeight());
+        bombCanvas.setWidth(Entity.SIDE * gameMap.getWidth());
+        bombCanvas.setHeight(Entity.SIDE * gameMap.getHeight());
+        itemCanvas.setWidth(Entity.SIDE * gameMap.getWidth());
+        itemCanvas.setHeight(Entity.SIDE * gameMap.getHeight());
+        Group root = new Group();
+        root.getChildren().add(mapCanvas);
+        root.getChildren().add(itemCanvas);
         root.getChildren().add(bombCanvas);
-
-        /// Set up the characters.
         root.getChildren().add(characterCanvas);
+        scene.setRoot(root);
+        gameMap.loadEntities();
+    }
+
+    public void setUp() throws FileNotFoundException {
+        Group root = new Group();
+        /// Set up game canvases.
+        gameMap.setUp(mapCanvas);
+        root.getChildren().add(mapCanvas);
+        root.getChildren().add(itemCanvas);
+        root.getChildren().add(bombCanvas);
+        root.getChildren().add(characterCanvas);
+        scene = new Scene(root);
         characterCanvas.requestFocus();
 
-        Cell firstCell = gameMap.getCell(1, 1);
-        double bomberPositionX  = firstCell.getLoadingPositionX();
-        double bomberPositionY  = firstCell.getLoadingPositionY();
-
-        Bomber bomber = new Bomber(
-                gameMap,
-                bomberPositionX + 3.0f,
-                bomberPositionY
-        );
-        firstCell.addEntity(bomber);
-
         /// Set up game components.
-        Component.init(characterCanvas, bomber);
-        MovingController.activateInputReader();
-        MovingController.activateAI();
-        EntityManager.init(bombCanvas);
-        EntityManager.activateInputReader();
+        Component.init(characterCanvas, gameMap);
+        CharacterController.activateInputReader();
+        InteractionHandler.init(bombCanvas, itemCanvas);
+        InteractionHandler.activateInputReader();
+        gameMap.loadEntities();
     }
 
     public void run() {
@@ -71,18 +95,22 @@ public class PlayingState extends GameState {
                 double elapsedTime = (currentTimestamp - lastTimestamp) / 1000000000.0;
                 lastTimestamp = currentTimestamp;
 
-                this.update(elapsedTime);
+                try {
+                    this.update(elapsedTime);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
                 this.draw();
             }
 
-            private void update(double elapsedTime) {
-                MovingController.update(elapsedTime);
-                EntityManager.update(elapsedTime);
+            private void update(double elapsedTime) throws FileNotFoundException {
+                CharacterController.update(elapsedTime);
+                InteractionHandler.update(elapsedTime);
             }
 
             private void draw() {
-                MovingController.draw();
-                EntityManager.draw();
+                CharacterController.draw();
+                InteractionHandler.draw();
             }
         };
         playingStateTimer.start();

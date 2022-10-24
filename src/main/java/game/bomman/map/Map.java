@@ -1,9 +1,13 @@
 package game.bomman.map;
 
-import game.bomman.component.EntityManager;
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
+import game.bomman.entity.character.enemy.Balloon;
+import game.bomman.entity.character.enemy.Fire;
+import game.bomman.entity.character.enemy.Oneal;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
+import game.bomman.entity.item.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -17,9 +21,8 @@ public class Map {
     private Cell[][] cells;
     private Scanner mapScanner;
 
-    public Map() throws FileNotFoundException {
-        FileInputStream mapFile = new FileInputStream(
-                "src/main/resources/game/bomman/assets/map1.txt");
+    public void readFromFile(String filePath) throws FileNotFoundException {
+        FileInputStream mapFile = new FileInputStream(filePath);
         mapScanner = new Scanner(mapFile);
 
         int height = mapScanner.nextInt();
@@ -27,7 +30,7 @@ public class Map {
 
         mapScanner.useDelimiter("\n");
         mapScanner.next();
-        this.initCells(width, height);
+        initCells(width, height);
     }
 
     private void initCells(int width, int height) {
@@ -47,8 +50,9 @@ public class Map {
         return cells[j][i];
     }
 
-    public Canvas setUp() throws FileNotFoundException {
-        Canvas canvas = new Canvas(Entity.SIDE * width, Entity.SIDE * height);
+    public void setUp(Canvas canvas) throws FileNotFoundException {
+        canvas.setWidth(Entity.SIDE * width);
+        canvas.setHeight(Entity.SIDE * height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         for (int j = 0; j < height; ++j) {
@@ -102,10 +106,17 @@ public class Map {
                     gc.drawImage(thisCell.getSprite(), posX, posY, Entity.SIDE, Entity.SIDE);
                 } else {
                     thisCell.setGrass();
+                    char bellowRawConfig = cells[j - 1][i].getRawConfig();
 
-                    if (j > 0 && (cells[j - 1][i].getRawConfig() == '#'
-                            || cells[j - 1][i].getRawConfig() == '*')
-                            || cells[j - 1][i].getRawConfig() == 'x') {
+                    if (j > 0 && (bellowRawConfig == '#'
+                            || bellowRawConfig == '*')
+                            || bellowRawConfig == 'x'
+                            || bellowRawConfig == 'f'
+                            || bellowRawConfig == 's'
+                            || bellowRawConfig == 'b'
+                            || bellowRawConfig == 'l'
+                            || bellowRawConfig == 'i'
+                            || bellowRawConfig == 'j') {
                         gc.drawImage(
                                 thisCell.getSprite(),
                                 Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
@@ -118,36 +129,80 @@ public class Map {
                                 posX, posY, Entity.SIDE, Entity.SIDE
                         );
                     }
-                    if (rawConfig == '*' || rawConfig == 'x') {
-                        thisCell.setBlocking(true);
-                        Brick newBrick = new Brick(this, posX, posY, i, j);
-                        EntityManager.addImmobileEntity(newBrick);
-                        thisCell.addEntity(newBrick);
-
-                        if (rawConfig == 'x') {
-                            /// Initialize the portal but not actually put it into the game yet.
-                            Portal portal = new Portal(this, posX, posY, i, j);
-                            EntityManager.addPortal(portal);
-                        }
-                    }
                 }
             }
         }
 
         mapScanner.close();
-        return canvas;
     }
 
-    public int[] getPositionOf(Entity entity) {
-        int[] pos = new int[2];
-        for (int i = 1; i < height - 1; ++i) {
-            for (int j = 1; j < width; ++j) {
-                Cell cell = cells[i][j];
-                if (entity.gotInto(cell)) {
-                    pos = new int[] {i, j};
+    public void loadEntities() {
+        for (int j = 0; j < height; ++j) {
+            for (int i = 0; i < width; ++i) {
+                Cell thisCell = cells[j][i];
+                char rawConfig = thisCell.getRawConfig();
+                double posX = thisCell.getLoadingPositionX();
+                double posY = thisCell.getLoadingPositionY();
+
+                if (rawConfig == '*'
+                        || rawConfig == 'x'
+                        || rawConfig == 'f'
+                        || rawConfig == 's'
+                        || rawConfig == 'b'
+                        || rawConfig == 'l'
+                        || rawConfig == 'i'
+                        || rawConfig == 'j') {
+                    Brick newBrick = new Brick(this, posX, posY);
+                    InteractionHandler.addImmobileEntity(newBrick);
+
+                    switch (rawConfig) {
+                        case 'x' -> {
+                            /// Initialize the portal but not actually put it into the game yet.
+                            Portal portal = new Portal(this, posX, posY);
+                            InteractionHandler.addPortal(portal);
+                        }
+                        case 'f' -> {
+                            FlameItem flame = new FlameItem(this, posX, posY);
+                            InteractionHandler.addItem(flame);
+                        }
+                        case 'b' -> {
+                            BombItem bomb = new BombItem(this, posX, posY);
+                            InteractionHandler.addItem(bomb);
+                        }
+                        case 's' -> {
+                            SpeedItem speed = new SpeedItem(this, posX, posY);
+                            InteractionHandler.addItem(speed);
+                        }
+                        case 'l' -> {
+                            LifeItem life = new LifeItem(this, posX, posY);
+                            InteractionHandler.addItem(life);
+                        }
+                        case 'i' -> {
+                            BombPassingItem bombPassing = new BombPassingItem(this, posX, posY);
+                            InteractionHandler.addItem(bombPassing);
+                        }
+                        case 'j' -> {
+                            BrickPassingItem brickPassing = new BrickPassingItem(this, posX, posY);
+                            InteractionHandler.addItem(brickPassing);
+                        }
+                    }
+                    continue;
+                }
+                if (rawConfig == '1') {
+                    Balloon balloon = new Balloon(this, posX, posY);
+                    InteractionHandler.addEnemy(balloon);
+                    continue;
+                }
+                if (rawConfig == '3') {
+                    Fire fire = new Fire(this, posX, posY);
+                    InteractionHandler.addEnemy(fire);
+                    continue;
+                }
+                if (rawConfig == '2') {
+                    Oneal oneal = new Oneal(this, posX, posY);
+                    InteractionHandler.addEnemy(oneal);
                 }
             }
         }
-        return pos;
     }
 }
