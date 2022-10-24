@@ -15,7 +15,7 @@ import java.util.Random;
 public class Balloon extends Enemy {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 3;
-    private static final double DYING_SPRITE_DURATION = 0.25f;
+    private static final double DYING_SPRITE_DURATION = 0.2f;
     private static final int N_DYING_SPRITES = 5;
     private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
@@ -31,14 +31,9 @@ public class Balloon extends Enemy {
         }
     }
 
-    public Balloon(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
-        movingCommand = CharacterController.moveUp;
+    public Balloon(Map map, double loadingPosX, double loadingPosY) {
         timer = new Random().nextDouble(MOVING_SPRITE_DURATION);
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
-        newLoadingX = loadingPosX;
-        newLoadingY = loadingPosY;
-        speed = 90;
+        speed = 100;
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -48,16 +43,8 @@ public class Balloon extends Enemy {
             dyingTimer = 0;
             ++dyingFrameIndex;
             if (dyingFrameIndex == N_DYING_SPRITES) {
-                this.removeFromCell(positionOnMapX, positionOnMapY);
                 InteractionHandler.removeEnemy(this);
             }
-        }
-    }
-
-    @Override
-    public void interactWith(Entity other) {
-        if (other instanceof Flame) {
-            this.die();
         }
     }
 
@@ -68,8 +55,11 @@ public class Balloon extends Enemy {
             dying();
             return;
         }
+        if (getPosOnMapY() == 13) {
+            System.out.println(hitBox.getMinX() + " " + hitBox.getMinY());
+        }
 
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
         /// Handle interaction between Bomber and other entities.
         InteractionHandler.handleInteraction(this, thisCell);
 
@@ -94,12 +84,9 @@ public class Balloon extends Enemy {
             return;
         }
 
-        hitBox.setMinX(newLoadingX);
-        hitBox.setMinY(newLoadingY);
-
         gc.drawImage(balloonWalking,
                 SIDE * frameIndex, 0, SIDE, SIDE,
-                newLoadingX, newLoadingY, SIDE, SIDE);
+                hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
     }
 
     @Override

@@ -14,7 +14,8 @@ public class Flame extends ImmobileEntity {
     private static final Image downImage;
     private static final Image leftImage;
     private static final Image rightImage;
-    private static final double SPRITE_DURATION = 0.18f;
+    private static final double CENTRAL_SPRITE_DURATION = 0.12f;
+    private static final double OTHER_SPRITE_DURATION = 0.15f;
     private static final int N_CENTRAL_SPRITES = 5;
     private static final int N_OTHER_SPRITES = 4;
     private double otherTimer = 0;
@@ -35,11 +36,9 @@ public class Flame extends ImmobileEntity {
         }
     }
 
-    public Flame(char label, Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
+    public Flame(char label, Map map, double loadingPosX, double loadingPosY) {
         this.label = label;
         this.map = map;
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
@@ -49,7 +48,6 @@ public class Flame extends ImmobileEntity {
     }
 
     private void disappear() {
-        removeFromCell(positionOnMapX, positionOnMapY);
         InteractionHandler.removeImmobileEntity(this);
     }
 
@@ -58,7 +56,7 @@ public class Flame extends ImmobileEntity {
 
         if (label == 'c') {
             timer += elapsedTime;
-            if (timer >= SPRITE_DURATION) {
+            if (timer >= CENTRAL_SPRITE_DURATION) {
                 timer = 0;
                 ++frameIndex;
                 if (frameIndex == N_CENTRAL_SPRITES) {
@@ -67,7 +65,7 @@ public class Flame extends ImmobileEntity {
             }
         } else {
             otherTimer += elapsedTime;
-            if (otherTimer >= SPRITE_DURATION) {
+            if (otherTimer >= OTHER_SPRITE_DURATION) {
                 otherTimer = 0;
                 ++otherFrameIndex;
                 if (otherFrameIndex == N_OTHER_SPRITES) {

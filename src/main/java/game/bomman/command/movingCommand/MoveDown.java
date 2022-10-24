@@ -8,6 +8,8 @@ public class MoveDown extends Command {
 
     @Override
     public void executeOn(Character obj) {
-        obj.moveDown();
+        if (obj.isAlive()) {
+            obj.moveDown();
+        }
     }
 }

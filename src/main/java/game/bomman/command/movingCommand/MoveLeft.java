@@ -10,6 +10,8 @@ public class MoveLeft extends Command {
 
     @Override
     public void executeOn(Character obj) {
-        obj.moveLeft();
+        if (obj.isAlive()) {
+            obj.moveLeft();
+        }
     }
 }

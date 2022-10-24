@@ -32,9 +32,7 @@ public class Brick extends ImmobileEntity {
         }
     }
 
-    public Brick(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
+    public Brick(Map map, double loadingPosX, double loadingPosY) {
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
         gc.drawImage(image, loadingPosX, loadingPosY, SIDE, SIDE);
@@ -62,6 +60,7 @@ public class Brick extends ImmobileEntity {
 
     public void spark() { sparked = true; }
 
+    @Override
     public void explode() {
         isBreaking = true;
     }
@@ -73,14 +72,15 @@ public class Brick extends ImmobileEntity {
 
     @Override
     public void update(double elapsedTime) {
+        int positionOnMapX = getPosOnMapX();
+        int positionOnMapY = getPosOnMapY();
+
         if (isBreaking == true) {
             beingBroken(elapsedTime);
         }
         if (broken == true) {
             /// Remove the brick from the game.
-            this.removeFromCell(positionOnMapX, positionOnMapY);
             InteractionHandler.removeImmobileEntity(this);
-            map.getCell(positionOnMapX, positionOnMapY).setBlocking(false);
 
             /// Change the shader grass below the brick into grass.
             Cell belowCell = map.getCell(positionOnMapX, positionOnMapY + 1);
@@ -95,7 +95,6 @@ public class Brick extends ImmobileEntity {
 
                 /// Actually put the portal into the game.
                 portal.appear();
-                thisCell.addEntity(portal);
                 InteractionHandler.addImmobileEntity(portal);
 
                 if (sparked == true) {
@@ -105,8 +104,13 @@ public class Brick extends ImmobileEntity {
 
             /// Reveal the item hidden under the broken brick if any.
             char rawConfig = thisCell.getRawConfig();
-            if (rawConfig == 'f' || rawConfig == 's' || rawConfig == 'b') {
-                Item.startCountdownTimer((Item) thisCell.getEntity(0));
+            if (rawConfig == 'f'
+                    || rawConfig == 's'
+                    || rawConfig == 'b'
+                    || rawConfig == 'l'
+                    || rawConfig == 'i'
+                    || rawConfig == 'j') {
+                Item.startCountdownTimer(InteractionHandler.getItem(thisCell));
             }
         }
         if (sparked == true) {

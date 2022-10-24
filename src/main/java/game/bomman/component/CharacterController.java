@@ -3,13 +3,11 @@ package game.bomman.component;
 import game.bomman.command.*;
 import game.bomman.command.movingCommand.*;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.enemy.Balloon;
-import game.bomman.entity.character.enemy.Enemy;
-import game.bomman.entity.character.enemy.Fire;
-import game.bomman.map.Cell;
+import game.bomman.entity.character.enemy.*;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
+import java.io.FileNotFoundException;
 import java.util.Random;
 
 public class CharacterController extends Component {
@@ -67,21 +65,6 @@ public class CharacterController extends Component {
             newIndex = enemyMovingCommand.nextInt(4);
         }
         enemy.setFacingDirectionIndex(newIndex);
-
-        switch (newIndex) {
-            case 0 -> {
-                enemy.setMovingCommand(moveUp);
-            }
-            case 1 -> {
-                enemy.setMovingCommand(moveRight);
-            }
-            case 2 -> {
-                enemy.setMovingCommand(moveDown);
-            }
-            case 3 -> {
-                enemy.setMovingCommand(moveLeft);
-            }
-        }
     }
 
     private static void runAI(double elapsedTime) {
@@ -94,7 +77,7 @@ public class CharacterController extends Component {
             }
             if (enemy instanceof Fire) {
                 enemy.addGoAheadTimer(elapsedTime);
-                if (enemy.reachedMapEege() || (enemy.timerUp() && enemy.fitInThatCell())) {
+                if (enemy.isBlocked() || (enemy.timerUp() && enemy.fitInThatCell())) {
                     changeMovingDirection(enemy);
                     if (enemy.timerUp()) {
                         enemy.resetGoAheadTimer();
@@ -102,15 +85,27 @@ public class CharacterController extends Component {
                 }
                 continue;
             }
+            if (enemy instanceof Oneal) {
+                int newDirection = enemy.findBomber();
+                if (newDirection != -1) {
+                    if (enemy.fitInThatCell()) {
+                        enemy.setFacingDirectionIndex(newDirection);
+                    }
+                } else {
+                    if (enemy.isBlocked()) {
+                        changeMovingDirection(enemy);
+                    }
+                }
+            }
         }
     }
 
-    public static void update(double elapsedTime) {
+    public static void update(double elapsedTime) throws FileNotFoundException {
+        runAI(elapsedTime);
         for (int i = 0; i < enemyList.size(); ++i) {
             Enemy enemy = enemyList.get(i);
             enemy.update(elapsedTime);
         }
-        runAI(elapsedTime);
         bomber.update(elapsedTime);
     }
 

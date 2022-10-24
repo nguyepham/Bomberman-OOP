@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 public class Bomb extends ImmobileEntity {
     private static final Image image;
     private static Bomber bomber;
-    private double countdownTimer = 2.0f;
+    private double countdownTimer = ImmobileEntity.countdownTimer;
     private static final double SPRITE_DURATION = 0.15;
     private static final int N_SPRITES = 4;
 
@@ -24,12 +24,9 @@ public class Bomb extends ImmobileEntity {
         }
     }
 
-    public Bomb(Map map_, Bomber bomber_, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
+    public Bomb(Map map_, Bomber bomber_, double loadingPosX, double loadingPosY) {
         map = map_;
         bomber = bomber_;
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
-        map.getCell(posOnMapX, posOnMapY).setBlocking(true);
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
@@ -40,27 +37,31 @@ public class Bomb extends ImmobileEntity {
         }
     }
 
-    private void explode() {
+    @Override
+    public void explode() {
+        int positionOnMapX = getPosOnMapX();
+        int positionOnMapY = getPosOnMapY();
+
         Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
         int flameLength = bomber.getFlameLength();
-
-        thisCell.setBlocking(false);
         bomber.retakeBomb();
-        removeFromCell(positionOnMapX, positionOnMapY);
+
         InteractionHandler.removeImmobileEntity(this);
 
         createFlame('c', thisCell);
 
         for (int i = 1; i <= flameLength; ++i) {
             Cell nextCell = map.getCell(positionOnMapX, positionOnMapY - i);
-            if (nextCell.isBlocking() == true) {
-                if (nextCell.getBrick() != null) {
-                    nextCell.getBrick().explode();
-                } else if (nextCell.getBomb() != null) {
-                    nextCell.getBomb().explode();
-                }
+            ImmobileEntity entity = nextCell.getImmobileEntity();
+
+            if (entity != null && (entity instanceof Bomb || entity instanceof Brick)) {
+                entity.explode();
                 break;
             }
+            if (nextCell.isSteel() || nextCell.isWall()) {
+                break;
+            }
+
             if (i == flameLength) {
                 createFlame('u', nextCell);
             } else {
@@ -69,14 +70,16 @@ public class Bomb extends ImmobileEntity {
         }
         for (int i = 1; i <= flameLength; ++i) {
             Cell nextCell = map.getCell(positionOnMapX + i, positionOnMapY);
-            if (nextCell.isBlocking() == true) {
-                if (nextCell.getBrick() != null) {
-                    nextCell.getBrick().explode();
-                } else if (nextCell.getBomb() != null) {
-                    nextCell.getBomb().explode();
-                }
+            ImmobileEntity entity = nextCell.getImmobileEntity();
+
+            if (entity != null && (entity instanceof Bomb || entity instanceof Brick)) {
+                entity.explode();
                 break;
             }
+            if (nextCell.isSteel() || nextCell.isWall()) {
+                break;
+            }
+
             if (i == flameLength) {
                 createFlame('r', nextCell);
             } else {
@@ -86,14 +89,16 @@ public class Bomb extends ImmobileEntity {
 
         for (int i = 1; i <= flameLength; ++i) {
             Cell nextCell = map.getCell(positionOnMapX, positionOnMapY + i);
-            if (nextCell.isBlocking() == true) {
-                if (nextCell.getBrick() != null) {
-                    nextCell.getBrick().explode();
-                } else if (nextCell.getBomb() != null) {
-                    nextCell.getBomb().explode();
-                }
+            ImmobileEntity entity = nextCell.getImmobileEntity();
+
+            if (entity != null && (entity instanceof Bomb || entity instanceof Brick)) {
+                entity.explode();
                 break;
             }
+            if (nextCell.isSteel() || nextCell.isWall()) {
+                break;
+            }
+
             if (i == flameLength) {
                 createFlame('d', nextCell);
             } else {
@@ -103,14 +108,16 @@ public class Bomb extends ImmobileEntity {
 
         for (int i = 1; i <= flameLength; ++i) {
             Cell nextCell = map.getCell(positionOnMapX - i, positionOnMapY);
-            if (nextCell.isBlocking() == true) {
-                if (nextCell.getBrick() != null) {
-                    nextCell.getBrick().explode();
-                } else if (nextCell.getBomb() != null) {
-                    nextCell.getBomb().explode();
-                }
+            ImmobileEntity entity = nextCell.getImmobileEntity();
+
+            if (entity != null && (entity instanceof Bomb || entity instanceof Brick)) {
+                entity.explode();
                 break;
             }
+            if (nextCell.isSteel() || nextCell.isWall()) {
+                break;
+            }
+
             if (i == flameLength) {
                 createFlame('l', nextCell);
             } else {
@@ -121,9 +128,7 @@ public class Bomb extends ImmobileEntity {
 
     private void createFlame(char label, Cell thisCell) {
         Flame newFlame = new Flame(label, map,
-                thisCell.getLoadingPositionX(), thisCell.getLoadingPositionY(),
-                thisCell.getPosOnMapX(), thisCell.getPosOnMapY());
-        thisCell.addEntity(newFlame);
+                thisCell.getLoadingPositionX(), thisCell.getLoadingPositionY());
         InteractionHandler.addImmobileEntity(newFlame);
     }
 

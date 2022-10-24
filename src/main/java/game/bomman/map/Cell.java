@@ -1,8 +1,11 @@
 package game.bomman.map;
 
+import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
+import game.bomman.entity.character.Character;
 import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Brick;
+import game.bomman.entity.immobileEntity.ImmobileEntity;
 import game.bomman.entity.item.Item;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -13,26 +16,30 @@ import java.util.List;
 
 public class Cell extends Entity {
     private static GraphicsContext gc;
-    private boolean blocking;
+    private boolean isSteel = false;
+    private boolean isWall = false;
     private char rawConfig;
     private Image staticSprite;
     private List<Entity> entityList = new ArrayList<>();
 
     public Cell(GraphicsContext gc_, int x, int y, char rawConfig_) {
         gc = gc_;
-        positionOnMapX = x;
-        positionOnMapY = y;
         rawConfig = rawConfig_;
-        blocking = false;
         initHitBox(SIDE * x, SIDE * y, SIDE, SIDE);
     }
 
-    public boolean isBlocking() {
-        return blocking;
-    }
+    public boolean isSteel() { return isSteel; }
 
-    public void setBlocking(boolean value) {
-        blocking = value;
+    public boolean isWall() { return isWall; }
+
+    public boolean isBlocking(Character character) {
+        boolean blocking = isWall || (isSteel && character.getSteelPassing() == false);
+        ImmobileEntity entity = InteractionHandler.getImmobileEntity(this);
+        if (entity != null) {
+            blocking = blocking || (entity instanceof Bomb && character.getBombPassing() == false);
+            blocking = blocking || (entity instanceof Brick && character.getBrickPassing() == false);
+        }
+        return blocking;
     }
 
     public char getRawConfig() {
@@ -55,38 +62,16 @@ public class Cell extends Entity {
 
     public void setSteel() throws FileNotFoundException {
         staticSprite = loadImage(IMAGES_PATH + "/map/steel.png");
-        setBlocking(true);
+        isSteel = true;
     }
 
     public void setWall() throws FileNotFoundException {
         staticSprite = loadImage(IMAGES_PATH + "/map/walls@10.png");
-        setBlocking(true);
+        isWall = true;
     }
 
-    public int numOfEntities() {return entityList.size(); }
-
-    public Entity getEntity(int index) { return entityList.get(index); }
-
-    public Brick getBrick() {
-        for (Entity entity : entityList) {
-            if (entity instanceof Brick) {
-                return (Brick) entity;
-            }
-        }
-        return null;
-    }
-
-    public Bomb getBomb() {
-        for (Entity entity : entityList) {
-            if (entity instanceof Bomb) {
-                return (Bomb) entity;
-            }
-        }
-        return null;
-    }
-
-    public void addEntity(Entity entity) {
-        entityList.add(entity);
+    public ImmobileEntity getImmobileEntity() {
+        return InteractionHandler.getImmobileEntity(this);
     }
 
     public void removeEntity(Entity entity) {

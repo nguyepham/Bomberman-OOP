@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,11 @@ public class InteractionHandler extends Component {
         itemCanvas = itemCanvas_;
         ImmobileEntity.setCanvas(bombCanvas.getGraphicsContext2D());
         Item.setCanvas(itemCanvas.getGraphicsContext2D());
+    }
+
+    public static void clearEntityList() {
+        immobileEntityList.clear();
+        itemList.clear();
     }
 
     public static void addPortal(Portal portal_) {
@@ -55,7 +61,7 @@ public class InteractionHandler extends Component {
                 portal.activate();
             } else {
                 Cell portalCell = gameMap.getCell(portal.getPosOnMapX(), portal.getPosOnMapY());
-                Brick brick = portalCell.getBrick();
+                Brick brick = (Brick) portalCell.getImmobileEntity();
                 brick.spark();
             }
             return;
@@ -87,9 +93,48 @@ public class InteractionHandler extends Component {
         }
     }
 
+    public static ImmobileEntity getImmobileEntity(Cell cell) {
+        for (ImmobileEntity entity : immobileEntityList) {
+            if (entity.getPosOnMapX() == cell.getPosOnMapX() && entity.getPosOnMapY() == cell.getPosOnMapY()) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    public static Item getItem(Cell cell) {
+        for (Item item : itemList) {
+            if (item.getPosOnMapX() == cell.getPosOnMapX() && item.getPosOnMapY() == cell.getPosOnMapY()) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public static void handleInteraction(Entity entity, Cell cell) {
-        for (int i = 0; i < cell.numOfEntities(); ++i) {
-            entity.interactWith(cell.getEntity(i));
+        int posX = cell.getPosOnMapX();
+        int posY = cell.getPosOnMapY();
+
+        if (bomber.getPosOnMapX() == posX && bomber.getPosOnMapY() == posY) {
+            entity.interactWith(bomber);
+        }
+
+        for (Enemy other : enemyList) {
+            if (other.getPosOnMapX() == posX && other.getPosOnMapY() == posY) {
+                entity.interactWith(other);
+            }
+        }
+
+        for (ImmobileEntity other : immobileEntityList) {
+            if (other.getPosOnMapX() == posX && other.getPosOnMapY() == posY) {
+                entity.interactWith(other);
+            }
+        }
+
+        for (Item other : itemList) {
+            if (other.getPosOnMapX() == posX && other.getPosOnMapY() == posY) {
+                entity.interactWith(other);
+            }
         }
     }
 
@@ -112,7 +157,7 @@ public class InteractionHandler extends Component {
 //        characterCanvas.addEventHandler(KeyEvent.KEY_RELEASED, layingBombEvent);
     }
 
-    public static void update(double elapsedTime) {
+    public static void update(double elapsedTime) throws FileNotFoundException {
         for (int i = 0; i < immobileEntityList.size(); ++i) {
             ImmobileEntity entity = immobileEntityList.get(i);
             entity.update(elapsedTime);

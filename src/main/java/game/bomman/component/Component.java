@@ -22,7 +22,13 @@ public abstract class Component {
         Character.setCanvas(characterCanvas.getGraphicsContext2D());
 
         bomber = new Bomber(gameMap);
-        gameMap.getCell(1, 1).addEntity(bomber);
-        System.out.println("Bomber constructed.");
+    }
+
+    public static Bomber getBomber() { return bomber; }
+
+    public static void clearEnemyList() { enemyList.clear(); }
+
+    public static void resetBomberPosition() {
+        bomber.resetPosition();
     }
 }
