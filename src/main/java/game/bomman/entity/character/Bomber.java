@@ -451,6 +451,7 @@ public class Bomber extends Character {
         if (numOfBombs == 0) {
             return;
         }
+
         Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
 
         Portal portal = InteractionHandler.getPortal();
