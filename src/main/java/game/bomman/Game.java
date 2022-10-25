@@ -1,6 +1,7 @@
 package game.bomman;
 
 import game.bomman.component.SoundPlayer;
+import game.bomman.gameState.EndingState;
 import game.bomman.gameState.PlayingState;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -14,6 +15,8 @@ public class Game {
     public static final String LEVEL_1_MAP = "src/main/resources/game/bomman/assets/map1.txt";
     public static final String LEVEL_2_MAP = "src/main/resources/game/bomman/assets/map2.txt";
     public static final String LEVEL_3_MAP = "src/main/resources/game/bomman/assets/map3.txt";
+    private static final int NUM_OF_MAPS = 2;
+    private static int currentMap = 1;
 
     public static void init(Stage stage_) throws FileNotFoundException {
         stage = stage_;
@@ -21,6 +24,13 @@ public class Game {
     }
 
     public static void levelUp() throws FileNotFoundException {
+        ++currentMap;
+        if (currentMap > NUM_OF_MAPS) {
+            EndingState endingState = new EndingState(true);
+            Game.getPlayingState().getPlayingStateTimer().stop();
+            MainApplication.stage.setScene(endingState.getScene());
+            return;
+        }
         playingState.loadNextLevelMap();
         stage.setScene(playingState.getScene());
         stage.sizeToScene();
@@ -48,5 +58,9 @@ public class Game {
         setPosition(stage);
         SoundPlayer.playStageStartSound();
         stage.show();
+    }
+
+    public static PlayingState getPlayingState() {
+        return playingState;
     }
 }

@@ -1,6 +1,7 @@
 package game.bomman.entity.character;
 
 import game.bomman.Game;
+import game.bomman.MainApplication;
 import game.bomman.component.InteractionHandler;
 import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
@@ -8,6 +9,7 @@ import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Portal;
+import game.bomman.gameState.EndingState;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -401,6 +403,11 @@ public class Bomber extends Character {
 
     private void respawn() {
         --numOfLives;
+        if (numOfLives == 0) {
+            EndingState endingState = new EndingState(false);
+            Game.getPlayingState().getPlayingStateTimer().stop();
+            MainApplication.stage.setScene(endingState.getScene());
+        }
         isAlive = true;
         dyingFrameIndex = 0;
         waiting = true;

@@ -8,9 +8,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainApplication extends Application {
+    public static Stage stage;
+
     @Override
     public void start(Stage stage) throws IOException {
-        MenuController.stage = stage;
+        MainApplication.stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("menu.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Bomberman");

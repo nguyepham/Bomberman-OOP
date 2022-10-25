@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 public class Portal extends ImmobileEntity {
     private static final Image image;
     private static final double SPRITE_DURATION = 0.5f;
-    private boolean activated = false;
+    private boolean activated = true;
     private boolean appeared = false;
 
     static {

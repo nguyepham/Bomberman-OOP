@@ -19,6 +19,7 @@ public class PlayingState extends GameState {
     private Canvas bombCanvas;
     private Canvas itemCanvas;
     private static Map gameMap;
+    private AnimationTimer playingStateTimer;
 
     public PlayingState() throws FileNotFoundException {
         gameMap = new Map();
@@ -87,7 +88,7 @@ public class PlayingState extends GameState {
     }
 
     public void run() {
-        AnimationTimer playingStateTimer = new AnimationTimer() {
+        playingStateTimer = new AnimationTimer() {
             long lastTimestamp = System.nanoTime();
 
             @Override
@@ -114,5 +115,9 @@ public class PlayingState extends GameState {
             }
         };
         playingStateTimer.start();
+    }
+
+    public AnimationTimer getPlayingStateTimer() {
+        return playingStateTimer;
     }
 }

@@ -7,16 +7,14 @@ import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 
 public class MenuController {
-    public static Stage stage;
-
     @FXML
     void startGameClicked(ActionEvent event) throws FileNotFoundException {
-        Game.init(stage);
+        Game.init(MainApplication.stage);
         Game.run();
     }
 
     @FXML
     void exitClicked(ActionEvent event) {
-        stage.close();
+        MainApplication.stage.close();
     }
 }
