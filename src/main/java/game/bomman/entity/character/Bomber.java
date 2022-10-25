@@ -378,6 +378,7 @@ public class Bomber extends Character {
             ++levelUpFrameIndex;
             if (levelUpFrameIndex == N_LEVEL_UP_SPRITES) {
                 insidePortal = false;
+                levelUpFrameIndex = 0;
                 Game.levelUp();
             }
         }
@@ -407,6 +408,9 @@ public class Bomber extends Character {
             EndingState endingState = new EndingState(false);
             Game.getPlayingState().getPlayingStateTimer().stop();
             MainApplication.stage.setScene(endingState.getScene());
+            MainApplication.stage.sizeToScene();
+            Game.setPosition(MainApplication.stage);
+            SoundPlayer.playGameOverSound();
         }
         isAlive = true;
         dyingFrameIndex = 0;
@@ -447,6 +451,7 @@ public class Bomber extends Character {
         if (numOfBombs == 0) {
             return;
         }
+
         Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
 
         Portal portal = InteractionHandler.getPortal();

@@ -14,6 +14,12 @@ public class SoundPlayer {
     private static MediaPlayer dyingPlayer;
     private static Media stageStart = new Media(new File(FILE_PATH + "/stage_start.wav").toURI().toString());
     private static MediaPlayer stageStartPlayer;
+    private static Media gameStart = new Media(new File(FILE_PATH + "/game_start.wav").toURI().toString());
+    private static MediaPlayer gameStartPlayer;
+    private static Media gameOver = new Media(new File(FILE_PATH + "/game_over.wav").toURI().toString());
+    private static MediaPlayer gameOverPlayer;
+    private static Media win = new Media(new File(FILE_PATH + "/win.wav").toURI().toString());
+    private static MediaPlayer winPlayer;
 
     public static void playBombSound() {
         bombPlayer = new MediaPlayer(bomb);
@@ -33,5 +39,20 @@ public class SoundPlayer {
     public static void playStageStartSound() {
         stageStartPlayer = new MediaPlayer(stageStart);
         stageStartPlayer.play();
+    }
+
+    public static void playGameStartSound() {
+        gameStartPlayer = new MediaPlayer(gameStart);
+        gameStartPlayer.play();
+    }
+
+    public static void playGameOverSound() {
+        gameOverPlayer = new MediaPlayer(gameOver);
+        gameOverPlayer.play();
+    }
+
+    public static void playWinSound() {
+        winPlayer = new MediaPlayer(win);
+        winPlayer.play();
     }
 }

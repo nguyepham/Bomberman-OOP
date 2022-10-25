@@ -1,5 +1,6 @@
 package game.bomman;
 
+import game.bomman.component.SoundPlayer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ public class MainApplication extends Application {
         stage.setTitle("Bomberman");
         stage.setResizable(false);
         stage.setScene(scene);
+        SoundPlayer.playStageStartSound();
         stage.show();
     }
 

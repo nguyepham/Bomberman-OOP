@@ -28,13 +28,17 @@ public class Game {
         if (currentMap > NUM_OF_MAPS) {
             EndingState endingState = new EndingState(true);
             Game.getPlayingState().getPlayingStateTimer().stop();
-            MainApplication.stage.setScene(endingState.getScene());
+            stage.setScene(endingState.getScene());
+            stage.sizeToScene();
+            setPosition(stage);
+            SoundPlayer.playWinSound();
             return;
         }
         playingState.loadNextLevelMap();
         stage.setScene(playingState.getScene());
         stage.sizeToScene();
         setPosition(stage);
+        SoundPlayer.playStageStartSound();
     }
 
     public static void setPosition(Stage stage) {
