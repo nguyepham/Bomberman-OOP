@@ -42,13 +42,12 @@ public class Bomb extends ImmobileEntity {
         int positionOnMapX = getPosOnMapX();
         int positionOnMapY = getPosOnMapY();
 
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
         int flameLength = bomber.getFlameLength();
         bomber.retakeBomb();
 
         InteractionHandler.removeImmobileEntity(this);
 
-        createFlame('c', thisCell);
+        createFlame('c', map.getCell(positionOnMapX, positionOnMapY));
 
         for (int i = 1; i <= flameLength; ++i) {
             Cell nextCell = map.getCell(positionOnMapX, positionOnMapY - i);
@@ -147,6 +146,10 @@ public class Bomb extends ImmobileEntity {
             if (frameIndex == N_SPRITES) {
                 frameIndex = 0;
             }
+        }
+
+        if (bomber.isDetonator()) {
+            return;
         }
         countDown(elapsedTime);
     }

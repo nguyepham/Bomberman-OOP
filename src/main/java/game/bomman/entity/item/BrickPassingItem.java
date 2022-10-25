@@ -30,7 +30,9 @@ public class BrickPassingItem extends Item {
         }
         super.interactWith(other);
         if (other instanceof Bomber) {
-            ((Bomber) other).setBrickPassing();
+            Bomber bomber = (Bomber) other;
+            if (bomber.isDetonator()) return;
+            bomber.setBrickPassing();
             disappear();
         }
     }

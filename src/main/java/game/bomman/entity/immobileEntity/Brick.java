@@ -109,7 +109,8 @@ public class Brick extends ImmobileEntity {
                     || rawConfig == 'b'
                     || rawConfig == 'l'
                     || rawConfig == 'i'
-                    || rawConfig == 'j') {
+                    || rawConfig == 'j'
+                    || rawConfig == 'd') {
                 Item.startCountdownTimer(InteractionHandler.getItem(thisCell));
             }
         }

@@ -36,8 +36,8 @@ public class Cell extends Entity {
         boolean blocking = isWall || (isSteel && character.getSteelPassing() == false);
         ImmobileEntity entity = InteractionHandler.getImmobileEntity(this);
         if (entity != null) {
-            blocking = blocking || (entity instanceof Bomb && character.getBombPassing() == false);
-            blocking = blocking || (entity instanceof Brick && character.getBrickPassing() == false);
+            blocking = blocking || (entity instanceof Brick && character.isBrickPassing() == false);
+            blocking = blocking || (entity instanceof Bomb && character.isBombPassing() == false);
         }
         return blocking;
     }

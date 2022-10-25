@@ -7,7 +7,6 @@ import javafx.scene.canvas.GraphicsContext;
 public abstract class Character extends Entity {
     protected int facingDirectionIndex = 2;
     protected double speed;
-    protected double bombPassingTimer = 0;
     protected double brickPassingTimer = 0;
     protected boolean isAlive = true;
     protected boolean bombPassing = false;
@@ -17,14 +16,8 @@ public abstract class Character extends Entity {
 
     public boolean isAlive() { return isAlive; }
 
-    public boolean getBombPassing() { return bombPassing; }
-
-    public void setBombPassing() {
-        bombPassing = true;
-        bombPassingTimer = 10.0f;
-    }
-
-    public boolean getBrickPassing() { return brickPassing; }
+    public boolean isBrickPassing() { return brickPassing; }
+    public boolean isBombPassing() { return bombPassing; }
 
     public void setBrickPassing() {
         brickPassing = true;

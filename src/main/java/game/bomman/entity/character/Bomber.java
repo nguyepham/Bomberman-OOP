@@ -28,6 +28,10 @@ public class Bomber extends Character {
     private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
     private int padding = 0;
+    private double respawnWaitTimer = 4.0;
+    private double detonatorTimer = 30.0;
+    private boolean waiting = true;
+    private boolean detonator = false;
     private boolean isMoving = false;
     private boolean insidePortal = false;
     private static final Image bomberWalking;
@@ -36,6 +40,8 @@ public class Bomber extends Character {
     private static final Image effectedStanding;
     private static final Image bomberDying;
     private static final Image bomberLevelUp;
+    private static final Image detonatorStanding;
+    private static final Image detonatorWalking;
     private int numOfLives;
     private int numOfBombs;
     private int flameLength;
@@ -59,9 +65,20 @@ public class Bomber extends Character {
             effectedWalking = loadImage(IMAGES_PATH + "/player/walking_tran.png");
             bomberDying = loadImage(IMAGES_PATH + "/player/die@11.png");
             bomberLevelUp = loadImage(IMAGES_PATH + "/player/white@4.png");
+            detonatorStanding = loadImage(IMAGES_PATH + "/player/detonatorStanding.png");
+            detonatorWalking = loadImage(IMAGES_PATH + "/player/detonatorWalking.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isWaiting() { return waiting; }
+
+    public boolean isDetonator() { return detonator; }
+
+    public void setDetonator() {
+        detonator = true;
+        detonatorTimer = 30.0;
     }
 
     public int getFlameLength() { return flameLength; }
@@ -85,17 +102,25 @@ public class Bomber extends Character {
             return;
         }
 
-        if (bombPassingTimer > 0) {
-            bombPassingTimer -= elapsedTime;
-        } else {
-            bombPassingTimer = 0;
-            bombPassing = false;
-        }
         if (brickPassingTimer > 0) {
             brickPassingTimer -= elapsedTime;
         } else {
             brickPassingTimer = 0;
             brickPassing = false;
+        }
+
+        if (respawnWaitTimer > 0) {
+            respawnWaitTimer -= elapsedTime;
+        } else {
+            respawnWaitTimer = 0;
+            waiting = false;
+        }
+
+        if (detonatorTimer > 0) {
+            detonatorTimer -= elapsedTime;
+        } else {
+            detonatorTimer = 0;
+            detonator = false;
         }
 
         Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
@@ -309,26 +334,38 @@ public class Bomber extends Character {
         }
 
         if (isMoving) {
-            if (bombPassing == true || brickPassing == true) {
+            if (brickPassing == true) {
                 gc.drawImage(effectedWalking,
                         (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
-            } else {
-                gc.drawImage(bomberWalking,
+                return;
+            }
+            if (detonator == true) {
+                gc.drawImage(detonatorWalking,
                         (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+                return;
             }
+            gc.drawImage(bomberWalking,
+                    (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
+                    hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
 
         } else {
-            if (bombPassing == true || brickPassing == true) {
+            if (brickPassing == true) {
                 gc.drawImage(effectedStanding,
                         WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
-            } else {
-                gc.drawImage(bomberStanding,
+                return;
+            }
+            if (detonator == true) {
+                gc.drawImage(detonatorStanding,
                         WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
+                return;
             }
+            gc.drawImage(bomberStanding,
+                    WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
+                    hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
         }
     }
 
@@ -354,7 +391,7 @@ public class Bomber extends Character {
     }
 
     @Override
-    protected void die() {
+    public void die() {
         super.die();
         isMoving = false;
         while (commandStack.isEmpty() == false) { commandStack.pop(); }
@@ -362,13 +399,12 @@ public class Bomber extends Character {
 
     private void respawn() {
         --numOfLives;
-        if (flameLength > 1) {
-            --flameLength;
-        }
         isAlive = true;
         dyingFrameIndex = 0;
-        bombPassing = false;
+        waiting = true;
+        respawnWaitTimer = 4.0;
         brickPassing = false;
+        detonator = false;
         resetPosition();
     }
 
@@ -398,13 +434,10 @@ public class Bomber extends Character {
         }
     }
 
-    @Override
-    public void layingBomb() {
-
+    private void layNewBomb() {
         if (numOfBombs == 0) {
             return;
         }
-
         Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
 
         Portal portal = InteractionHandler.getPortal();
@@ -427,6 +460,21 @@ public class Bomber extends Character {
                 thisCell.getLoadingPositionY()
         );
         InteractionHandler.addImmobileEntity(newBomb);
+    }
+
+    @Override
+    public void layingBomb() {
+
+        if (detonator == true) {
+            Bomb checkBomb = InteractionHandler.getBomb();
+            if (checkBomb != null) {
+                checkBomb.explode();
+            } else {
+                layNewBomb();
+            }
+            return;
+        }
+        layNewBomb();
     }
 
     public void retakeBomb() {

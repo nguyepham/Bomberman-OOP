@@ -47,16 +47,6 @@ public class Oneal extends Enemy {
     }
 
     @Override
-    public void interactWith(Entity other) {
-        super.interactWith(other);
-        if (other instanceof Bomber) {
-            if (((Bomber) other).isAlive()) {
-                die();
-            }
-        }
-    }
-
-    @Override
     public void update(double elapsedTime) {
         if (isAlive == false) {
             dyingTimer += elapsedTime;

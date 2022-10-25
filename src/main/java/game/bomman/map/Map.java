@@ -116,7 +116,8 @@ public class Map {
                             || bellowRawConfig == 'b'
                             || bellowRawConfig == 'l'
                             || bellowRawConfig == 'i'
-                            || bellowRawConfig == 'j') {
+                            || bellowRawConfig == 'j'
+                            || bellowRawConfig == 'd') {
                         gc.drawImage(
                                 thisCell.getSprite(),
                                 Entity.SIDE, 0, Entity.SIDE, Entity.SIDE,
@@ -151,7 +152,8 @@ public class Map {
                         || rawConfig == 'b'
                         || rawConfig == 'l'
                         || rawConfig == 'i'
-                        || rawConfig == 'j') {
+                        || rawConfig == 'j'
+                        || rawConfig == 'd') {
                     Brick newBrick = new Brick(this, posX, posY);
                     InteractionHandler.addImmobileEntity(newBrick);
 
@@ -184,6 +186,10 @@ public class Map {
                         case 'j' -> {
                             BrickPassingItem brickPassing = new BrickPassingItem(this, posX, posY);
                             InteractionHandler.addItem(brickPassing);
+                        }
+                        case 'd' -> {
+                            DetonatorItem detonator = new DetonatorItem(this, posX, posY);
+                            InteractionHandler.addItem(detonator);
                         }
                     }
                     continue;
