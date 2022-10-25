@@ -2,6 +2,7 @@ package game.bomman.entity.character;
 
 import game.bomman.Game;
 import game.bomman.component.InteractionHandler;
+import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.entity.character.enemy.Enemy;
@@ -394,6 +395,7 @@ public class Bomber extends Character {
     public void die() {
         super.die();
         isMoving = false;
+        SoundPlayer.playDyingSound();
         while (commandStack.isEmpty() == false) { commandStack.pop(); }
     }
 

@@ -1,7 +1,7 @@
 package game.bomman.gameState;
 
 import game.bomman.Game;
-import game.bomman.component.Component;
+import game.bomman.component.GamePlayComponent;
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.component.CharacterController;
@@ -47,8 +47,8 @@ public class PlayingState extends GameState {
                 Entity.SIDE * gameMap.getHeight()
         );
 
-        Component.resetBomberPosition();
-        Component.clearEnemyList();
+        GamePlayComponent.resetBomberPosition();
+        GamePlayComponent.clearEnemyList();
         InteractionHandler.clearEntityList();
         gameMap.readFromFile(Game.LEVEL_2_MAP);
         gameMap.setUp(mapCanvas);
@@ -79,7 +79,7 @@ public class PlayingState extends GameState {
         characterCanvas.requestFocus();
 
         /// Set up game components.
-        Component.init(characterCanvas, gameMap);
+        GamePlayComponent.init(characterCanvas, gameMap);
         CharacterController.activateInputReader();
         InteractionHandler.init(bombCanvas, itemCanvas);
         InteractionHandler.activateInputReader();

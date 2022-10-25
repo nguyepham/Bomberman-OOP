@@ -18,7 +18,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InteractionHandler extends Component {
+public class InteractionHandler extends GamePlayComponent {
     public static Command layingBomb = new LayingBomb();
     private static Canvas bombCanvas;
     private static Canvas itemCanvas;

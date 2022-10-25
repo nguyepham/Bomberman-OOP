@@ -1,5 +1,6 @@
 package game.bomman;
 
+import game.bomman.component.SoundPlayer;
 import game.bomman.gameState.PlayingState;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -45,6 +46,7 @@ public class Game {
         stage.setScene(playingState.getScene());
         stage.sizeToScene();
         setPosition(stage);
+        SoundPlayer.playStageStartSound();
         stage.show();
     }
 }

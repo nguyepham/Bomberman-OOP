@@ -1,6 +1,7 @@
 package game.bomman.entity.immobileEntity;
 
 import game.bomman.component.InteractionHandler;
+import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.map.Cell;
@@ -39,6 +40,8 @@ public class Bomb extends ImmobileEntity {
 
     @Override
     public void explode() {
+        SoundPlayer.playBombSound();
+
         int positionOnMapX = getPosOnMapX();
         int positionOnMapY = getPosOnMapY();
 
