@@ -2,6 +2,7 @@ module game.bomman {
     requires javafx.controls;
     requires javafx.fxml;
     requires org.jetbrains.annotations;
+    requires javafx.media;
 
 
     opens game.bomman to javafx.fxml;

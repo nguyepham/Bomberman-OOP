@@ -19,10 +19,6 @@ public abstract class Entity {
       hitBox = new HitBox(loadingPosX, loadingPosY, width, height);
    }
 
-   protected void removeFromCell(int i, int j) {
-      map.getCell(i, j).removeEntity(this);
-   }
-
    // create a load Image method to encapsulate
    // the functionality of loading images so that
    // we can change the particular implementation
@@ -54,14 +50,6 @@ public abstract class Entity {
 
    public int getPosOnMapY() {
       return (int) (hitBox.getCenterY() / SIDE);
-   }
-
-   public boolean gotInto(Entity other) {
-      return other.hitBox.contains(hitBox.getCenterX(), hitBox.getCenterY());
-   }
-
-   public boolean collidesWith(Entity other) {
-      return false;
    }
 
    public abstract void interactWith(Entity other);

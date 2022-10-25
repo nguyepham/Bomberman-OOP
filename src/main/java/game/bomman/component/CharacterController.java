@@ -10,7 +10,7 @@ import javafx.scene.input.KeyEvent;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
-public class CharacterController extends Component {
+public class CharacterController extends GamePlayComponent {
     public static Command moveLeft = new MoveLeft();
     public static Command moveDown = new MoveDown();
     public static Command moveRight = new MoveRight();

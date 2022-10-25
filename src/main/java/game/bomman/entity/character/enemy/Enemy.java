@@ -48,7 +48,7 @@ public abstract class Enemy extends Character {
 
             Bomber bomber = InteractionHandler.getBomber();
 
-            if (bomber.getBombPassing() == true || bomber.getBrickPassing() == true) {
+            if (bomber.isBrickPassing() || bomber.isWaiting()) {
                 break;
             }
             if (posX == bomber.getPosOnMapX() && posY == bomber.getPosOnMapY()) {
@@ -137,7 +137,7 @@ public abstract class Enemy extends Character {
     @Override
     public void interactWith(Entity other) {
         if (other instanceof Flame) {
-            this.die();
+            die();
         }
     }
 

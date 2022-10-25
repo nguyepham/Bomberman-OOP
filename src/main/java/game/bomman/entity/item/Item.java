@@ -1,6 +1,7 @@
 package game.bomman.entity.item;
 
 import game.bomman.component.InteractionHandler;
+import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
 import game.bomman.entity.immobileEntity.Flame;
 import javafx.scene.canvas.GraphicsContext;
@@ -45,6 +46,7 @@ public abstract class Item extends Entity {
     }
 
     protected void disappear() {
+        SoundPlayer.playBonusSound();
         InteractionHandler.removeItem(this);
     }
 

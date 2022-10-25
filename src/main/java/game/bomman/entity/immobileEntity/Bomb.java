@@ -1,6 +1,7 @@
 package game.bomman.entity.immobileEntity;
 
 import game.bomman.component.InteractionHandler;
+import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.map.Cell;
@@ -39,16 +40,17 @@ public class Bomb extends ImmobileEntity {
 
     @Override
     public void explode() {
+        SoundPlayer.playBombSound();
+
         int positionOnMapX = getPosOnMapX();
         int positionOnMapY = getPosOnMapY();
 
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
         int flameLength = bomber.getFlameLength();
         bomber.retakeBomb();
 
         InteractionHandler.removeImmobileEntity(this);
 
-        createFlame('c', thisCell);
+        createFlame('c', map.getCell(positionOnMapX, positionOnMapY));
 
         for (int i = 1; i <= flameLength; ++i) {
             Cell nextCell = map.getCell(positionOnMapX, positionOnMapY - i);
@@ -147,6 +149,10 @@ public class Bomb extends ImmobileEntity {
             if (frameIndex == N_SPRITES) {
                 frameIndex = 0;
             }
+        }
+
+        if (bomber.isDetonator()) {
+            return;
         }
         countDown(elapsedTime);
     }

@@ -4,6 +4,7 @@ import game.bomman.command.Command;
 import game.bomman.command.interactingCommand.*;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.enemy.Enemy;
+import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.ImmobileEntity;
 import game.bomman.entity.immobileEntity.Portal;
@@ -17,7 +18,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InteractionHandler extends Component {
+public class InteractionHandler extends GamePlayComponent {
     public static Command layingBomb = new LayingBomb();
     private static Canvas bombCanvas;
     private static Canvas itemCanvas;
@@ -106,6 +107,15 @@ public class InteractionHandler extends Component {
         for (Item item : itemList) {
             if (item.getPosOnMapX() == cell.getPosOnMapX() && item.getPosOnMapY() == cell.getPosOnMapY()) {
                 return item;
+            }
+        }
+        return null;
+    }
+
+    public static Bomb getBomb() {
+        for (ImmobileEntity entity : immobileEntityList) {
+            if (entity instanceof Bomb) {
+                return (Bomb) entity;
             }
         }
         return null;
