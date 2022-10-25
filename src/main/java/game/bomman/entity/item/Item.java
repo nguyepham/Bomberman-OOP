@@ -1,8 +1,8 @@
 package game.bomman.entity.item;
 
 import game.bomman.component.InteractionHandler;
+import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.Bomber;
 import game.bomman.entity.immobileEntity.Flame;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -13,7 +13,7 @@ public abstract class Item extends Entity {
     protected static GraphicsContext gc;
     protected static final Image explodingImage;
     protected static final int N_EXPLODING_SPRITE = 7;
-    protected static final double SPRITE_DURATION = 0.3f;;
+    protected static final double SPRITE_DURATION = 0.3f;
     protected static final double EXISTING_TIME = 15.0f;
     protected static final double EXPLODING_SPRITE_DURATION = 0.15f;
     protected static final int N_SPRITE = 2;
@@ -46,7 +46,7 @@ public abstract class Item extends Entity {
     }
 
     protected void disappear() {
-        removeFromCell(positionOnMapX, positionOnMapY);
+        SoundPlayer.playBonusSound();
         InteractionHandler.removeItem(this);
     }
 
@@ -56,11 +56,6 @@ public abstract class Item extends Entity {
 
     @Override
     public void interactWith(Entity other) {
-        if (other instanceof Bomber) {
-            ((Bomber) other).increaseNumOfBombs();
-            disappear();
-            return;
-        }
         if (other instanceof Flame) {
             isExploding = true;
         }
@@ -68,7 +63,7 @@ public abstract class Item extends Entity {
 
     @Override
     public void update(double elapsedTime) {
-        InteractionHandler.handleInteraction(this, map.getCell(positionOnMapX, positionOnMapY));
+        InteractionHandler.handleInteraction(this, map.getCell(getPosOnMapX(), getPosOnMapY()));
 
         if (isExploding == true) {
             explodingTimer += elapsedTime;

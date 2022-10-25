@@ -8,6 +8,8 @@ public class MoveRight extends Command {
 
     @Override
     public void executeOn(Character obj) {
-        obj.moveRight();
+        if (obj.isAlive()) {
+            obj.moveRight();
+        }
     }
 }

@@ -1,10 +1,6 @@
 package game.bomman.entity.character.enemy;
 
-import game.bomman.component.CharacterController;
 import game.bomman.component.InteractionHandler;
-import game.bomman.entity.Entity;
-import game.bomman.entity.immobileEntity.Flame;
-import game.bomman.entity.character.Bomber;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -15,7 +11,7 @@ import java.util.Random;
 public class Fire extends Enemy {
     private static final double MOVING_SPRITE_DURATION = 0.2f;
     private static final int N_MOVING_SPRITES = 4;
-    private static final double DYING_SPRITE_DURATION = 0.16f;
+    private static final double DYING_SPRITE_DURATION = 0.142f;
     private static final int N_DYING_SPRITES = 7;
     private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
@@ -31,14 +27,11 @@ public class Fire extends Enemy {
         }
     }
 
-    public Fire(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
-        movingCommand = CharacterController.moveDown;
+    public Fire(Map map, double loadingPosX, double loadingPosY) {
+        brickPassing = true;
+        steelPassing = true;
         timer = new Random().nextDouble(MOVING_SPRITE_DURATION);
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
-        newLoadingX = loadingPosX;
-        newLoadingY = loadingPosY;
-        speed = 120;
+        speed = 80;
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -48,16 +41,8 @@ public class Fire extends Enemy {
             dyingTimer = 0;
             ++dyingFrameIndex;
             if (dyingFrameIndex == N_DYING_SPRITES) {
-                this.removeFromCell(positionOnMapX, positionOnMapY);
                 InteractionHandler.removeEnemy(this);
             }
-        }
-    }
-
-    @Override
-    public void interactWith(Entity other) {
-        if (other instanceof Flame) {
-            this.die();
         }
     }
 
@@ -69,7 +54,7 @@ public class Fire extends Enemy {
             return;
         }
 
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
+        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
         /// Handle interaction between Bomber and other entities.
         InteractionHandler.handleInteraction(this, thisCell);
 
@@ -94,12 +79,9 @@ public class Fire extends Enemy {
             return;
         }
 
-        hitBox.setMinX(newLoadingX);
-        hitBox.setMinY(newLoadingY);
-
         gc.drawImage(fireWalking,
                 SIDE * frameIndex, 0, SIDE, SIDE,
-                newLoadingX, newLoadingY, SIDE, SIDE);
+                hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
     }
 
     @Override
@@ -108,20 +90,12 @@ public class Fire extends Enemy {
     }
 
     @Override
-    public boolean isBlocked() {
-        Cell thisCell = map.getCell(positionOnMapX, positionOnMapY);
-        return reachedMapEege();
-    }
-
-    @Override
     public void moveDown() {
         facingDirectionIndex = 2;
     }
 
     @Override
-    public void moveLeft() {
-        facingDirectionIndex = 3;
-    }
+    public void moveLeft() { facingDirectionIndex = 3; }
 
     @Override
     public void moveRight() {

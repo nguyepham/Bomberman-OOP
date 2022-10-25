@@ -7,18 +7,18 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class FlameItem extends Item {
+public class DetonatorItem extends Item {
     private static final Image image;
 
     static {
         try {
-            image = loadImage(IMAGES_PATH + "/item/bonus_flames@2.png");
+            image = loadImage(IMAGES_PATH + "/item/bonus_detonator@2.png");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public FlameItem(Map map, double loadingPosX, double loadingPosY) {
+    public DetonatorItem(Map map, double loadingPosX, double loadingPosY) {
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -30,7 +30,9 @@ public class FlameItem extends Item {
         }
         super.interactWith(other);
         if (other instanceof Bomber) {
-            ((Bomber) other).increaseFlameLength();
+            Bomber bomber = (Bomber) other;
+            if (bomber.isBrickPassing()) return;
+            bomber.setDetonator();
             disappear();
         }
     }

@@ -10,6 +10,8 @@ public class MoveUp extends Command {
 
     @Override
     public void executeOn(Character obj) {
-        obj.moveUp();
+        if (obj.isAlive()) {
+            obj.moveUp();
+        }
     }
 }

@@ -29,9 +29,7 @@ public class Portal extends ImmobileEntity {
         }
     }
 
-    public Portal(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
+    public Portal(Map map, double loadingPosX, double loadingPosY) {
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }

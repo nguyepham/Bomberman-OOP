@@ -1,9 +1,7 @@
 package game.bomman.entity.item;
 
-import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
-import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
@@ -20,11 +18,21 @@ public class SpeedItem extends Item {
         }
     }
 
-    public SpeedItem(Map map, double loadingPosX, double loadingPosY, int posOnMapX, int posOnMapY) {
+    public SpeedItem(Map map, double loadingPosX, double loadingPosY) {
         this.map = map;
-        positionOnMapX = posOnMapX;
-        positionOnMapY = posOnMapY;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
+    }
+
+    @Override
+    public void interactWith(Entity other) {
+        if (countdownStarted == false) {
+            return;
+        }
+        super.interactWith(other);
+        if (other instanceof Bomber) {
+            ((Bomber) other).increaseSpeed();
+            disappear();
+        }
     }
 
     @Override
