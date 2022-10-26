@@ -24,7 +24,7 @@ public class FirstTypeOfMovement extends Enemy {
 
     public FirstTypeOfMovement(
             Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
-            double movingSpriteDuration, double dyingSpriteDuration, int numOfLives,
+            double movingSpriteDuration, double dyingSpriteDuration,
             Map map, double loadingPosX, double loadingPosY
     ) {
         this.walkingImage = walkingImage;
@@ -33,7 +33,6 @@ public class FirstTypeOfMovement extends Enemy {
         this.nDyingSprites = nDyingSprites;
         this.movingSpriteDuration = movingSpriteDuration;
         this.dyingSpriteDuration = dyingSpriteDuration;
-        setNumOfLives(numOfLives);
 
         timer = new Random().nextDouble(movingSpriteDuration);
         speed = 100;
