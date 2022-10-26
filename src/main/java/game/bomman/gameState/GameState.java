@@ -7,4 +7,6 @@ public abstract class GameState {
     protected Scene scene;
 
     public GameState() {}
+
+    public Scene getScene() { return scene; }
 }

@@ -29,8 +29,6 @@ public class PlayingState extends GameState {
         itemCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
     }
 
-    public Scene getScene() { return scene; }
-
     public void loadNextLevelMap() throws FileNotFoundException {
         characterCanvas.getGraphicsContext2D().clearRect(
                 Entity.SIDE, Entity.SIDE,

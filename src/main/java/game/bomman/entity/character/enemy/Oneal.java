@@ -48,7 +48,7 @@ public class Oneal extends Enemy {
 
     @Override
     public void update(double elapsedTime) {
-        if (isAlive == false) {
+        if (!isAlive) {
             dyingTimer += elapsedTime;
             dying();
             return;
