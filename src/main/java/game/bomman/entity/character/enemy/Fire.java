@@ -73,7 +73,7 @@ public class Fire extends Enemy {
 
     @Override
     public void draw() {
-        if (isAlive == false) {
+        if (!isAlive) {
             gc.drawImage(fireDying,
                     SIDE * dyingFrameIndex, 0, SIDE, SIDE,
                     hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);

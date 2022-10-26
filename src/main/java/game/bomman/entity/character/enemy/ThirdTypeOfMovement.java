@@ -5,13 +5,13 @@ import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
+import java.io.FileNotFoundException;
 import java.util.Random;
 
 /**
- * Kiểu di chuyển này là
- * khi gặp vật cản thì đổi hướng đi ngẫu nhiên.
+ * Kiểu di chuyển này là đuổi theo Bomber.
  */
-public class FirstTypeOfMovement extends Enemy {
+public class ThirdTypeOfMovement extends Enemy {
     private final double movingSpriteDuration;
     private final int nMovingSprites;
     private final double dyingSpriteDuration;
@@ -20,9 +20,8 @@ public class FirstTypeOfMovement extends Enemy {
     private int dyingFrameIndex = 0;
     private final Image walkingImage;
     private final Image dyingImage;
-    private int numOfLives = 1;
 
-    public FirstTypeOfMovement(
+    public ThirdTypeOfMovement(
             Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
             double movingSpriteDuration, double dyingSpriteDuration,
             Map map, double loadingPosX, double loadingPosY
@@ -35,7 +34,7 @@ public class FirstTypeOfMovement extends Enemy {
         this.dyingSpriteDuration = dyingSpriteDuration;
 
         timer = new Random().nextDouble(movingSpriteDuration);
-        speed = 100;
+        speed = 120;
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
@@ -45,16 +44,13 @@ public class FirstTypeOfMovement extends Enemy {
             dyingTimer = 0;
             ++dyingFrameIndex;
             if (dyingFrameIndex == nDyingSprites) {
-                --numOfLives;
-                if (numOfLives == 0) {
-                    InteractionHandler.removeEnemy(this);
-                }
+                InteractionHandler.removeEnemy(this);
             }
         }
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime) throws FileNotFoundException {
         if (!isAlive) {
             dyingTimer += elapsedTime;
             dying();
@@ -134,11 +130,5 @@ public class FirstTypeOfMovement extends Enemy {
     @Override
     public void removeUp() {
 
-    }
-
-    public void setNumOfLives(int numOfLives) {
-        if (numOfLives > 0) {
-            this.numOfLives = numOfLives;
-        }
     }
 }
