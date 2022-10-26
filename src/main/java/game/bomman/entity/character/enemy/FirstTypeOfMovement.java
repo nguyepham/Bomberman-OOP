@@ -77,6 +77,10 @@ public class FirstTypeOfMovement extends Enemy {
             return;
         }
 
+        if (speed != 0) {
+            setSpeed = speed;
+        }
+
         timer += elapsedTime;
         if (timer >= movingSpriteDuration) {
             timer = 0;
