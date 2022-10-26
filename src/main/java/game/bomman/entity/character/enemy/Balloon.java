@@ -27,8 +27,9 @@ public class Balloon extends FirstTypeOfMovement {
 
     public Balloon(Map map, double loadingPosX, double loadingPosY) {
         super(balloonWalking, balloonDying, N_MOVING_SPRITES, N_DYING_SPRITES,
-                MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION, 1,
+                MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
                 map, loadingPosX, loadingPosY);
         speed = 100;
+        setNumOfLives(1);
     }
 }

@@ -27,8 +27,9 @@ public class Ghost extends FirstTypeOfMovement {
 
     public Ghost(Map map, double loadingPosX, double loadingPosY) {
         super(ghostWalking, ghostDying, N_MOVING_SPRITES, N_DYING_SPRITES,
-                MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION, 2,
+                MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
                 map, loadingPosX, loadingPosY);
         speed = 150;
+        setNumOfLives(2);
     }
 }
