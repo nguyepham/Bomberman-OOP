@@ -1,5 +1,8 @@
 package game.bomman.entity.character.enemy;
 
+import game.bomman.component.InteractionHandler;
+import game.bomman.entity.character.Bomber;
+import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
@@ -15,7 +18,7 @@ public class Bear extends ThirdTypeOfMovement {
     private static final int N_DYING_SPRITES = 5;
     private static final Image bearWalking;
     private static final Image bearDying;
-    private static final double MAX_SPEED = 300;
+    private static final double MAX_SPEED = 200;
     private static final double MIN_SPEED = 100;
     private final double MAX_DISTANCE;
 
@@ -37,8 +40,10 @@ public class Bear extends ThirdTypeOfMovement {
 
     @Override
     public void update(double elapsedTime) throws FileNotFoundException {
+        Bomber bomber = InteractionHandler.getBomber();
         // khoảng cách đến Bomber tính theo Cell
-        int distance = traces.size();
+        int distance = Math.abs(bomber.getPosOnMapX() - getPosOnMapX())
+                + Math.abs(bomber.getPosOnMapY() - getPosOnMapY()) - 2;
         // tốc độ luôn trong [MIN_SPEED, MAX_SPEED]
         speed = MIN_SPEED + (MAX_DISTANCE - distance) / MAX_DISTANCE * (MAX_SPEED - MIN_SPEED);
         super.update(elapsedTime);

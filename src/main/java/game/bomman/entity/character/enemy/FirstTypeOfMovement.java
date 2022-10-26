@@ -1,6 +1,8 @@
 package game.bomman.entity.character.enemy;
 
 import game.bomman.component.InteractionHandler;
+import game.bomman.entity.Entity;
+import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -21,6 +23,9 @@ public class FirstTypeOfMovement extends Enemy {
     private final Image walkingImage;
     private final Image dyingImage;
     private int numOfLives = 1;
+    // The flame that hits this enemy
+    private Flame hitFlame = null;
+    private double setSpeed = 100;
 
     public FirstTypeOfMovement(
             Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
@@ -45,25 +50,32 @@ public class FirstTypeOfMovement extends Enemy {
             dyingTimer = 0;
             ++dyingFrameIndex;
             if (dyingFrameIndex == nDyingSprites) {
-                --numOfLives;
-                if (numOfLives == 0) {
-                    InteractionHandler.removeEnemy(this);
-                }
+                InteractionHandler.removeEnemy(this);
             }
         }
     }
 
     @Override
     public void update(double elapsedTime) {
+        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
+        /// Handle interaction between Bomber and other entities.
+        InteractionHandler.handleInteraction(this, thisCell);
+
+        if (hitFlame != null) {
+            if (hitFlame.isDisappeared()) {
+                hitFlame = null;
+                --numOfLives;
+                speed = setSpeed;
+            } else {
+                speed = 0;
+            }
+        }
+
         if (!isAlive) {
             dyingTimer += elapsedTime;
             dying();
             return;
         }
-
-        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
-        /// Handle interaction between Bomber and other entities.
-        InteractionHandler.handleInteraction(this, thisCell);
 
         timer += elapsedTime;
         if (timer >= movingSpriteDuration) {
@@ -139,6 +151,19 @@ public class FirstTypeOfMovement extends Enemy {
     public void setNumOfLives(int numOfLives) {
         if (numOfLives > 0) {
             this.numOfLives = numOfLives;
+        }
+    }
+
+    @Override
+    public void interactWith(Entity other) {
+        if (other instanceof Flame flame) {
+            if (numOfLives <= 1) {
+                hitFlame = null;
+                die();
+            }
+            else {
+                hitFlame = flame;
+            }
         }
     }
 }
