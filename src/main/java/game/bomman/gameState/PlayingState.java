@@ -103,8 +103,8 @@ public class PlayingState extends GameState {
             }
 
             private void update(double elapsedTime) throws FileNotFoundException {
-                CharacterController.update(elapsedTime);
                 InteractionHandler.update(elapsedTime);
+                CharacterController.update(elapsedTime);
             }
 
             private void draw() {

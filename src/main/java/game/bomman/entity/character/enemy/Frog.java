@@ -17,7 +17,7 @@ public class Frog extends FirstTypeOfMovement {
     private static final Image frogWalking;
     private static final Image frogDying;
     private final Random random = new Random();
-    private static final int MAX_SPEED = 500;
+    private static final int MAX_SPEED = 200;
 
     static {
         try {
