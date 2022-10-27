@@ -13,8 +13,6 @@ public class Fire extends Enemy {
     private static final int N_MOVING_SPRITES = 4;
     private static final double DYING_SPRITE_DURATION = 0.142f;
     private static final int N_DYING_SPRITES = 7;
-    private double dyingTimer = 0;
-    private int dyingFrameIndex = 0;
     private static final Image fireWalking;
     private static final Image fireDying;
 

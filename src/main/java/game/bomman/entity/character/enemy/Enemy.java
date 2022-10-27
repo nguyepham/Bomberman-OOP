@@ -15,6 +15,9 @@ public abstract class Enemy extends Character {
     public static final double GO_AHEAD_TIME = 3f;
     protected double goAheadTimer = 0;
     protected ArrayList<Step> traces = new ArrayList<>();
+    protected double dyingTimer = 0;
+    protected int dyingFrameIndex = 0;
+
 
     public void resetGoAheadTimer() { goAheadTimer = 0; }
 

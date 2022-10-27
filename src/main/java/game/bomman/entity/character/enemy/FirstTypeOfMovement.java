@@ -18,8 +18,6 @@ public class FirstTypeOfMovement extends Enemy {
     private final int nMovingSprites;
     private final double dyingSpriteDuration;
     private final int nDyingSprites;
-    private double dyingTimer = 0;
-    private int dyingFrameIndex = 0;
     private final Image walkingImage;
     private final Image dyingImage;
     private int numOfLives = 1;
