@@ -69,7 +69,7 @@ public class CharacterController extends GamePlayComponent {
 
     private static void runAI(double elapsedTime) {
         for (Enemy enemy : enemyList) {
-            if (enemy instanceof Balloon) {
+            if (enemy instanceof FirstTypeOfMovement) {
                 if (enemy.isBlocked()) {
                     changeMovingDirection(enemy);
                 }
@@ -85,7 +85,7 @@ public class CharacterController extends GamePlayComponent {
                 }
                 continue;
             }
-            if (enemy instanceof Oneal) {
+            if (enemy instanceof ThirdTypeOfMovement) {
                 int newDirection = enemy.findBomber();
                 if (newDirection != -1) {
                     if (enemy.fitInThatCell()) {

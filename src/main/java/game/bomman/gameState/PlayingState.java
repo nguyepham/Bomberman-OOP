@@ -29,8 +29,6 @@ public class PlayingState extends GameState {
         itemCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
     }
 
-    public Scene getScene() { return scene; }
-
     public void loadNextLevelMap() throws FileNotFoundException {
         characterCanvas.getGraphicsContext2D().clearRect(
                 Entity.SIDE, Entity.SIDE,
@@ -105,8 +103,8 @@ public class PlayingState extends GameState {
             }
 
             private void update(double elapsedTime) throws FileNotFoundException {
-                CharacterController.update(elapsedTime);
                 InteractionHandler.update(elapsedTime);
+                CharacterController.update(elapsedTime);
             }
 
             private void draw() {

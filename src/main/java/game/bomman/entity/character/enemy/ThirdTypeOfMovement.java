@@ -8,46 +8,49 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
-public class Fire extends Enemy {
-    private static final double MOVING_SPRITE_DURATION = 0.2f;
-    private static final int N_MOVING_SPRITES = 4;
-    private static final double DYING_SPRITE_DURATION = 0.142f;
-    private static final int N_DYING_SPRITES = 7;
+/**
+ * Kiểu di chuyển này là đuổi theo Bomber.
+ */
+public class ThirdTypeOfMovement extends Enemy {
+    private final double movingSpriteDuration;
+    private final int nMovingSprites;
+    private final double dyingSpriteDuration;
+    private final int nDyingSprites;
     private double dyingTimer = 0;
     private int dyingFrameIndex = 0;
-    private static final Image fireWalking;
-    private static final Image fireDying;
+    private final Image walkingImage;
+    private final Image dyingImage;
 
-    static {
-        try {
-            fireWalking = loadImage(IMAGES_PATH + "/enemy/fire@4.png") ;
-            fireDying = loadImage(IMAGES_PATH + "/enemy/fire_die@7.png");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public ThirdTypeOfMovement(
+            Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
+            double movingSpriteDuration, double dyingSpriteDuration,
+            Map map, double loadingPosX, double loadingPosY
+    ) {
+        this.walkingImage = walkingImage;
+        this.dyingImage = dyingImage;
+        this.nMovingSprites = nMovingSprites;
+        this.nDyingSprites = nDyingSprites;
+        this.movingSpriteDuration = movingSpriteDuration;
+        this.dyingSpriteDuration = dyingSpriteDuration;
 
-    public Fire(Map map, double loadingPosX, double loadingPosY) {
-        brickPassing = true;
-        steelPassing = true;
-        timer = new Random().nextDouble(MOVING_SPRITE_DURATION);
-        speed = 80;
+        timer = new Random().nextDouble(movingSpriteDuration);
+        speed = 120;
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
     }
 
     private void dying() {
-        if (dyingTimer >= DYING_SPRITE_DURATION) {
+        if (dyingTimer >= dyingSpriteDuration) {
             dyingTimer = 0;
             ++dyingFrameIndex;
-            if (dyingFrameIndex == N_DYING_SPRITES) {
+            if (dyingFrameIndex == nDyingSprites) {
                 InteractionHandler.removeEnemy(this);
             }
         }
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime) throws FileNotFoundException {
         if (!isAlive) {
             dyingTimer += elapsedTime;
             dying();
@@ -59,28 +62,27 @@ public class Fire extends Enemy {
         InteractionHandler.handleInteraction(this, thisCell);
 
         timer += elapsedTime;
-        if (timer >= MOVING_SPRITE_DURATION) {
+        if (timer >= movingSpriteDuration) {
             timer = 0;
             ++frameIndex;
-            if (frameIndex == N_MOVING_SPRITES) {
+            if (frameIndex == nMovingSprites) {
                 frameIndex = 0;
             }
         }
 
         updatePosition(elapsedTime);
-
     }
 
     @Override
     public void draw() {
         if (!isAlive) {
-            gc.drawImage(fireDying,
+            gc.drawImage(dyingImage,
                     SIDE * dyingFrameIndex, 0, SIDE, SIDE,
                     hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
             return;
         }
 
-        gc.drawImage(fireWalking,
+        gc.drawImage(walkingImage,
                 SIDE * frameIndex, 0, SIDE, SIDE,
                 hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
     }
@@ -96,7 +98,9 @@ public class Fire extends Enemy {
     }
 
     @Override
-    public void moveLeft() { facingDirectionIndex = 3; }
+    public void moveLeft() {
+        facingDirectionIndex = 3;
+    }
 
     @Override
     public void moveRight() {

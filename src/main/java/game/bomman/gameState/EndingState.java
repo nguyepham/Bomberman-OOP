@@ -32,6 +32,4 @@ public class EndingState extends GameState {
             MainApplication.stage.close();
         });
     }
-
-    public Scene getScene() { return scene; }
 }

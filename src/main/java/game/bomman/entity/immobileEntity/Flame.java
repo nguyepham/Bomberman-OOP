@@ -21,6 +21,7 @@ public class Flame extends ImmobileEntity {
     private double otherTimer = 0;
     private int otherFrameIndex = 0;
     private char label;
+    private boolean disappeared = false;
 
     static {
         try {
@@ -48,6 +49,7 @@ public class Flame extends ImmobileEntity {
     }
 
     private void disappear() {
+        disappeared = true;
         InteractionHandler.removeImmobileEntity(this);
     }
 
@@ -114,5 +116,9 @@ public class Flame extends ImmobileEntity {
                         hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
             }
         }
+    }
+
+    public boolean isDisappeared() {
+        return disappeared;
     }
 }

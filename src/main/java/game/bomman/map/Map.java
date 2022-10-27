@@ -2,9 +2,7 @@ package game.bomman.map;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.enemy.Balloon;
-import game.bomman.entity.character.enemy.Fire;
-import game.bomman.entity.character.enemy.Oneal;
+import game.bomman.entity.character.enemy.*;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.entity.item.*;
@@ -207,6 +205,18 @@ public class Map {
                 if (rawConfig == '2') {
                     Oneal oneal = new Oneal(this, posX, posY);
                     InteractionHandler.addEnemy(oneal);
+                }
+                else if (rawConfig == '4') {
+                    Ghost ghost = new Ghost(this, posX, posY);
+                    InteractionHandler.addEnemy(ghost);
+                }
+                else if (rawConfig == '5') {
+                    Frog frog = new Frog(this, posX, posY);
+                    InteractionHandler.addEnemy(frog);
+                }
+                else if (rawConfig == '6') {
+                    Bear bear = new Bear(this, posX, posY);
+                    InteractionHandler.addEnemy(bear);
                 }
             }
         }
