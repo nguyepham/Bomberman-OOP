@@ -4,7 +4,6 @@ import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Character;
-import game.bomman.entity.immobileEntity.Bomb;
 import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.map.Cell;
 
@@ -14,6 +13,8 @@ import java.util.LinkedList;
 public abstract class Enemy extends Character {
     public static final double GO_AHEAD_TIME = 3f;
     protected double goAheadTimer = 0;
+    // tất cả các cell có thể đến được từ chỗ Enemy đang đứng
+    // cùng hướng đi để đến nó
     protected ArrayList<Step> traces = new ArrayList<>();
     protected double dyingTimer = 0;
     protected int dyingFrameIndex = 0;
@@ -31,7 +32,7 @@ public abstract class Enemy extends Character {
 
     public void setFacingDirectionIndex(int value) { facingDirectionIndex = value; }
 
-    public int findBomber() {
+    public int findBomberUsingBFS() {
         traces.clear();
         int direction = -1;
 
@@ -40,7 +41,7 @@ public abstract class Enemy extends Character {
         queue.add(found);
         traces.add(found);
 
-        while (queue.isEmpty() == false) {
+        while (!queue.isEmpty()) {
             Step step = queue.pop();
             int posX = step.getPosX();
             int posY = step.getPosY();
@@ -60,7 +61,7 @@ public abstract class Enemy extends Character {
             }
 
             Cell upCell = map.getCell(posX, posY - 1);
-            if (upCell.isBlocking(this) == false) {
+            if (!upCell.isBlocking(this)) {
                 if (getStepTrace(posX, posY - 1) == null) {
                     Step newStep = new Step(posX, posY - 1, 0);
                     queue.add(newStep);
@@ -68,7 +69,7 @@ public abstract class Enemy extends Character {
                 }
             }
             Cell rightCell = map.getCell(posX + 1, posY);
-            if (rightCell.isBlocking(this) == false) {
+            if (!rightCell.isBlocking(this)) {
                 if (getStepTrace(posX + 1, posY) == null) {
                     Step newStep = new Step(posX + 1, posY, 1);
                     queue.add(newStep);
@@ -76,7 +77,7 @@ public abstract class Enemy extends Character {
                 }
             }
             Cell downCell = map.getCell(posX, posY + 1);
-            if (downCell.isBlocking(this) == false) {
+            if (!downCell.isBlocking(this)) {
                 if (getStepTrace(posX, posY + 1) == null) {
                     Step newStep = new Step(posX, posY + 1, 2);
                     queue.add(newStep);
@@ -84,7 +85,7 @@ public abstract class Enemy extends Character {
                 }
             }
             Cell leftCell = map.getCell(posX - 1, posY);
-            if (leftCell.isBlocking(this) == false) {
+            if (!leftCell.isBlocking(this)) {
                 if (getStepTrace(posX - 1, posY) == null) {
                     Step newStep = new Step(posX - 1, posY, 3);
                     queue.add(newStep);
@@ -100,27 +101,32 @@ public abstract class Enemy extends Character {
                     case 0 -> {
                         found = getStepTrace(found.getPosX(), found.getPosY() + 1);
                         if (found == null) {
-                            System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
+                            // nếu found đã null thì không có found.getPosX(), found.getPosY()
+                            // vì vậy ở đây nên throw
+                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
                         }
                     }
                     case 1 -> {
                         found = getStepTrace(found.getPosX() - 1, found.getPosY());
-                        if (found == null) {
-                            System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        }
+                        //if (found == null) {
+                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
+                        //}
                     }
                     case 2 -> {
                         found = getStepTrace(found.getPosX(), found.getPosY() - 1);
-                        if (found == null) {
-                            System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        }
+                        //if (found == null) {
+                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
+                        //}
                     }
                     case 3 -> {
                         found = getStepTrace(found.getPosX() + 1, found.getPosY());
-                        if (found == null) {
-                            System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        }
+                        //if (found == null) {
+                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
+                        //}
                     }
+                }
+                if (found == null) {
+                    throw new RuntimeException("found is null while tracing the path to get to Bomber.");
                 }
             }
         }
@@ -128,6 +134,94 @@ public abstract class Enemy extends Character {
         return direction;
     }
 
+    public int findBomberUsingDFS() {
+        traces.clear();
+        // next direction for this Enemy to move in
+        int direction = -1;
+
+        Step currentPosition = new Step(getPosOnMapX(), getPosOnMapY(), -1);
+        Step found = dfs(currentPosition);
+
+        if (found != null) {
+            while (found.getTrace() != -1) {
+                direction = found.getTrace();
+                switch (direction) {
+                    case 0 -> found = getStepTrace(found.getPosX(), found.getPosY() + 1);
+                    case 1 -> found = getStepTrace(found.getPosX() - 1, found.getPosY());
+                    case 2 -> found = getStepTrace(found.getPosX(), found.getPosY() - 1);
+                    case 3 -> found = getStepTrace(found.getPosX() + 1, found.getPosY());
+                }
+                if (found == null) {
+                    throw new RuntimeException("found is null while tracing the path to get to Bomber.");
+                }
+            }
+            System.out.println("direction: " + direction);
+        }
+
+        return direction;
+    }
+
+    /**
+     * Finds a way to get to Bomber.
+     *
+     * @param step the current Step in the finding process.
+     * @return the Step that leads to Bomber.
+     *         null if this Enemy cannot come to Bomber.
+     */
+    private Step dfs(Step step) {
+        traces.add(step);
+        int posX = step.getPosX();
+        int posY = step.getPosY();
+
+        Bomber bomber = InteractionHandler.getBomber();
+        if (bomber.isBrickPassing() || bomber.isWaiting()) {
+            return null;
+        }
+        if (posX == bomber.getPosOnMapX() && posY == bomber.getPosOnMapY()) {
+            return step;
+        }
+
+        Cell upCell = map.getCell(posX, posY - 1);
+        if (!upCell.isBlocking(this)) {
+            if (getStepTrace(posX, posY - 1) == null) {
+                Step newStep = new Step(posX, posY - 1, 0);
+                Step found = dfs(newStep);
+                if (found != null) return found;
+            }
+        }
+        Cell rightCell = map.getCell(posX + 1, posY);
+        if (!rightCell.isBlocking(this)) {
+            if (getStepTrace(posX + 1, posY) == null) {
+                Step newStep = new Step(posX + 1, posY, 1);
+                Step found = dfs(newStep);
+                if (found != null) return found;
+            }
+        }
+        Cell downCell = map.getCell(posX, posY + 1);
+        if (!downCell.isBlocking(this)) {
+            if (getStepTrace(posX, posY + 1) == null) {
+                Step newStep = new Step(posX, posY + 1, 2);
+                Step found = dfs(newStep);
+                if (found != null) return found;
+            }
+        }
+        Cell leftCell = map.getCell(posX - 1, posY);
+        if (!leftCell.isBlocking(this)) {
+            if (getStepTrace(posX - 1, posY) == null) {
+                Step newStep = new Step(posX - 1, posY, 3);
+                Step found = dfs(newStep);
+                if (found != null) return found;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * return the first Step in traces[] whose
+     * target cell is at (posX, posY),
+     * or null if there's no such Step.
+     */
     protected Step getStepTrace(int posX, int posY) {
         for (Step step : traces) {
             if (step.getPosX() == posX && step.getPosY() == posY) {

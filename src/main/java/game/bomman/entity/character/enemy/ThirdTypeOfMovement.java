@@ -129,4 +129,8 @@ public class ThirdTypeOfMovement extends Enemy {
     public void removeUp() {
 
     }
+
+    public int findBomber() {
+        return findBomberUsingBFS();
+    }
 }

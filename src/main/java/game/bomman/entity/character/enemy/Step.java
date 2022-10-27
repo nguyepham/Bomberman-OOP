@@ -2,8 +2,10 @@ package game.bomman.entity.character.enemy;
 
 
 public class Step {
+    // target cell position
     private int posX;
     private int posY;
+    // the direction led to that cell
     private int trace;
 
     public Step(int posX, int posY, int trace) {

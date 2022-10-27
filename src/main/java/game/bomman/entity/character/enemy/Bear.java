@@ -48,4 +48,9 @@ public class Bear extends ThirdTypeOfMovement {
         speed = MIN_SPEED + (MAX_DISTANCE - distance) / MAX_DISTANCE * (MAX_SPEED - MIN_SPEED);
         super.update(elapsedTime);
     }
+
+    @Override
+    public int findBomber() {
+        return findBomberUsingDFS();
+    }
 }

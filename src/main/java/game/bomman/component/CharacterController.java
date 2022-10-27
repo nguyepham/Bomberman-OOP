@@ -86,7 +86,7 @@ public class CharacterController extends GamePlayComponent {
                 continue;
             }
             if (enemy instanceof ThirdTypeOfMovement) {
-                int newDirection = enemy.findBomber();
+                int newDirection = ((ThirdTypeOfMovement) enemy).findBomber();
                 if (newDirection != -1) {
                     if (enemy.fitInThatCell()) {
                         enemy.setFacingDirectionIndex(newDirection);
