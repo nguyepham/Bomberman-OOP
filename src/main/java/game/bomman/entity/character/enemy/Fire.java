@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
-public class Fire extends Enemy {
+public class Fire extends SecondTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.2f;
     private static final int N_MOVING_SPRITES = 4;
     private static final double DYING_SPRITE_DURATION = 0.142f;
@@ -26,84 +26,17 @@ public class Fire extends Enemy {
     }
 
     public Fire(Map map, double loadingPosX, double loadingPosY) {
+        super(fireWalking, fireDying, N_MOVING_SPRITES, N_DYING_SPRITES,
+                MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
+                map, loadingPosX, loadingPosY);
         brickPassing = true;
         steelPassing = true;
-        timer = new Random().nextDouble(MOVING_SPRITE_DURATION);
         speed = 80;
-        this.map = map;
-        initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
-    }
-
-    private void dying() {
-        if (dyingTimer >= DYING_SPRITE_DURATION) {
-            dyingTimer = 0;
-            ++dyingFrameIndex;
-            if (dyingFrameIndex == N_DYING_SPRITES) {
-                InteractionHandler.removeEnemy(this);
-            }
-        }
-    }
-
-    @Override
-    public void update(double elapsedTime) {
-        if (!isAlive) {
-            dyingTimer += elapsedTime;
-            dying();
-            return;
-        }
-
-        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
-        /// Handle interaction between Bomber and other entities.
-        InteractionHandler.handleInteraction(this, thisCell);
-
-        timer += elapsedTime;
-        if (timer >= MOVING_SPRITE_DURATION) {
-            timer = 0;
-            ++frameIndex;
-            if (frameIndex == N_MOVING_SPRITES) {
-                frameIndex = 0;
-            }
-        }
-
-        updatePosition(elapsedTime);
-
-    }
-
-    @Override
-    public void draw() {
-        if (!isAlive) {
-            gc.drawImage(fireDying,
-                    SIDE * dyingFrameIndex, 0, SIDE, SIDE,
-                    hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
-            return;
-        }
-
-        gc.drawImage(fireWalking,
-                SIDE * frameIndex, 0, SIDE, SIDE,
-                hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
     }
 
     @Override
     public void layingBomb() {
 
-    }
-
-    @Override
-    public void moveDown() {
-        facingDirectionIndex = 2;
-    }
-
-    @Override
-    public void moveLeft() { facingDirectionIndex = 3; }
-
-    @Override
-    public void moveRight() {
-        facingDirectionIndex = 1;
-    }
-
-    @Override
-    public void moveUp() {
-        facingDirectionIndex = 0;
     }
 
     @Override

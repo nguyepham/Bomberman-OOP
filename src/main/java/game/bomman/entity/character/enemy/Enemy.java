@@ -4,11 +4,18 @@ import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Character;
+import game.bomman.entity.character.Direction;
 import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.map.Cell;
+import game.bomman.map.Map;
+import javafx.scene.image.Image;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
+
+import static game.bomman.entity.character.Direction.*;
 
 public abstract class Enemy extends Character {
     public static final double GO_AHEAD_TIME = 3f;
@@ -18,6 +25,30 @@ public abstract class Enemy extends Character {
     protected ArrayList<Step> traces = new ArrayList<>();
     protected double dyingTimer = 0;
     protected int dyingFrameIndex = 0;
+    protected final double movingSpriteDuration;
+    protected final int nMovingSprites;
+    private final double dyingSpriteDuration;
+    private final int nDyingSprites;
+    private final Image walkingImage;
+    private final Image dyingImage;
+
+    public Enemy(
+            Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
+            double movingSpriteDuration, double dyingSpriteDuration,
+            Map map, double loadingPosX, double loadingPosY
+    ) {
+        this.walkingImage = walkingImage;
+        this.dyingImage = dyingImage;
+        this.nMovingSprites = nMovingSprites;
+        this.nDyingSprites = nDyingSprites;
+        this.movingSpriteDuration = movingSpriteDuration;
+        this.dyingSpriteDuration = dyingSpriteDuration;
+
+        timer = new Random().nextDouble(movingSpriteDuration);
+        this.map = map;
+        initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
+        speed = 100;
+    }
 
 
     public void resetGoAheadTimer() { goAheadTimer = 0; }
@@ -32,12 +63,12 @@ public abstract class Enemy extends Character {
 
     public void setFacingDirectionIndex(int value) { facingDirectionIndex = value; }
 
-    public int findBomberUsingBFS() {
+    public Direction findBomberUsingBFS() {
         traces.clear();
-        int direction = -1;
+        Direction direction;
 
         LinkedList<Step> queue = new LinkedList<>();
-        Step found = new Step(getPosOnMapX(), getPosOnMapY(), -1);
+        Step found = new Step(getPosOnMapX(), getPosOnMapY(), STAY);
         queue.add(found);
         traces.add(found);
 
@@ -45,10 +76,6 @@ public abstract class Enemy extends Character {
             Step step = queue.pop();
             int posX = step.getPosX();
             int posY = step.getPosY();
-
-            if (posX == 2 && posY == 1) {
-                direction += 0;
-            }
 
             Bomber bomber = InteractionHandler.getBomber();
 
@@ -63,7 +90,7 @@ public abstract class Enemy extends Character {
             Cell upCell = map.getCell(posX, posY - 1);
             if (!upCell.isBlocking(this)) {
                 if (getStepTrace(posX, posY - 1) == null) {
-                    Step newStep = new Step(posX, posY - 1, 0);
+                    Step newStep = new Step(posX, posY - 1, UP);
                     queue.add(newStep);
                     traces.add(newStep);
                 }
@@ -71,7 +98,7 @@ public abstract class Enemy extends Character {
             Cell rightCell = map.getCell(posX + 1, posY);
             if (!rightCell.isBlocking(this)) {
                 if (getStepTrace(posX + 1, posY) == null) {
-                    Step newStep = new Step(posX + 1, posY, 1);
+                    Step newStep = new Step(posX + 1, posY, RIGHT);
                     queue.add(newStep);
                     traces.add(newStep);
                 }
@@ -79,7 +106,7 @@ public abstract class Enemy extends Character {
             Cell downCell = map.getCell(posX, posY + 1);
             if (!downCell.isBlocking(this)) {
                 if (getStepTrace(posX, posY + 1) == null) {
-                    Step newStep = new Step(posX, posY + 1, 2);
+                    Step newStep = new Step(posX, posY + 1, DOWN);
                     queue.add(newStep);
                     traces.add(newStep);
                 }
@@ -87,74 +114,51 @@ public abstract class Enemy extends Character {
             Cell leftCell = map.getCell(posX - 1, posY);
             if (!leftCell.isBlocking(this)) {
                 if (getStepTrace(posX - 1, posY) == null) {
-                    Step newStep = new Step(posX - 1, posY, 3);
+                    Step newStep = new Step(posX - 1, posY, LEFT);
                     queue.add(newStep);
                     traces.add(newStep);
                 }
             }
         }
 
-        if (found.getTrace() != -1) {
-            while (found.getTrace() != -1) {
-                direction = found.getTrace();
-                switch (direction) {
-                    case 0 -> {
-                        found = getStepTrace(found.getPosX(), found.getPosY() + 1);
-                        if (found == null) {
-                            // nếu found đã null thì không có found.getPosX(), found.getPosY()
-                            // vì vậy ở đây nên throw
-                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        }
-                    }
-                    case 1 -> {
-                        found = getStepTrace(found.getPosX() - 1, found.getPosY());
-                        //if (found == null) {
-                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        //}
-                    }
-                    case 2 -> {
-                        found = getStepTrace(found.getPosX(), found.getPosY() - 1);
-                        //if (found == null) {
-                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        //}
-                    }
-                    case 3 -> {
-                        found = getStepTrace(found.getPosX() + 1, found.getPosY());
-                        //if (found == null) {
-                            //System.out.println("Null at: " + found.getPosX() + " " + found.getPosY());
-                        //}
-                    }
-                }
-                if (found == null) {
-                    throw new RuntimeException("found is null while tracing the path to get to Bomber.");
-                }
-            }
-        }
+        direction = getDirection(found);
 
         return direction;
     }
 
-    public int findBomberUsingDFS() {
+    /**
+     * Traces down the path to Bomber and return the next direction.
+     *
+     * @param found the final Step to get to Bomber.
+     * @return the next direction for this Enemy to move in.
+     */
+    private Direction getDirection(Step found) {
+        Direction direction = STAY;
+        while (found.getTrace() != STAY) {
+            direction = found.getTrace();
+            switch (direction) {
+                case UP -> found = getStepTrace(found.getPosX(), found.getPosY() + 1);
+                case RIGHT -> found = getStepTrace(found.getPosX() - 1, found.getPosY());
+                case DOWN -> found = getStepTrace(found.getPosX(), found.getPosY() - 1);
+                case LEFT -> found = getStepTrace(found.getPosX() + 1, found.getPosY());
+            }
+            if (found == null) {
+                throw new RuntimeException("found is null while tracing the path to get to Bomber.");
+            }
+        }
+        return direction;
+    }
+
+    public Direction findBomberUsingDFS() {
         traces.clear();
         // next direction for this Enemy to move in
-        int direction = -1;
+        Direction direction = STAY;
 
-        Step currentPosition = new Step(getPosOnMapX(), getPosOnMapY(), -1);
+        Step currentPosition = new Step(getPosOnMapX(), getPosOnMapY(), STAY);
         Step found = dfs(currentPosition);
 
         if (found != null) {
-            while (found.getTrace() != -1) {
-                direction = found.getTrace();
-                switch (direction) {
-                    case 0 -> found = getStepTrace(found.getPosX(), found.getPosY() + 1);
-                    case 1 -> found = getStepTrace(found.getPosX() - 1, found.getPosY());
-                    case 2 -> found = getStepTrace(found.getPosX(), found.getPosY() - 1);
-                    case 3 -> found = getStepTrace(found.getPosX() + 1, found.getPosY());
-                }
-                if (found == null) {
-                    throw new RuntimeException("found is null while tracing the path to get to Bomber.");
-                }
-            }
+            direction = getDirection(found);
             System.out.println("direction: " + direction);
         }
 
@@ -184,7 +188,7 @@ public abstract class Enemy extends Character {
         Cell upCell = map.getCell(posX, posY - 1);
         if (!upCell.isBlocking(this)) {
             if (getStepTrace(posX, posY - 1) == null) {
-                Step newStep = new Step(posX, posY - 1, 0);
+                Step newStep = new Step(posX, posY - 1, UP);
                 Step found = dfs(newStep);
                 if (found != null) return found;
             }
@@ -192,7 +196,7 @@ public abstract class Enemy extends Character {
         Cell rightCell = map.getCell(posX + 1, posY);
         if (!rightCell.isBlocking(this)) {
             if (getStepTrace(posX + 1, posY) == null) {
-                Step newStep = new Step(posX + 1, posY, 1);
+                Step newStep = new Step(posX + 1, posY, RIGHT);
                 Step found = dfs(newStep);
                 if (found != null) return found;
             }
@@ -200,7 +204,7 @@ public abstract class Enemy extends Character {
         Cell downCell = map.getCell(posX, posY + 1);
         if (!downCell.isBlocking(this)) {
             if (getStepTrace(posX, posY + 1) == null) {
-                Step newStep = new Step(posX, posY + 1, 2);
+                Step newStep = new Step(posX, posY + 1, DOWN);
                 Step found = dfs(newStep);
                 if (found != null) return found;
             }
@@ -208,7 +212,7 @@ public abstract class Enemy extends Character {
         Cell leftCell = map.getCell(posX - 1, posY);
         if (!leftCell.isBlocking(this)) {
             if (getStepTrace(posX - 1, posY) == null) {
-                Step newStep = new Step(posX - 1, posY, 3);
+                Step newStep = new Step(posX - 1, posY, LEFT);
                 Step found = dfs(newStep);
                 if (found != null) return found;
             }
@@ -304,5 +308,73 @@ public abstract class Enemy extends Character {
             }
         }
         return blocked;
+    }
+
+    @Override
+    public void update(double elapsedTime) throws FileNotFoundException {
+        if (!isAlive) {
+            dyingTimer += elapsedTime;
+            dying();
+            return;
+        }
+
+        Cell thisCell = map.getCell(getPosOnMapX(), getPosOnMapY());
+        /// Handle interaction between Bomber and other entities.
+        InteractionHandler.handleInteraction(this, thisCell);
+
+        timer += elapsedTime;
+        if (timer >= movingSpriteDuration) {
+            timer = 0;
+            ++frameIndex;
+            if (frameIndex == nMovingSprites) {
+                frameIndex = 0;
+            }
+        }
+
+        updatePosition(elapsedTime);
+    }
+
+    @Override
+    public void draw() {
+        if (!isAlive) {
+            gc.drawImage(dyingImage,
+                    SIDE * dyingFrameIndex, 0, SIDE, SIDE,
+                    hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
+            return;
+        }
+
+        gc.drawImage(walkingImage,
+                SIDE * frameIndex, 0, SIDE, SIDE,
+                hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
+    }
+
+    protected void dying() {
+        if (dyingTimer >= dyingSpriteDuration) {
+            dyingTimer = 0;
+            ++dyingFrameIndex;
+            if (dyingFrameIndex == nDyingSprites) {
+                InteractionHandler.removeEnemy(this);
+            }
+        }
+    }
+
+    @Override
+    public void moveDown() {
+        facingDirectionIndex = 2;
+    }
+
+    @Override
+    public void moveLeft() {
+        facingDirectionIndex = 3;
+    }
+
+    @Override
+    public void moveRight() {
+        facingDirectionIndex = 1;
+    }
+
+    @Override
+    public void moveUp() {
+        facingDirectionIndex = 0;
     }
 }

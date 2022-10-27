@@ -2,6 +2,7 @@ package game.bomman.entity.character.enemy;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.character.Bomber;
+import game.bomman.entity.character.Direction;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -50,7 +51,7 @@ public class Bear extends ThirdTypeOfMovement {
     }
 
     @Override
-    public int findBomber() {
+    public Direction findBomber() {
         return findBomberUsingDFS();
     }
 }

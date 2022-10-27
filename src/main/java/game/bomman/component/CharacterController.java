@@ -3,6 +3,7 @@ package game.bomman.component;
 import game.bomman.command.*;
 import game.bomman.command.movingCommand.*;
 import game.bomman.entity.Entity;
+import game.bomman.entity.character.Direction;
 import game.bomman.entity.character.enemy.*;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
@@ -44,7 +45,7 @@ public class CharacterController extends GamePlayComponent {
     }
 
     private static void changeMovingDirection(Enemy enemy) {
-        if (enemy instanceof Fire) {
+        if (enemy instanceof SecondTypeOfMovement) {
             getNewDirection(enemy);
             return;
         }
@@ -75,7 +76,7 @@ public class CharacterController extends GamePlayComponent {
                 }
                 continue;
             }
-            if (enemy instanceof Fire) {
+            if (enemy instanceof SecondTypeOfMovement) {
                 enemy.addGoAheadTimer(elapsedTime);
                 if (enemy.isBlocked() || (enemy.timerUp() && enemy.fitInThatCell())) {
                     changeMovingDirection(enemy);
@@ -86,10 +87,10 @@ public class CharacterController extends GamePlayComponent {
                 continue;
             }
             if (enemy instanceof ThirdTypeOfMovement) {
-                int newDirection = ((ThirdTypeOfMovement) enemy).findBomber();
-                if (newDirection != -1) {
+                Direction newDirection = ((ThirdTypeOfMovement) enemy).findBomber();
+                if (newDirection != Direction.STAY) {
                     if (enemy.fitInThatCell()) {
-                        enemy.setFacingDirectionIndex(newDirection);
+                        enemy.setFacingDirectionIndex(newDirection.ordinal());
                     }
                 } else {
                     if (enemy.isBlocked()) {

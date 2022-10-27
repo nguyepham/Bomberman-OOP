@@ -18,6 +18,7 @@ public class Frog extends FirstTypeOfMovement {
     private static final Image frogDying;
     private final Random random = new Random();
     private static final int MAX_SPEED = 200;
+    private static final int MIN_SPEED = 100;
 
     static {
         try {
@@ -32,14 +33,13 @@ public class Frog extends FirstTypeOfMovement {
         super(frogWalking, frogDying, N_MOVING_SPRITES, N_DYING_SPRITES,
                 MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
                 map, loadingPosX, loadingPosY);
-        speed = 100;
         setNumOfLives(1);
     }
 
     @Override
     public void update(double elapsedTime) {
         if (timer == 0) {
-            speed = random.nextDouble(MAX_SPEED);
+            speed = random.nextDouble(MAX_SPEED - MIN_SPEED) + MIN_SPEED;
         }
         super.update(elapsedTime);
     }

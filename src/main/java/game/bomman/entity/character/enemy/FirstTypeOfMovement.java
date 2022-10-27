@@ -14,12 +14,6 @@ import java.util.Random;
  * khi gặp vật cản thì đổi hướng đi ngẫu nhiên.
  */
 public class FirstTypeOfMovement extends Enemy {
-    private final double movingSpriteDuration;
-    private final int nMovingSprites;
-    private final double dyingSpriteDuration;
-    private final int nDyingSprites;
-    private final Image walkingImage;
-    private final Image dyingImage;
     private int numOfLives = 1;
     // The flame that hits this enemy
     private Flame hitFlame = null;
@@ -30,27 +24,7 @@ public class FirstTypeOfMovement extends Enemy {
             double movingSpriteDuration, double dyingSpriteDuration,
             Map map, double loadingPosX, double loadingPosY
     ) {
-        this.walkingImage = walkingImage;
-        this.dyingImage = dyingImage;
-        this.nMovingSprites = nMovingSprites;
-        this.nDyingSprites = nDyingSprites;
-        this.movingSpriteDuration = movingSpriteDuration;
-        this.dyingSpriteDuration = dyingSpriteDuration;
-
-        timer = new Random().nextDouble(movingSpriteDuration);
-        speed = 100;
-        this.map = map;
-        initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
-    }
-
-    private void dying() {
-        if (dyingTimer >= dyingSpriteDuration) {
-            dyingTimer = 0;
-            ++dyingFrameIndex;
-            if (dyingFrameIndex == nDyingSprites) {
-                InteractionHandler.removeEnemy(this);
-            }
-        }
+        super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY);
     }
 
     @Override
@@ -92,42 +66,8 @@ public class FirstTypeOfMovement extends Enemy {
     }
 
     @Override
-    public void draw() {
-        if (!isAlive) {
-            gc.drawImage(dyingImage,
-                    SIDE * dyingFrameIndex, 0, SIDE, SIDE,
-                    hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
-            return;
-        }
-
-        gc.drawImage(walkingImage,
-                SIDE * frameIndex, 0, SIDE, SIDE,
-                hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
-    }
-
-    @Override
     public void layingBomb() {
 
-    }
-
-    @Override
-    public void moveDown() {
-        facingDirectionIndex = 2;
-    }
-
-    @Override
-    public void moveLeft() {
-        facingDirectionIndex = 3;
-    }
-
-    @Override
-    public void moveRight() {
-        facingDirectionIndex = 1;
-    }
-
-    @Override
-    public void moveUp() {
-        facingDirectionIndex = 0;
     }
 
     @Override
