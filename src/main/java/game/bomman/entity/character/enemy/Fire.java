@@ -1,12 +1,9 @@
 package game.bomman.entity.character.enemy;
 
-import game.bomman.component.InteractionHandler;
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
-import java.util.Random;
 
 public class Fire extends SecondTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.2f;
@@ -32,30 +29,5 @@ public class Fire extends SecondTypeOfMovement {
         brickPassing = true;
         steelPassing = true;
         speed = 80;
-    }
-
-    @Override
-    public void layingBomb() {
-
-    }
-
-    @Override
-    public void removeDown() {
-
-    }
-
-    @Override
-    public void removeLeft() {
-
-    }
-
-    @Override
-    public void removeRight() {
-
-    }
-
-    @Override
-    public void removeUp() {
-
     }
 }

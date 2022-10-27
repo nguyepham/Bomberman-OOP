@@ -12,33 +12,17 @@ public class ThirdTypeOfMovement extends Enemy {
         super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY);
     }
 
-
     @Override
-    public void layingBomb() {
-
-    }
-
-    @Override
-    public void removeDown() {
-
-    }
-
-    @Override
-    public void removeLeft() {
-
-    }
-
-    @Override
-    public void removeRight() {
-
-    }
-
-    @Override
-    public void removeUp() {
-
-    }
-
-    public Direction findBomber() {
-        return findBomberUsingBFS();
+    public void runAI(double elapsedTime) {
+        Direction newDirection = movementController.findBomberUsingBFS();
+        if (newDirection != Direction.STAY) {
+            if (this.fitInThatCell()) {
+                this.setFacingDirectionIndex(newDirection.ordinal());
+            }
+        } else {
+            if (this.isBlocked()) {
+                movementController.changeMovingDirection();
+            }
+        }
     }
 }

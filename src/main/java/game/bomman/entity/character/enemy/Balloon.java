@@ -1,12 +1,9 @@
 package game.bomman.entity.character.enemy;
 
-import game.bomman.component.InteractionHandler;
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
-import java.util.Random;
 
 public class Balloon extends FirstTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.3f;

@@ -2,8 +2,6 @@ package game.bomman.entity.character.enemy;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.character.Bomber;
-import game.bomman.entity.character.Direction;
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
@@ -48,10 +46,5 @@ public class Bear extends ThirdTypeOfMovement {
         // tốc độ luôn trong [MIN_SPEED, MAX_SPEED]
         speed = MIN_SPEED + (MAX_DISTANCE - distance) / MAX_DISTANCE * (MAX_SPEED - MIN_SPEED);
         super.update(elapsedTime);
-    }
-
-    @Override
-    public Direction findBomber() {
-        return findBomberUsingDFS();
     }
 }

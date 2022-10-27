@@ -1,14 +1,9 @@
 package game.bomman.entity.character.enemy;
 
-import game.bomman.component.InteractionHandler;
-import game.bomman.entity.Entity;
-import game.bomman.entity.character.Bomber;
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
-import java.util.Random;
 
 public class Oneal extends ThirdTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.3f;

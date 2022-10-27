@@ -7,8 +7,6 @@ import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
-import java.util.Random;
-
 /**
  * Kiểu di chuyển này là
  * khi gặp vật cản thì đổi hướng đi ngẫu nhiên.
@@ -25,6 +23,13 @@ public class FirstTypeOfMovement extends Enemy {
             Map map, double loadingPosX, double loadingPosY
     ) {
         super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY);
+    }
+
+    @Override
+    public void runAI(double elapsedTime) {
+        if (this.isBlocked()) {
+            movementController.changeMovingDirection();
+        }
     }
 
     @Override
@@ -63,31 +68,6 @@ public class FirstTypeOfMovement extends Enemy {
         }
 
         updatePosition(elapsedTime);
-    }
-
-    @Override
-    public void layingBomb() {
-
-    }
-
-    @Override
-    public void removeDown() {
-
-    }
-
-    @Override
-    public void removeLeft() {
-
-    }
-
-    @Override
-    public void removeRight() {
-
-    }
-
-    @Override
-    public void removeUp() {
-
     }
 
     public void setNumOfLives(int numOfLives) {

@@ -57,4 +57,8 @@ public abstract class Entity {
    public abstract void update(double elapsedTime) throws FileNotFoundException;
 
    public abstract void draw();
+
+   public Map getMap() {
+      return map;
+   }
 }
