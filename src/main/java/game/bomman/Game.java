@@ -13,13 +13,17 @@ import java.io.FileNotFoundException;
 public class Game {
     private static Stage stage;
     private static PlayingState playingState;
-    public static final String[] levels = {
-            "src/main/resources/game/bomman/assets/map1.txt",
-            "src/main/resources/game/bomman/assets/map2.txt",
-            "src/main/resources/game/bomman/assets/map3.txt",
-            "src/main/resources/game/bomman/assets/map4.txt"
-    };
+    public static final String[] levels;
     public static int currentMap = 0;
+    // Thay đổi số map ở đây khi thêm file map mới:
+    private static final int NUMBER_OF_MAPS = 4;
+
+    static {
+        levels = new String[NUMBER_OF_MAPS];
+        for (int i = 0; i < levels.length; ++i) {
+            levels[i] = String.format("src/main/resources/game/bomman/assets/map%d.txt", i + 1);
+        }
+    }
 
     public static void init(Stage stage_) throws FileNotFoundException {
         stage = stage_;
