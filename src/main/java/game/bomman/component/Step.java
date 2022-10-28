@@ -1,4 +1,4 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.component;
 
 import game.bomman.entity.character.Direction;
 

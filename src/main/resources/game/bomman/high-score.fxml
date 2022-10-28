@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="314.0" prefWidth="515.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="game.bomman.HighScoreController">
+   <children>
+      <Label layoutX="158.0" layoutY="23.0" text="High Scores:">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+      <TableView fx:id="scoreTable" layoutX="132.0" layoutY="100.0" prefHeight="200.0" prefWidth="250.0">
+        <columns>
+          <TableColumn fx:id="rankColumn" prefWidth="50" text="Rank" />
+          <TableColumn fx:id="valueColumn" prefWidth="200" text="Score" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

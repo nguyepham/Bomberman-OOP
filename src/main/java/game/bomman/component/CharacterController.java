@@ -27,6 +27,7 @@ public class CharacterController extends GamePlayComponent {
                     case UP -> moveUp.executeOn(bomber);
                     case RIGHT -> moveRight.executeOn(bomber);
                     case LEFT -> moveLeft.executeOn(bomber);
+                    case B -> bomber.detonate();
                 }
             } else if (event.getEventType() == KeyEvent.KEY_RELEASED) {
                 switch (event.getCode()) {

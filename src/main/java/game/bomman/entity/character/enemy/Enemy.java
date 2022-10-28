@@ -5,6 +5,7 @@ import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Character;
 import game.bomman.entity.immobileEntity.Flame;
+import game.bomman.gameState.scores.HighScore;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -22,11 +23,13 @@ public abstract class Enemy extends Character {
     private final Image walkingImage;
     private final Image dyingImage;
     protected AI movementController = new AI(this);
+    // the score obtained by removing this enemy
+    private int score = 100;
 
     public Enemy(
             Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
             double movingSpriteDuration, double dyingSpriteDuration,
-            Map map, double loadingPosX, double loadingPosY
+            Map map, double loadingPosX, double loadingPosY, int score
     ) {
         this.walkingImage = walkingImage;
         this.dyingImage = dyingImage;
@@ -39,6 +42,7 @@ public abstract class Enemy extends Character {
         this.map = map;
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
         speed = 100;
+        setScore(score);
     }
 
     public abstract void runAI(double elapsedTime);
@@ -158,6 +162,7 @@ public abstract class Enemy extends Character {
             ++dyingFrameIndex;
             if (dyingFrameIndex == nDyingSprites) {
                 InteractionHandler.removeEnemy(this);
+                addScore();
             }
         }
     }
@@ -205,5 +210,13 @@ public abstract class Enemy extends Character {
     @Override
     public void removeUp() {
 
+    }
+
+    public void addScore() {
+        HighScore.addScore(score);
+    }
+
+    public void setScore(int score) {
+        if (score > 0) this.score = score;
     }
 }

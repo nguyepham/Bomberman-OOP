@@ -33,7 +33,7 @@ public class Bear extends ThirdTypeOfMovement {
     public Bear(Map map, double loadingPosX, double loadingPosY) {
         super(bearWalking, bearDying, N_MOVING_SPRITES, N_DYING_SPRITES,
                 MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
-                map, loadingPosX, loadingPosY);
+                map, loadingPosX, loadingPosY, 220);
         MAX_DISTANCE = map.getWidth() - 1 + map.getHeight() - 1;
     }
 
