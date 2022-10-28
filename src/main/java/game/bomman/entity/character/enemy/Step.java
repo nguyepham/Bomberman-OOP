@@ -1,12 +1,15 @@
 package game.bomman.entity.character.enemy;
 
+import game.bomman.entity.character.Direction;
 
 public class Step {
+    // target cell position
     private int posX;
     private int posY;
-    private int trace;
+    // the direction led to that cell
+    private Direction trace;
 
-    public Step(int posX, int posY, int trace) {
+    public Step(int posX, int posY, Direction trace) {
         this.posX = posX;
         this.posY = posY;
         this.trace = trace;
@@ -16,7 +19,7 @@ public class Step {
 
     public int getPosY() { return posY; }
 
-    public int getTrace() { return trace; }
+    public Direction getTrace() { return trace; }
 
-    public void setTrace(int value) { trace = value; }
+    public void setTrace(Direction value) { trace = value; }
 }

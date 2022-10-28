@@ -22,10 +22,10 @@ public class MenuController {
 
     @FXML
     void instructionClicked() {
-        Stage instructionStage = new Stage();
-        InstructionScene instructionScene = new InstructionScene();
-        instructionStage.setScene(instructionScene.getScene());
-        instructionStage.setResizable(false);
-        instructionStage.show();
+        if (!MainApplication.instructionStage.isShowing()) {
+            MainApplication.instructionStage.setScene(MainApplication.instructionScene.getScene());
+            MainApplication.instructionStage.setResizable(false);
+            MainApplication.instructionStage.show();
+        }
     }
 }

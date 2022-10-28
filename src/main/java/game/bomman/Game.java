@@ -13,7 +13,7 @@ public class Game {
     private static Stage stage;
     private static PlayingState playingState;
     public static final String LEVEL_1_MAP = "src/main/resources/game/bomman/assets/map3.txt";
-    public static final String LEVEL_2_MAP = "src/main/resources/game/bomman/assets/map2.txt";
+    public static final String LEVEL_2_MAP = "src/main/resources/game/bomman/assets/map4.txt";
     public static final String LEVEL_3_MAP = "src/main/resources/game/bomman/assets/map3.txt";
     private static final int NUM_OF_MAPS = 2;
     private static int currentMap = 1;

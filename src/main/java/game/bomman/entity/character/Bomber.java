@@ -33,6 +33,7 @@ public class Bomber extends Character {
     private int padding = 0;
     private double respawnWaitTimer = 4.0;
     private double detonatorTimer = 30.0;
+    // indicates if bomber is waiting to respawn
     private boolean waiting = true;
     private boolean detonator = false;
     private boolean isMoving = false;

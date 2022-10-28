@@ -2,14 +2,13 @@ package game.bomman.entity.character.enemy;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.character.Bomber;
-import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
 /**
- * Có khá năng đuổi theo Bomber và tăng tốc khi đến gần Bomber.
+ * Có khá năng đuổi theo Bomber bằng BFS và tăng tốc khi đến gần Bomber.
  */
 public class Bear extends ThirdTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
@@ -20,7 +19,7 @@ public class Bear extends ThirdTypeOfMovement {
     private static final Image bearDying;
     private static final double MAX_SPEED = 200;
     private static final double MIN_SPEED = 100;
-    private final double MAX_DISTANCE;
+    private static double MAX_DISTANCE;
 
     static {
         try {

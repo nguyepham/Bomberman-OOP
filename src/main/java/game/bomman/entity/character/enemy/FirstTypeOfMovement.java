@@ -7,21 +7,11 @@ import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
-import java.util.Random;
-
 /**
  * Kiểu di chuyển này là
  * khi gặp vật cản thì đổi hướng đi ngẫu nhiên.
  */
 public class FirstTypeOfMovement extends Enemy {
-    private final double movingSpriteDuration;
-    private final int nMovingSprites;
-    private final double dyingSpriteDuration;
-    private final int nDyingSprites;
-    private double dyingTimer = 0;
-    private int dyingFrameIndex = 0;
-    private final Image walkingImage;
-    private final Image dyingImage;
     private int numOfLives = 1;
     // The flame that hits this enemy
     private Flame hitFlame = null;
@@ -32,26 +22,13 @@ public class FirstTypeOfMovement extends Enemy {
             double movingSpriteDuration, double dyingSpriteDuration,
             Map map, double loadingPosX, double loadingPosY
     ) {
-        this.walkingImage = walkingImage;
-        this.dyingImage = dyingImage;
-        this.nMovingSprites = nMovingSprites;
-        this.nDyingSprites = nDyingSprites;
-        this.movingSpriteDuration = movingSpriteDuration;
-        this.dyingSpriteDuration = dyingSpriteDuration;
-
-        timer = new Random().nextDouble(movingSpriteDuration);
-        speed = 100;
-        this.map = map;
-        initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
+        super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY);
     }
 
-    private void dying() {
-        if (dyingTimer >= dyingSpriteDuration) {
-            dyingTimer = 0;
-            ++dyingFrameIndex;
-            if (dyingFrameIndex == nDyingSprites) {
-                InteractionHandler.removeEnemy(this);
-            }
+    @Override
+    public void runAI(double elapsedTime) {
+        if (this.isBlocked()) {
+            movementController.changeMovingDirection();
         }
     }
 
@@ -91,65 +68,6 @@ public class FirstTypeOfMovement extends Enemy {
         }
 
         updatePosition(elapsedTime);
-    }
-
-    @Override
-    public void draw() {
-        if (!isAlive) {
-            gc.drawImage(dyingImage,
-                    SIDE * dyingFrameIndex, 0, SIDE, SIDE,
-                    hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
-            return;
-        }
-
-        gc.drawImage(walkingImage,
-                SIDE * frameIndex, 0, SIDE, SIDE,
-                hitBox.getMinX(), hitBox.getMinY(), SIDE, SIDE);
-    }
-
-    @Override
-    public void layingBomb() {
-
-    }
-
-    @Override
-    public void moveDown() {
-        facingDirectionIndex = 2;
-    }
-
-    @Override
-    public void moveLeft() {
-        facingDirectionIndex = 3;
-    }
-
-    @Override
-    public void moveRight() {
-        facingDirectionIndex = 1;
-    }
-
-    @Override
-    public void moveUp() {
-        facingDirectionIndex = 0;
-    }
-
-    @Override
-    public void removeDown() {
-
-    }
-
-    @Override
-    public void removeLeft() {
-
-    }
-
-    @Override
-    public void removeRight() {
-
-    }
-
-    @Override
-    public void removeUp() {
-
     }
 
     public void setNumOfLives(int numOfLives) {
