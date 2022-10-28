@@ -13,17 +13,19 @@ import javafx.scene.canvas.Canvas;
 
 import java.io.FileNotFoundException;
 
+import static game.bomman.Game.currentMap;
+
 public class PlayingState extends GameState {
-    private Canvas mapCanvas = new Canvas();
-    private Canvas characterCanvas;
-    private Canvas bombCanvas;
-    private Canvas itemCanvas;
+    private final Canvas mapCanvas = new Canvas();
+    private final Canvas characterCanvas;
+    private final Canvas bombCanvas;
+    private final Canvas itemCanvas;
     private static Map gameMap;
     private AnimationTimer playingStateTimer;
 
     public PlayingState() throws FileNotFoundException {
         gameMap = new Map();
-        gameMap.readFromFile(Game.LEVEL_1_MAP);
+        gameMap.readFromFile(Game.levels[0]);
         characterCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
         bombCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
         itemCanvas = new Canvas(Entity.SIDE * gameMap.getWidth(), Entity.SIDE * gameMap.getHeight());
@@ -49,7 +51,7 @@ public class PlayingState extends GameState {
         GamePlayComponent.resetBomberPosition();
         GamePlayComponent.clearEnemyList();
         InteractionHandler.clearEntityList();
-        gameMap.readFromFile(Game.LEVEL_2_MAP);
+        gameMap.readFromFile(Game.levels[currentMap]);
         gameMap.setUp(mapCanvas);
         characterCanvas.setWidth(Entity.SIDE * gameMap.getWidth());
         characterCanvas.setHeight(Entity.SIDE * gameMap.getHeight());
