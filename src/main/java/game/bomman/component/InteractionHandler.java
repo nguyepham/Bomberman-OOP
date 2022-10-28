@@ -112,7 +112,7 @@ public class InteractionHandler extends GamePlayComponent {
         return null;
     }
 
-    public static Bomb getBomb() {
+    public static Bomb getFirstBomb() {
         for (ImmobileEntity entity : immobileEntityList) {
             if (entity instanceof Bomb) {
                 return (Bomb) entity;

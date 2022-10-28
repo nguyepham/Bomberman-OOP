@@ -30,7 +30,7 @@ public class Fire extends SecondTypeOfMovement {
     public Fire(Map map, double loadingPosX, double loadingPosY) {
         super(fireWalking, fireDying, N_MOVING_SPRITES, N_DYING_SPRITES,
                 MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
-                map, loadingPosX, loadingPosY);
+                map, loadingPosX, loadingPosY, 150);
         speed = 80;
     }
 

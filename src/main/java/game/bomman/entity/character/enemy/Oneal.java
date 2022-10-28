@@ -25,7 +25,7 @@ public class Oneal extends ThirdTypeOfMovement {
     public Oneal(Map map, double loadingPosX, double loadingPosY) {
         super(onealWalking, onealDying, N_MOVING_SPRITES, N_DYING_SPRITES,
                 MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
-                map, loadingPosX, loadingPosY);
+                map, loadingPosX, loadingPosY, 200);
         speed = 120;
     }
 }

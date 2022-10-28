@@ -1,8 +1,11 @@
 package game.bomman;
 
+import game.bomman.component.GamePlayComponent;
+import game.bomman.component.InteractionHandler;
 import game.bomman.component.SoundPlayer;
 import game.bomman.gameState.EndingState;
 import game.bomman.gameState.PlayingState;
+import game.bomman.gameState.scores.HighScore;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -17,6 +20,7 @@ public class Game {
     public static int currentMap = 0;
     // Thay đổi số map ở đây khi thêm file map mới:
     private static final int NUMBER_OF_MAPS = 4;
+    private static boolean started = false;
 
     static {
         levels = new String[NUMBER_OF_MAPS];
@@ -34,7 +38,7 @@ public class Game {
         ++currentMap;
         if (currentMap >= levels.length) {
             EndingState endingState = new EndingState(true);
-            Game.getPlayingState().getPlayingStateTimer().stop();
+            endGame();
             stage.setScene(endingState.getScene());
             stage.sizeToScene();
             setPosition(stage);
@@ -69,6 +73,23 @@ public class Game {
         setPosition(stage);
         SoundPlayer.playStageStartSound();
         stage.show();
+
+        started = true;
+    }
+
+    public static boolean hasStarted() {
+        return started;
+    }
+
+    // Stop the game and clean up so that
+    // a new game could be played if needed
+    public static void endGame() {
+        started = false;
+        playingState.getPlayingStateTimer().stop();
+        GamePlayComponent.clearEnemyList();
+        InteractionHandler.clearEntityList();
+        GamePlayComponent.clearBomber();
+        HighScore.resetScore();
     }
 
     public static PlayingState getPlayingState() {

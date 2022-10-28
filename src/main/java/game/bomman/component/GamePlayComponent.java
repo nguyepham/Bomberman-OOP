@@ -25,6 +25,8 @@ public abstract class GamePlayComponent {
 
     public static Bomber getBomber() { return bomber; }
 
+    public static void clearBomber() { bomber = new Bomber(gameMap); }
+
     public static void clearEnemyList() { enemyList.clear(); }
 
     public static void resetBomberPosition() {

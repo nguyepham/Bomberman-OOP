@@ -183,14 +183,14 @@ public class Bomber extends Character {
                     if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking(this)
                             && currentX > cellMinX + 3) {
                         commandStack.add("1left");
-                        System.out.println("Left buffered.");
+                        //System.out.println("Left buffered.");
                         break;
                     }
 
                     if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking(this)
                             && currentX < cellMinX + 3) {
                         commandStack.add("1right");
-                        System.out.println("Right buffered.");
+                        //System.out.println("Right buffered.");
                         break;
                     }
                 }
@@ -204,7 +204,7 @@ public class Bomber extends Character {
                     }
                 }
                 if (isBuffering && currentY <= cellMinY) {
-                    System.out.println("Up buffer removed.");
+                    //System.out.println("Up buffer removed.");
                     commandStack.pop();
                 }
             }
@@ -219,13 +219,13 @@ public class Bomber extends Character {
                     if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking(this)
                             && currentX > cellMinX + 3) {
                         commandStack.add("1left");
-                        System.out.println("Left buffered.");
+                        //System.out.println("Left buffered.");
                         break;
                     }
                     if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentX < cellMinX + 3) {
                         commandStack.add("1right");
-                        System.out.println("Right buffered.");
+                        //System.out.println("Right buffered.");
                         break;
                     }
                 }
@@ -234,13 +234,13 @@ public class Bomber extends Character {
 
                 /// Character blocked.
                 if (isBlocked || isBuffering || currentY < cellMinY) {
-                    System.out.println(aheadCell.getRawConfig());
+                    //System.out.println(aheadCell.getRawConfig());
                     if (hitBox.getMinY() > cellMinY) {
                         hitBox.setMinY(cellMinY);
                     }
                 }
                 if (isBuffering && currentY >= cellMinY) {
-                    System.out.println("Down buffer removed.");
+                    //System.out.println("Down buffer removed.");
                     commandStack.pop();
                 }
             }
@@ -255,14 +255,14 @@ public class Bomber extends Character {
                     if (map.getCell(positionOnMapX - 1, positionOnMapY - 1).isBlocking(this)
                             && currentY < cellMinY) {
                         commandStack.add("1down");
-                        System.out.println("Down buffered.");
+                        //System.out.println("Down buffered.");
                         break;
                     }
                     if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
-                        System.out.println("Ahead cell: " + aheadCell.getPosOnMapY() + " " + getPosOnMapY());
-                        commandStack.add("1up");
-                        System.out.println("Up buffered.");
+                        //System.out.println("Ahead cell: " + aheadCell.getPosOnMapY() + " " + getPosOnMapY());
+                        //commandStack.add("1up");
+                        //System.out.println("Up buffered.");
                         break;
                     }
                 }
@@ -271,13 +271,13 @@ public class Bomber extends Character {
 
                 /// Character blocked.
                 if (isBlocked || isBuffering || currentX > cellMinX + 3) {
-                    System.out.println(aheadCell.getRawConfig());
+                    //System.out.println(aheadCell.getRawConfig());
                     if (hitBox.getMinX() < cellMinX + 3) {
                         hitBox.setMinX(cellMinX + 3);
                     }
                 }
                 if (isBuffering && currentX <= cellMinX + 3) {
-                    System.out.println("Left buffer removed.");
+                    //System.out.println("Left buffer removed.");
                     commandStack.pop();
                 }
             }
@@ -292,13 +292,13 @@ public class Bomber extends Character {
                     if (map.getCell(positionOnMapX + 1, positionOnMapY - 1).isBlocking(this)
                             && currentY < cellMinY) {
                         commandStack.add("1down");
-                        System.out.println("Down buffered.");
+                        //System.out.println("Down buffered.");
                         break;
                     }
                     if (map.getCell(positionOnMapX + 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
                         commandStack.add("1up");
-                        System.out.println("Up buffered.");
+                        //System.out.println("Up buffered.");
                         break;
                     }
                 }
@@ -307,13 +307,13 @@ public class Bomber extends Character {
 
                 /// Character blocked.
                 if (isBlocked || isBuffering || currentX < cellMinX + 3) {
-                    System.out.println(aheadCell.getRawConfig());
+                    //System.out.println(aheadCell.getRawConfig());
                     if (hitBox.getMinX() > cellMinX + 3) {
                         hitBox.setMinX(cellMinX + 3);
                     }
                 }
                 if (isBuffering && currentX >= cellMinX + 3) {
-                    System.out.println("Right buffer removed.");
+                    //System.out.println("Right buffer removed.");
                     commandStack.pop();
                 }
             }
@@ -405,13 +405,14 @@ public class Bomber extends Character {
 
     private void respawn() {
         --numOfLives;
-        if (numOfLives == 0) {
+        if (numOfLives <= 0) {
             EndingState endingState = new EndingState(false);
-            Game.getPlayingState().getPlayingStateTimer().stop();
+            Game.endGame();
             MainApplication.stage.setScene(endingState.getScene());
             MainApplication.stage.sizeToScene();
             Game.setPosition(MainApplication.stage);
             SoundPlayer.playGameOverSound();
+            return;
         }
         isAlive = true;
         dyingFrameIndex = 0;
@@ -479,17 +480,16 @@ public class Bomber extends Character {
 
     @Override
     public void layingBomb() {
-
-        if (detonator == true) {
-            Bomb checkBomb = InteractionHandler.getBomb();
-            if (checkBomb != null) {
-                checkBomb.explode();
-            } else {
-                layNewBomb();
-            }
-            return;
-        }
         layNewBomb();
+    }
+
+    public void detonate() {
+        if (detonator) {
+            Bomb firstBomb = InteractionHandler.getFirstBomb();
+            if (firstBomb != null) {
+                firstBomb.explode();
+            }
+        }
     }
 
     public void retakeBomb() {
@@ -500,8 +500,8 @@ public class Bomber extends Character {
     public void moveDown() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'd') {
             commandStack.push("0down");
-            System.out.println("Moved down.");
-            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+            //System.out.println("Moved down.");
+            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -509,8 +509,8 @@ public class Bomber extends Character {
     public void moveLeft() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'l') {
             commandStack.push("0left");
-            System.out.println("Moved left.");
-            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+            //System.out.println("Moved left.");
+            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -518,8 +518,8 @@ public class Bomber extends Character {
     public void moveRight() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'r') {
             commandStack.push("0right");
-            System.out.println("Moved right.");
-            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+            //System.out.println("Moved right.");
+            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -527,8 +527,8 @@ public class Bomber extends Character {
     public void moveUp() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'u') {
             commandStack.push("0up");
-            System.out.println("Moved up.");
-            System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+            //System.out.println("Moved up.");
+            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -540,8 +540,8 @@ public class Bomber extends Character {
                 break;
             }
         }
-        System.out.println("reMoved down.");
-        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+        //System.out.println("reMoved down.");
+        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -552,8 +552,8 @@ public class Bomber extends Character {
                 break;
             }
         }
-        System.out.println("reMoved left.");
-        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+        //System.out.println("reMoved left.");
+        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -564,8 +564,8 @@ public class Bomber extends Character {
                 break;
             }
         }
-        System.out.println("reMoved right.");
-        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+        //System.out.println("reMoved right.");
+        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -576,7 +576,7 @@ public class Bomber extends Character {
                 break;
             }
         }
-        System.out.println("reMoved up.");
-        System.out.println(getPosOnMapX() + " " + getPosOnMapY());
+        //System.out.println("reMoved up.");
+        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 }

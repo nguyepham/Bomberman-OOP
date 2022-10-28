@@ -32,7 +32,7 @@ public class Frog extends FirstTypeOfMovement {
     public Frog(Map map, double loadingPosX, double loadingPosY) {
         super(frogWalking, frogDying, N_MOVING_SPRITES, N_DYING_SPRITES,
                 MOVING_SPRITE_DURATION, DYING_SPRITE_DURATION,
-                map, loadingPosX, loadingPosY);
+                map, loadingPosX, loadingPosY, 150);
         setNumOfLives(1);
     }
 

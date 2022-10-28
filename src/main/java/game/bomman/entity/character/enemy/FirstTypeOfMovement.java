@@ -17,12 +17,8 @@ public class FirstTypeOfMovement extends Enemy {
     private Flame hitFlame = null;
     private double setSpeed = 100;
 
-    public FirstTypeOfMovement(
-            Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites,
-            double movingSpriteDuration, double dyingSpriteDuration,
-            Map map, double loadingPosX, double loadingPosY
-    ) {
-        super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY);
+    public FirstTypeOfMovement(Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites, double movingSpriteDuration, double dyingSpriteDuration, Map map, double loadingPosX, double loadingPosY, int score) {
+        super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY, score);
     }
 
     @Override

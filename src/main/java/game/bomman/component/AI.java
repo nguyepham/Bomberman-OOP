@@ -4,7 +4,6 @@ import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Direction;
 import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.character.enemy.SecondTypeOfMovement;
-import game.bomman.entity.character.enemy.Step;
 import game.bomman.map.Cell;
 
 import java.util.ArrayList;

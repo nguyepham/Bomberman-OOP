@@ -23,8 +23,6 @@ public class MenuController {
     @FXML
     void instructionClicked() {
         if (!MainApplication.instructionStage.isShowing()) {
-            MainApplication.instructionStage.setScene(MainApplication.instructionScene.getScene());
-            MainApplication.instructionStage.setResizable(false);
             MainApplication.instructionStage.show();
         }
     }
