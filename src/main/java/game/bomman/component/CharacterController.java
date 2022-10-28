@@ -1,5 +1,6 @@
 package game.bomman.component;
 
+import game.bomman.Game;
 import game.bomman.command.Command;
 import game.bomman.command.movingCommand.*;
 import game.bomman.entity.Entity;
@@ -21,20 +22,22 @@ public class CharacterController extends GamePlayComponent {
 
     public static void activateInputReader() {
         EventHandler<KeyEvent> moveByKey = (event) -> {
-            if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-                switch (event.getCode()) {
-                    case DOWN -> moveDown.executeOn(bomber);
-                    case UP -> moveUp.executeOn(bomber);
-                    case RIGHT -> moveRight.executeOn(bomber);
-                    case LEFT -> moveLeft.executeOn(bomber);
-                    case B -> bomber.detonate();
-                }
-            } else if (event.getEventType() == KeyEvent.KEY_RELEASED) {
-                switch (event.getCode()) {
-                    case DOWN -> removeDown.executeOn(bomber);
-                    case UP -> removeUp.executeOn(bomber);
-                    case RIGHT -> removeRight.executeOn(bomber);
-                    case LEFT -> removeLeft.executeOn(bomber);
+            if (Game.hasStarted() && !Game.hasPaused()) {
+                if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                    switch (event.getCode()) {
+                        case DOWN -> moveDown.executeOn(bomber);
+                        case UP -> moveUp.executeOn(bomber);
+                        case RIGHT -> moveRight.executeOn(bomber);
+                        case LEFT -> moveLeft.executeOn(bomber);
+                        case B -> bomber.detonate();
+                    }
+                } else if (event.getEventType() == KeyEvent.KEY_RELEASED) {
+                    switch (event.getCode()) {
+                        case DOWN -> removeDown.executeOn(bomber);
+                        case UP -> removeUp.executeOn(bomber);
+                        case RIGHT -> removeRight.executeOn(bomber);
+                        case LEFT -> removeLeft.executeOn(bomber);
+                    }
                 }
             }
         };

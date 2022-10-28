@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;
 
-@SuppressWarnings("ClassEscapesDefinedScope")
 public class Game {
     private static Stage stage;
     private static PlayingState playingState;
@@ -21,6 +20,7 @@ public class Game {
     // Thay đổi số map ở đây khi thêm file map mới:
     private static final int NUMBER_OF_MAPS = 4;
     private static boolean started = false;
+    private static boolean paused = false;
 
     static {
         levels = new String[NUMBER_OF_MAPS];
@@ -65,6 +65,8 @@ public class Game {
     public static void run() throws FileNotFoundException {
         playingState.setUp();
         playingState.run();
+        started = true;
+        paused = false;
 
         stage.setTitle("Bomberman");
         stage.setResizable(false);
@@ -73,8 +75,6 @@ public class Game {
         setPosition(stage);
         SoundPlayer.playStageStartSound();
         stage.show();
-
-        started = true;
     }
 
     public static boolean hasStarted() {
@@ -92,7 +92,17 @@ public class Game {
         HighScore.resetScore();
     }
 
-    public static PlayingState getPlayingState() {
-        return playingState;
+    public static boolean hasPaused() { return paused; }
+
+    public static void pause() {
+        if (!paused) {
+            paused = true;
+        }
+    }
+
+    public static void load() {
+        if (paused) {
+            paused = false;
+        }
     }
 }

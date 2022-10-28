@@ -1,16 +1,11 @@
 package game.bomman;
 
-import game.bomman.gameState.scores.HighScore;
-import game.bomman.gameState.Menu;
 import game.bomman.component.SoundPlayer;
 import game.bomman.gameState.InstructionScene;
-import game.bomman.gameState.scores.Score;
+import game.bomman.gameState.Menu;
+import game.bomman.gameState.scores.HighScore;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -43,6 +38,7 @@ public class MainApplication extends Application {
         });
 
         // Activate keyboard shortcut key handlers
+        activatePauseLoadKeyHandler();
         SoundPlayer.activateMuteHandler(stage);
         activateQuitKeyHandler(stage);
         activateBackToMenuKeyHandler();
@@ -96,6 +92,21 @@ public class MainApplication extends Application {
             }
         };
         stage.addEventHandler(KeyEvent.KEY_PRESSED, highScoreKeyHandler);
+    }
+
+    // Bấm P để pause, L để tiếp tục game
+    public void activatePauseLoadKeyHandler() {
+        EventHandler<KeyEvent> pauseLoadKeyHandler = event -> {
+            if (Game.hasStarted()) {
+                if (event.getCode() == KeyCode.P) {
+                    Game.pause();
+                }
+                else if (event.getCode() == KeyCode.L) {
+                    Game.load();
+                }
+            }
+        };
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, pauseLoadKeyHandler);
     }
 
     public static void main(String[] args) {
