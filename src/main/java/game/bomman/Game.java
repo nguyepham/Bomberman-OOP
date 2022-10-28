@@ -9,14 +9,21 @@ import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;
 
+@SuppressWarnings("ClassEscapesDefinedScope")
 public class Game {
     private static Stage stage;
     private static PlayingState playingState;
-    public static final String LEVEL_1_MAP = "src/main/resources/game/bomman/assets/map3.txt";
-    public static final String LEVEL_2_MAP = "src/main/resources/game/bomman/assets/map4.txt";
-    public static final String LEVEL_3_MAP = "src/main/resources/game/bomman/assets/map3.txt";
-    private static final int NUM_OF_MAPS = 2;
-    private static int currentMap = 1;
+    public static final String[] levels;
+    public static int currentMap = 0;
+    // Thay đổi số map ở đây khi thêm file map mới:
+    private static final int NUMBER_OF_MAPS = 4;
+
+    static {
+        levels = new String[NUMBER_OF_MAPS];
+        for (int i = 0; i < levels.length; ++i) {
+            levels[i] = String.format("src/main/resources/game/bomman/assets/map%d.txt", i + 1);
+        }
+    }
 
     public static void init(Stage stage_) throws FileNotFoundException {
         stage = stage_;
@@ -25,7 +32,7 @@ public class Game {
 
     public static void levelUp() throws FileNotFoundException {
         ++currentMap;
-        if (currentMap > NUM_OF_MAPS) {
+        if (currentMap >= levels.length) {
             EndingState endingState = new EndingState(true);
             Game.getPlayingState().getPlayingStateTimer().stop();
             stage.setScene(endingState.getScene());
