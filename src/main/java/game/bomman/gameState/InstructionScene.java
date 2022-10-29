@@ -3,7 +3,6 @@ package game.bomman.gameState;
 import game.bomman.entity.Entity;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 

@@ -28,8 +28,6 @@ public class EndingState extends GameState {
         Group root = new Group(canvas);
         canvas.getGraphicsContext2D().drawImage(image, 0, 0);
         scene = new Scene(root);
-        scene.setOnKeyPressed(event -> {
-            MainApplication.stage.close();
-        });
+        scene.setOnKeyPressed(event -> MainApplication.quitGame());
     }
 }

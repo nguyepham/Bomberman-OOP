@@ -95,14 +95,16 @@ public class Game {
     public static boolean hasPaused() { return paused; }
 
     public static void pause() {
-        if (!paused) {
+        if (started && !paused) {
             paused = true;
+            MainApplication.pausedStage.showAndWait();
         }
     }
 
     public static void load() {
-        if (paused) {
+        if (started && paused) {
             paused = false;
+            MainApplication.pausedStage.close();
         }
     }
 }
