@@ -1,7 +1,8 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.firstTypeOfMoving;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
+import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
@@ -11,13 +12,13 @@ import javafx.scene.image.Image;
  * Kiểu di chuyển này là
  * khi gặp vật cản thì đổi hướng đi ngẫu nhiên.
  */
-public class FirstTypeOfMovement extends Enemy {
+public class FirstTypeOfMoving extends Enemy {
     private int numOfLives = 1;
     // The flame that hits this enemy
     private Flame hitFlame = null;
     private double setSpeed = 100;
 
-    public FirstTypeOfMovement(Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites, double movingSpriteDuration, double dyingSpriteDuration, Map map, double loadingPosX, double loadingPosY, int score) {
+    public FirstTypeOfMoving(Image walkingImage, Image dyingImage, int nMovingSprites, int nDyingSprites, double movingSpriteDuration, double dyingSpriteDuration, Map map, double loadingPosX, double loadingPosY, int score) {
         super(walkingImage, dyingImage, nMovingSprites, nDyingSprites, movingSpriteDuration, dyingSpriteDuration, map, loadingPosX, loadingPosY, score);
     }
 

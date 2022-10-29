@@ -1,5 +1,6 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.firstTypeOfMoving;
 
+import game.bomman.entity.character.enemy.firstTypeOfMoving.FirstTypeOfMoving;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
@@ -8,7 +9,7 @@ import java.io.FileNotFoundException;
 /**
  * Moves like balloon but faster. Has two lives.
  */
-public class Ghost extends FirstTypeOfMovement {
+public class Ghost extends FirstTypeOfMoving {
     private static final double MOVING_SPRITE_DURATION = 0.3;
     private static final int N_MOVING_SPRITES = 4;
     private static final double DYING_SPRITE_DURATION = 0.2;

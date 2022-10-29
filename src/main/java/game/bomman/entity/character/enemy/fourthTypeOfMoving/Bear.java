@@ -1,4 +1,4 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.fourthTypeOfMoving;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.character.Bomber;
@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 /**
  * Có khá năng đuổi theo Bomber bằng BFS và tăng tốc khi đến gần Bomber.
  */
-public class Bear extends FourthTypeOfMovement {
+public class Bear extends FourthTypeOfMoving {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 3;
     private static final double DYING_SPRITE_DURATION = 0.2f;

@@ -1,11 +1,12 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.firstTypeOfMoving;
 
+import game.bomman.entity.character.enemy.firstTypeOfMoving.FirstTypeOfMoving;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class Balloon extends FirstTypeOfMovement {
+public class Balloon extends FirstTypeOfMoving {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 3;
     private static final double DYING_SPRITE_DURATION = 0.2f;

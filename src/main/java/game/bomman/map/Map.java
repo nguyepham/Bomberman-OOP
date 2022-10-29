@@ -2,7 +2,12 @@ package game.bomman.map;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.enemy.*;
+import game.bomman.entity.character.enemy.firstTypeOfMoving.Balloon;
+import game.bomman.entity.character.enemy.firstTypeOfMoving.Ghost;
+import game.bomman.entity.character.enemy.fourthTypeOfMoving.Bear;
+import game.bomman.entity.character.enemy.fourthTypeOfMoving.Frog;
+import game.bomman.entity.character.enemy.thirdTypeOfMoving.Oneal;
+import game.bomman.entity.character.enemy.secondTypeOfMoving.Fire;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.entity.item.*;

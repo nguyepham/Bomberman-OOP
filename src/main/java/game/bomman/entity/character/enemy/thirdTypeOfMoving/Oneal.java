@@ -1,11 +1,12 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.thirdTypeOfMoving;
 
+import game.bomman.entity.character.enemy.thirdTypeOfMoving.ThirdTypeOfMoving;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class Oneal extends ThirdTypeOfMovement {
+public class Oneal extends ThirdTypeOfMoving {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 4;
     private static final double DYING_SPRITE_DURATION = 0.2f;

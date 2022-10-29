@@ -1,4 +1,4 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.secondTypeOfMoving;
 
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 /**
  * Fire có thể đi qua Brick và Steel và thay đổi hướng mỗi 3s.
  */
-public class Fire extends SecondTypeOfMovement {
+public class Fire extends SecondTypeOfMoving {
     private static final double MOVING_SPRITE_DURATION = 0.2f;
     private static final int N_MOVING_SPRITES = 4;
     private static final double DYING_SPRITE_DURATION = 0.142f;

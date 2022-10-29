@@ -3,6 +3,7 @@ package game.bomman.entity.character.enemy;
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.character.Bomber;
 import game.bomman.entity.character.Direction;
+import game.bomman.entity.character.enemy.secondTypeOfMoving.SecondTypeOfMoving;
 import game.bomman.map.Cell;
 
 import java.util.ArrayList;
@@ -216,7 +217,7 @@ public class AI {
     }
 
     public void changeMovingDirection() {
-        if (enemy instanceof SecondTypeOfMovement) {
+        if (enemy instanceof SecondTypeOfMoving) {
             getNewDirection();
             return;
         }

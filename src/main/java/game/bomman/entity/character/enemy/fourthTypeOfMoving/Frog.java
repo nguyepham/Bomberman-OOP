@@ -1,4 +1,4 @@
-package game.bomman.entity.character.enemy;
+package game.bomman.entity.character.enemy.fourthTypeOfMoving;
 
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * Di chuyển như Balloon và có thể thay đổi tốc độ.
  */
-public class Frog extends FourthTypeOfMovement {
+public class Frog extends FourthTypeOfMoving {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 3;
     private static final double DYING_SPRITE_DURATION = 0.2f;
