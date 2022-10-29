@@ -18,7 +18,7 @@ public class Game {
     public static final String[] levels;
     public static int currentMap = 0;
     // Thay đổi số map ở đây khi thêm file map mới:
-    private static final int NUMBER_OF_MAPS = 4;
+    private static final int NUMBER_OF_MAPS = 2;
     private static boolean started = false;
     private static boolean paused = false;
 
