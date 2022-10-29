@@ -49,7 +49,7 @@ public class Bomber extends Character {
     private int numOfLives;
     private int numOfBombs;
     private int flameLength;
-    private Stack<String> commandStack = new Stack<>();
+    private final Stack<String> commandStack = new Stack<>();
 
     public Bomber(Map map) {
         this.map = map;
@@ -100,7 +100,7 @@ public class Bomber extends Character {
     @Override
     public void update(double elapsedTime) throws FileNotFoundException {
 
-        if (isAlive == false) {
+        if (!isAlive) {
             dyingTimer += elapsedTime;
             dying();
             return;
@@ -131,7 +131,7 @@ public class Bomber extends Character {
         /// Handle interaction between Bomber and other entities.
         InteractionHandler.handleInteraction(this, thisCell);
 
-        if (insidePortal == true) {
+        if (insidePortal) {
             levelUpTimer += elapsedTime;
             levelUp();
             return;
@@ -174,7 +174,7 @@ public class Bomber extends Character {
         switch (command.charAt(1)) {
             case 'u' -> {
                 facingDirectionIndex = 0;
-                padding = N_SPRITES_PER_DIRECTION * 0;
+                padding = 0;
 
                 Cell aheadCell = getAheadCell();
                 boolean isBlocked = aheadCell.isBlocking(this);
@@ -260,9 +260,6 @@ public class Bomber extends Character {
                     }
                     if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
-                        //System.out.println("Ahead cell: " + aheadCell.getPosOnMapY() + " " + getPosOnMapY());
-                        //commandStack.add("1up");
-                        //System.out.println("Up buffered.");
                         break;
                     }
                 }
@@ -323,14 +320,14 @@ public class Bomber extends Character {
     @Override
     public void draw() {
 
-        if (isAlive == false) {
+        if (!isAlive) {
             gc.drawImage(bomberDying,
                     53 * dyingFrameIndex, 0, 53, HEIGHT,
                     hitBox.getMinX(), hitBox.getMinY(), 53, HEIGHT);
             return;
         }
 
-        if (insidePortal == true) {
+        if (insidePortal) {
             gc.drawImage(bomberLevelUp,
                     WIDTH * levelUpFrameIndex, 0, WIDTH, HEIGHT,
                     hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
@@ -338,13 +335,13 @@ public class Bomber extends Character {
         }
 
         if (isMoving) {
-            if (brickPassing == true) {
+            if (brickPassing) {
                 gc.drawImage(effectedWalking,
                         (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
                 return;
             }
-            if (detonator == true) {
+            if (detonator) {
                 gc.drawImage(detonatorWalking,
                         (frameIndex + padding) * WIDTH, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
@@ -355,13 +352,13 @@ public class Bomber extends Character {
                     hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
 
         } else {
-            if (brickPassing == true) {
+            if (brickPassing) {
                 gc.drawImage(effectedStanding,
                         WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
                 return;
             }
-            if (detonator == true) {
+            if (detonator) {
                 gc.drawImage(detonatorStanding,
                         WIDTH * facingDirectionIndex, 0, WIDTH, HEIGHT,
                         hitBox.getMinX(), hitBox.getMinY(), WIDTH, HEIGHT);
@@ -400,7 +397,7 @@ public class Bomber extends Character {
         super.die();
         isMoving = false;
         SoundPlayer.playDyingSound();
-        while (commandStack.isEmpty() == false) { commandStack.pop(); }
+        while (!commandStack.isEmpty()) { commandStack.pop(); }
     }
 
     private void respawn() {
@@ -408,9 +405,9 @@ public class Bomber extends Character {
         if (numOfLives <= 0) {
             EndingState endingState = new EndingState(false);
             Game.endGame();
-            MainApplication.stage.setScene(endingState.getScene());
-            MainApplication.stage.sizeToScene();
-            Game.setPosition(MainApplication.stage);
+            MainApplication.primaryStage.setScene(endingState.getScene());
+            MainApplication.primaryStage.sizeToScene();
+            Game.setPosition(MainApplication.primaryStage);
             SoundPlayer.playGameOverSound();
             return;
         }
@@ -437,7 +434,7 @@ public class Bomber extends Character {
             if (Math.abs(hitBox.getCenterX() - thisCell.getHitBox().getCenterX()) <= 0.3
                     && Math.abs(hitBox.getCenterY() - thisCell.getHitBox().getCenterY()) <= 0.3) {
                 Portal portal = (Portal) other;
-                if (portal.isActivated() == true) {
+                if (portal.isActivated()) {
                     this.getIntoPortal();
                 }
             }
@@ -445,7 +442,6 @@ public class Bomber extends Character {
         }
         if (other instanceof Enemy || other instanceof Flame) {
             die();
-            return;
         }
     }
 
@@ -500,8 +496,6 @@ public class Bomber extends Character {
     public void moveDown() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'd') {
             commandStack.push("0down");
-            //System.out.println("Moved down.");
-            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -509,8 +503,6 @@ public class Bomber extends Character {
     public void moveLeft() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'l') {
             commandStack.push("0left");
-            //System.out.println("Moved left.");
-            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -518,8 +510,6 @@ public class Bomber extends Character {
     public void moveRight() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'r') {
             commandStack.push("0right");
-            //System.out.println("Moved right.");
-            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -527,8 +517,6 @@ public class Bomber extends Character {
     public void moveUp() {
         if (commandStack.empty() || commandStack.peek().charAt(1) != 'u') {
             commandStack.push("0up");
-            //System.out.println("Moved up.");
-            //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
         }
     }
 
@@ -540,8 +528,6 @@ public class Bomber extends Character {
                 break;
             }
         }
-        //System.out.println("reMoved down.");
-        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -552,8 +538,6 @@ public class Bomber extends Character {
                 break;
             }
         }
-        //System.out.println("reMoved left.");
-        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -564,8 +548,6 @@ public class Bomber extends Character {
                 break;
             }
         }
-        //System.out.println("reMoved right.");
-        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 
     @Override
@@ -576,7 +558,5 @@ public class Bomber extends Character {
                 break;
             }
         }
-        //System.out.println("reMoved up.");
-        //System.out.println(getPosOnMapX() + " " + getPosOnMapY());
     }
 }

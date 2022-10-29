@@ -1,5 +1,6 @@
 package game.bomman.component;
 
+import game.bomman.Game;
 import game.bomman.command.Command;
 import game.bomman.command.interactingCommand.*;
 import game.bomman.entity.Entity;
@@ -12,6 +13,7 @@ import game.bomman.entity.item.Item;
 import game.bomman.map.Cell;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.io.FileNotFoundException;
@@ -23,8 +25,8 @@ public class InteractionHandler extends GamePlayComponent {
     private static Canvas bombCanvas;
     private static Canvas itemCanvas;
     private static Portal portal;
-    private static List<ImmobileEntity> immobileEntityList = new ArrayList<>();
-    private static List<Item> itemList = new ArrayList<>();
+    private static final List<ImmobileEntity> immobileEntityList = new ArrayList<>();
+    private static final List<Item> itemList = new ArrayList<>();
 
     public static void init(Canvas bombCanvas_, Canvas itemCanvas_) {
         bombCanvas = bombCanvas_;
@@ -150,21 +152,15 @@ public class InteractionHandler extends GamePlayComponent {
 
     public static void activateInputReader() {
         EventHandler<KeyEvent> layingBombEvent = (event) -> {
-            if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-                switch (event.getCode()) {
-                    case SPACE -> layingBomb.executeOn(bomber);
+            if (Game.hasStarted() && !Game.hasPaused()) {
+                if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                    if (event.getCode() == KeyCode.SPACE) {
+                        layingBomb.executeOn(bomber);
+                    }
                 }
-            } else if (event.getEventType() == KeyEvent.KEY_RELEASED) {
-//                switch (event.getCode()) {
-//                    case DOWN -> removeDown.executeOn(bomber);
-//                    case UP -> removeUp.executeOn(bomber);
-//                    case RIGHT -> removeRight.executeOn(bomber);
-//                    case LEFT -> removeLeft.executeOn(bomber);
-//                }
             }
         };
         characterCanvas.addEventHandler(KeyEvent.KEY_PRESSED, layingBombEvent);
-//        characterCanvas.addEventHandler(KeyEvent.KEY_RELEASED, layingBombEvent);
     }
 
     public static void update(double elapsedTime) throws FileNotFoundException {

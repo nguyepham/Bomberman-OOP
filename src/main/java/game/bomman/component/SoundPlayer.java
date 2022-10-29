@@ -11,62 +11,59 @@ import javafx.stage.Stage;
 
 public class SoundPlayer {
     private static final String FILE_PATH = "src/main/resources/game/bomman/assets/sounds";
-    private static Media bomb = new Media(new File(FILE_PATH + "/bomb.wav").toURI().toString());
-    private static MediaPlayer bombPlayer;
-    private static Media bonus = new Media(new File(FILE_PATH + "/bonus.wav").toURI().toString());
-    private static MediaPlayer bonusPlayer;
-    private static Media dying = new Media(new File(FILE_PATH + "/dying.wav").toURI().toString());
-    private static MediaPlayer dyingPlayer;
-    private static Media stageStart = new Media(new File(FILE_PATH + "/stage_start.wav").toURI().toString());
-    private static MediaPlayer stageStartPlayer;
-    private static Media gameStart = new Media(new File(FILE_PATH + "/game_start.wav").toURI().toString());
-    private static MediaPlayer gameStartPlayer;
-    private static Media gameOver = new Media(new File(FILE_PATH + "/game_over.wav").toURI().toString());
-    private static MediaPlayer gameOverPlayer;
-    private static Media win = new Media(new File(FILE_PATH + "/win.wav").toURI().toString());
-    private static MediaPlayer winPlayer;
+    private static final Media bomb = new Media(new File(FILE_PATH + "/bomb.wav").toURI().toString());
+    private static final Media bonus = new Media(new File(FILE_PATH + "/bonus.wav").toURI().toString());
+    private static final Media dying = new Media(new File(FILE_PATH + "/dying.wav").toURI().toString());
+    private static final Media stageStart = new Media(new File(FILE_PATH + "/stage_start.wav").toURI().toString());
+    private static final Media gameStart = new Media(new File(FILE_PATH + "/game_start.wav").toURI().toString());
+    private static final Media gameOver = new Media(new File(FILE_PATH + "/game_over.wav").toURI().toString());
+    private static final Media win = new Media(new File(FILE_PATH + "/win.wav").toURI().toString());
     private static boolean muted = false;
 
     public static void playBombSound() {
-        bombPlayer = new MediaPlayer(bomb);
+        MediaPlayer bombPlayer = new MediaPlayer(bomb);
         if (!muted) bombPlayer.play();
     }
 
     public static void playBonusSound() {
-        bonusPlayer = new MediaPlayer(bonus);
+        MediaPlayer bonusPlayer = new MediaPlayer(bonus);
         if (!muted) bonusPlayer.play();
     }
 
     public static void playDyingSound() {
-        dyingPlayer = new MediaPlayer(dying);
+        MediaPlayer dyingPlayer = new MediaPlayer(dying);
         if (!muted) dyingPlayer.play();
     }
 
     public static void playStageStartSound() {
-        stageStartPlayer = new MediaPlayer(stageStart);
+        MediaPlayer stageStartPlayer = new MediaPlayer(stageStart);
         if (!muted) stageStartPlayer.play();
     }
 
     public static void playGameStartSound() {
-        gameStartPlayer = new MediaPlayer(gameStart);
+        MediaPlayer gameStartPlayer = new MediaPlayer(gameStart);
         if (!muted) gameStartPlayer.play();
     }
 
     public static void playGameOverSound() {
-        gameOverPlayer = new MediaPlayer(gameOver);
+        MediaPlayer gameOverPlayer = new MediaPlayer(gameOver);
         if (!muted) gameOverPlayer.play();
     }
 
     public static void playWinSound() {
-        winPlayer = new MediaPlayer(win);
+        MediaPlayer winPlayer = new MediaPlayer(win);
         if (!muted) winPlayer.play();
+    }
+
+    public static void turnSoundOnOff() {
+        muted = !muted;
     }
 
     // Bấm S để bật tắt âm lượng
     public static void activateMuteHandler(Stage stage) {
         EventHandler<KeyEvent> muteHandler = event -> {
             if (event.getCode() == KeyCode.S) {
-                muted = !muted;
+                turnSoundOnOff();
             }
         };
         stage.addEventHandler(KeyEvent.KEY_PRESSED, muteHandler);

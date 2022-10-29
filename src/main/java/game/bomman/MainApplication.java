@@ -1,39 +1,43 @@
 package game.bomman;
 
-import game.bomman.gameState.scores.HighScore;
-import game.bomman.gameState.Menu;
 import game.bomman.component.SoundPlayer;
 import game.bomman.gameState.InstructionScene;
-import game.bomman.gameState.scores.Score;
+import game.bomman.gameState.Menu;
+import game.bomman.gameState.PausedScene;
+import game.bomman.gameState.scores.HighScore;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class MainApplication extends Application {
-    public static Stage stage;
+    public static Stage primaryStage;
     public static Stage instructionStage;
     public static Stage highScoreStage;
+    public static Stage pausedStage;
 
     @Override
     public void start(Stage stage) throws IOException {
         // Khởi tạo các thuộc tính
-        MainApplication.stage = stage;
+        MainApplication.primaryStage = stage;
+        primaryStage.setOnCloseRequest(windowEvent -> quitGame());
 
         instructionStage = new Stage();
         instructionStage.setTitle("Instruction");
         instructionStage.setScene(new InstructionScene().getScene());
         instructionStage.setResizable(false);
+        instructionStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                instructionStage.close();
+            }
+        });
 
         highScoreStage = new Stage();
-        highScoreStage.setTitle("High scores");
+        highScoreStage.setTitle("High Scores");
         highScoreStage.setScene(HighScore.newHighScoreScene());
         highScoreStage.setResizable(false);
         highScoreStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -42,11 +46,29 @@ public class MainApplication extends Application {
             }
         });
 
+        pausedStage = new Stage();
+        pausedStage.setTitle("Game Paused");
+        pausedStage.setScene(PausedScene.newPausedScene());
+        pausedStage.setResizable(false);
+        pausedStage.setOnCloseRequest(windowEvent -> Game.load());
+        pausedStage.initModality(Modality.APPLICATION_MODAL);
+
         // Activate keyboard shortcut key handlers
+        activatePauseLoadKeyHandler(stage);
+        activatePauseLoadKeyHandler(pausedStage);
         SoundPlayer.activateMuteHandler(stage);
+        SoundPlayer.activateMuteHandler(instructionStage);
+        SoundPlayer.activateMuteHandler(highScoreStage);
+        SoundPlayer.activateMuteHandler(pausedStage);
         activateQuitKeyHandler(stage);
-        activateBackToMenuKeyHandler();
-        activateHighScoreKeyHandler();
+        activateQuitKeyHandler(instructionStage);
+        activateQuitKeyHandler(highScoreStage);
+        activateQuitKeyHandler(pausedStage);
+        activateBackToMenuKeyHandler(stage);
+        activateBackToMenuKeyHandler(pausedStage);
+        activateHighScoreKeyHandler(stage);
+        activateHighScoreKeyHandler(instructionStage);
+        activateHighScoreKeyHandler(pausedStage);
 
         // Set the scene as a menu, play music and show the stage.
         stage.setTitle("Bomberman");
@@ -56,38 +78,51 @@ public class MainApplication extends Application {
         stage.show();
     }
 
+    public static void quitGame() {
+        primaryStage.close();
+        instructionStage.close();
+        highScoreStage.close();
+        pausedStage.close();
+    }
+
     // Bấm Q để thoát khỏi game.
     public void activateQuitKeyHandler(Stage stage) {
         EventHandler<KeyEvent> quitHandler = event -> {
             if (event.getCode() == KeyCode.Q) {
-                stage.close();
+                quitGame();
             }
         };
         stage.addEventHandler(KeyEvent.KEY_PRESSED, quitHandler);
     }
 
+    public static void getBackToMenu() {
+        if (Game.hasStarted()) {
+            Game.endGame();
+
+            try {
+                primaryStage.setScene(Menu.newMenuScene());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            Game.setPosition(primaryStage);
+        }
+
+        if (pausedStage.isShowing()) pausedStage.close();
+    }
+
     // Bấm ESC để quay về menu.
-    public void activateBackToMenuKeyHandler() {
+    public void activateBackToMenuKeyHandler(Stage stage) {
         EventHandler<KeyEvent> backToMenuKeyHandler = event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
-                if (Game.hasStarted()) {
-                    Game.endGame();
-
-                    try {
-                        stage.setScene(Menu.newMenuScene());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    Game.setPosition(stage);
-                }
+                getBackToMenu();
             }
         };
         stage.addEventHandler(KeyEvent.KEY_PRESSED, backToMenuKeyHandler);
     }
 
     // Bấm H để hiện các điểm cao
-    public void activateHighScoreKeyHandler() {
+    public void activateHighScoreKeyHandler(Stage stage) {
         EventHandler<KeyEvent> highScoreKeyHandler = event -> {
             if (event.getCode() == KeyCode.H) {
                 if (!highScoreStage.isShowing()) {
@@ -96,6 +131,19 @@ public class MainApplication extends Application {
             }
         };
         stage.addEventHandler(KeyEvent.KEY_PRESSED, highScoreKeyHandler);
+    }
+
+    // Bấm P để pause, L để tiếp tục game
+    public void activatePauseLoadKeyHandler(Stage stage) {
+        EventHandler<KeyEvent> pauseLoadKeyHandler = event -> {
+            if (event.getCode() == KeyCode.P) {
+                Game.pause();
+            }
+            else if (event.getCode() == KeyCode.L) {
+                Game.load();
+            }
+        };
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, pauseLoadKeyHandler);
     }
 
     public static void main(String[] args) {
