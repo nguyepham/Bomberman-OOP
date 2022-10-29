@@ -45,6 +45,12 @@ public abstract class Enemy extends Character {
         movementController = new AI(this);
     }
 
+    public void setNumOfLives(int numOfLives) {
+        if (numOfLives > 0) {
+            this.numOfLives = numOfLives;
+        }
+    }
+
     public abstract void runAI(double elapsedTime);
 
     public int getFacingDirectionIndex() { return facingDirectionIndex; }

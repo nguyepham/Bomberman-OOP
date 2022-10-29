@@ -17,8 +17,8 @@ public class Bear extends FourthTypeOfMovement {
     private static final int N_DYING_SPRITES = 5;
     private static final Image bearWalking;
     private static final Image bearDying;
-    private static final double MAX_SPEED = 150;
-    private static final double MIN_SPEED = 70;
+    private static final double MAX_SPEED = 180;
+    private static final double MIN_SPEED = 100;
     private static double MAX_DISTANCE;
 
     static {

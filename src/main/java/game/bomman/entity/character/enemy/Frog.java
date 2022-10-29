@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * Di chuyển như Balloon và có thể thay đổi tốc độ.
  */
-public class Frog extends FirstTypeOfMovement {
+public class Frog extends FourthTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 3;
     private static final double DYING_SPRITE_DURATION = 0.2f;
@@ -37,7 +37,7 @@ public class Frog extends FirstTypeOfMovement {
     }
 
     @Override
-    public void update(double elapsedTime) {
+    public void update(double elapsedTime) throws FileNotFoundException {
         if (timer == 0) {
             speed = random.nextDouble(MAX_SPEED - MIN_SPEED) + MIN_SPEED;
         }

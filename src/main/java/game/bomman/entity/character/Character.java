@@ -5,6 +5,7 @@ import game.bomman.map.Cell;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Character extends Entity {
+    protected int numOfLives;
     protected int facingDirectionIndex = 2;
     protected double speed;
     protected double brickPassingTimer = 0;

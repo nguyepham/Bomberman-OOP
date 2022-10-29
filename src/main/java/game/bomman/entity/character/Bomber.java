@@ -46,7 +46,6 @@ public class Bomber extends Character {
     private static final Image bomberLevelUp;
     private static final Image detonatorStanding;
     private static final Image detonatorWalking;
-    private int numOfLives;
     private int numOfBombs;
     private int flameLength;
     private final Stack<String> commandStack = new Stack<>();
