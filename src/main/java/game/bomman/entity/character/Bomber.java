@@ -234,7 +234,6 @@ public class Bomber extends Character {
 
                 /// Character blocked.
                 if (isBlocked || isBuffering || currentY < cellMinY) {
-                    //System.out.println(aheadCell.getRawConfig());
                     if (hitBox.getMinY() > cellMinY) {
                         hitBox.setMinY(cellMinY);
                     }
@@ -260,6 +259,7 @@ public class Bomber extends Character {
                     }
                     if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
+                        commandStack.add("1up");
                         break;
                     }
                 }
