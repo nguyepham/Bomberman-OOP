@@ -10,15 +10,15 @@ import java.io.FileNotFoundException;
 /**
  * Có khá năng đuổi theo Bomber bằng BFS và tăng tốc khi đến gần Bomber.
  */
-public class Bear extends ThirdTypeOfMovement {
+public class Bear extends FourthTypeOfMovement {
     private static final double MOVING_SPRITE_DURATION = 0.3f;
     private static final int N_MOVING_SPRITES = 3;
     private static final double DYING_SPRITE_DURATION = 0.2f;
     private static final int N_DYING_SPRITES = 5;
     private static final Image bearWalking;
     private static final Image bearDying;
-    private static final double MAX_SPEED = 200;
-    private static final double MIN_SPEED = 100;
+    private static final double MAX_SPEED = 150;
+    private static final double MIN_SPEED = 70;
     private static double MAX_DISTANCE;
 
     static {

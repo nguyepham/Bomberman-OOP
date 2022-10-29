@@ -40,13 +40,15 @@ public abstract class Item extends Entity {
             explodingTimer = 0;
             ++explodingFrameIndex;
             if (explodingFrameIndex == N_EXPLODING_SPRITE) {
-                disappear();
+                disappear(false);
             }
         }
     }
 
-    protected void disappear() {
-        SoundPlayer.playBonusSound();
+    protected void disappear(boolean byBomber) {
+        if (byBomber == true) {
+            SoundPlayer.playBonusSound();
+        }
         InteractionHandler.removeItem(this);
     }
 
@@ -85,7 +87,7 @@ public abstract class Item extends Entity {
 
         countdownTimer -= elapsedTime;
         if (countdownTimer <= 0) {
-            disappear();
+            disappear(false);
         }
     }
 

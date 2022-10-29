@@ -31,7 +31,7 @@ public class FlameItem extends Item {
         super.interactWith(other);
         if (other instanceof Bomber) {
             ((Bomber) other).increaseFlameLength();
-            disappear();
+            disappear(true);
         }
     }
 

@@ -18,6 +18,8 @@ public class SoundPlayer {
     private static final Media gameStart = new Media(new File(FILE_PATH + "/game_start.wav").toURI().toString());
     private static final Media gameOver = new Media(new File(FILE_PATH + "/game_over.wav").toURI().toString());
     private static final Media win = new Media(new File(FILE_PATH + "/win.wav").toURI().toString());
+    private static final Media music = new Media(new File(FILE_PATH + "/game_play.wav").toURI().toString());
+    private static MediaPlayer musicPlayer = new MediaPlayer(music);
     private static boolean muted = false;
 
     public static void playBombSound() {
@@ -59,11 +61,33 @@ public class SoundPlayer {
         muted = !muted;
     }
 
-    // Bấm S để bật tắt âm lượng
+    // Bấm S để bật tắt âm thanh
     public static void activateMuteHandler(Stage stage) {
         EventHandler<KeyEvent> muteHandler = event -> {
             if (event.getCode() == KeyCode.S) {
                 turnSoundOnOff();
+            }
+        };
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, muteHandler);
+    }
+
+    public static void playMusic() {
+        musicPlayer = new MediaPlayer(music);
+        musicPlayer.play();
+    }
+
+    public static void triggerMusicPlayer() {
+        if (musicPlayer.isMute()) {
+            musicPlayer.setMute(false);
+        } else {
+            musicPlayer.setMute(true);
+        }
+    }
+
+    public static void activateMusicHandler(Stage stage) {
+        EventHandler<KeyEvent> muteHandler = event -> {
+            if (event.getCode() == KeyCode.M) {
+                triggerMusicPlayer();
             }
         };
         stage.addEventHandler(KeyEvent.KEY_PRESSED, muteHandler);

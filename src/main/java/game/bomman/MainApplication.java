@@ -60,6 +60,10 @@ public class MainApplication extends Application {
         SoundPlayer.activateMuteHandler(instructionStage);
         SoundPlayer.activateMuteHandler(highScoreStage);
         SoundPlayer.activateMuteHandler(pausedStage);
+        SoundPlayer.activateMusicHandler(stage);
+        SoundPlayer.activateMusicHandler(instructionStage);
+        SoundPlayer.activateMusicHandler(highScoreStage);
+        SoundPlayer.activateMusicHandler(pausedStage);
         activateQuitKeyHandler(stage);
         activateQuitKeyHandler(instructionStage);
         activateQuitKeyHandler(highScoreStage);
@@ -74,7 +78,7 @@ public class MainApplication extends Application {
         stage.setTitle("Bomberman");
         stage.setResizable(false);
         stage.setScene(Menu.newMenuScene());
-        SoundPlayer.playStageStartSound();
+        SoundPlayer.playMusic();
         stage.show();
     }
 

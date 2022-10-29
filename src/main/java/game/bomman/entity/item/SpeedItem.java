@@ -31,7 +31,7 @@ public class SpeedItem extends Item {
         super.interactWith(other);
         if (other instanceof Bomber) {
             ((Bomber) other).increaseSpeed();
-            disappear();
+            disappear(true);
         }
     }
 
