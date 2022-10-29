@@ -114,6 +114,10 @@ public class AI {
 
     /// If marked cell is defined, move along the path.
     public void moveByDFS() {
+        if (pathId >= path.size()) {
+            return;
+        }
+
         if (enemy.fitInThatCell()) {
             enemy.setFacingDirectionIndex(path.get(pathId++).ordinal());
         }
