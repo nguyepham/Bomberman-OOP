@@ -106,6 +106,7 @@ public class PlayingState extends GameState {
                     DashboardHandler.updateTime();
                     if (gameTimer <= 0) {
                         gameLost();
+                        return;
                     }
                     try {
                         this.update(elapsedTime);
