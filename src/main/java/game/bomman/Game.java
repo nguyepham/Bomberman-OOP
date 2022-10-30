@@ -37,6 +37,7 @@ public class Game {
 
     public static void levelUp() throws FileNotFoundException {
         ++currentMap;
+        HighScore.addScore((long) playingState.getGameTimer());
         if (currentMap >= levels.length) {
             gameWin();
             return;

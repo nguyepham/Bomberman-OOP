@@ -145,4 +145,8 @@ public class PlayingState extends GameState {
     public void resetGameTimer() {
         this.gameTimer = FIXED_TIME;
     }
+
+    public double getGameTimer() {
+        return gameTimer;
+    }
 }

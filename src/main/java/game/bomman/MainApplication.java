@@ -102,15 +102,14 @@ public class MainApplication extends Application {
     public static void getBackToMenu() {
         if (Game.hasStarted()) {
             Game.endGame();
-
-            try {
-                primaryStage.setScene(Menu.newMenuScene());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            Game.setPosition(primaryStage);
         }
+        try {
+            primaryStage.setScene(Menu.newMenuScene());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Game.setPosition(primaryStage);
 
         if (pausedStage.isShowing()) pausedStage.close();
     }
