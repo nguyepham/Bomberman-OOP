@@ -1,6 +1,7 @@
 package game.bomman.gameState.scores;
 
 import game.bomman.MainApplication;
+import game.bomman.component.DashboardHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -25,16 +26,27 @@ public class HighScore {
 
     public static void addScore(long amount) {
         currentScore += amount;
+        DashboardHandler.updateScore();
         if (highScores.isEmpty() || currentScore > highScores.get(0).getValue()) {
             highScores.add(0, new Score(0, currentScore));
             if (highScores.size() > MAX_SIZE) highScores.remove(highScores.size() - 1);
             for (Score score: highScores) {
                 score.setRank(score.getRank() + 1);
             }
+            DashboardHandler.updateHighScore();
         }
     }
 
     public static ObservableList<Score> getHighScores() {
         return highScores;
+    }
+
+    public static long getCurrentScore() {
+        return currentScore;
+    }
+
+    public static long getHighestScore() {
+        if (highScores.isEmpty()) return currentScore;
+        return highScores.get(0).getValue();
     }
 }
