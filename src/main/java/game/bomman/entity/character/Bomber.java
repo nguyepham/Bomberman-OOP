@@ -20,7 +20,6 @@ import java.util.Stack;
 public class Bomber extends Character {
     public static final double WIDTH = 42;
     public static final double HEIGHT = 48;
-    private static final double WALKING_SPRITE_DURATION = 0.15f;
     private static final int N_SPRITES_PER_DIRECTION = 4;
     private static final double LEVEL_UP_SPRITE_DURATION = 0.4f;
     private static final int N_LEVEL_UP_SPRITES = 4;
@@ -144,7 +143,7 @@ public class Bomber extends Character {
 
         /// Update walking sprite.
         timer += elapsedTime;
-        if (timer >= WALKING_SPRITE_DURATION) {
+        if (timer >= speed / 1200) {
             timer = 0;
             ++frameIndex;
             if (frameIndex == N_SPRITES_PER_DIRECTION) {

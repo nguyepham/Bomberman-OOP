@@ -22,7 +22,7 @@ public abstract class Character extends Entity {
 
     public void setBrickPassing() {
         brickPassing = true;
-        brickPassingTimer = 8.0f;
+        brickPassingTimer = 20.0f;
     }
 
     public boolean getSteelPassing() {return steelPassing; }
