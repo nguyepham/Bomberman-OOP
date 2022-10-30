@@ -1,15 +1,14 @@
 package game.bomman.entity.character;
 
 import game.bomman.Game;
-import game.bomman.MainApplication;
+import game.bomman.component.DashboardHandler;
 import game.bomman.component.InteractionHandler;
 import game.bomman.component.SoundPlayer;
 import game.bomman.entity.Entity;
-import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.entity.character.enemy.Enemy;
 import game.bomman.entity.immobileEntity.Bomb;
+import game.bomman.entity.immobileEntity.Flame;
 import game.bomman.entity.immobileEntity.Portal;
-import game.bomman.gameState.EndingState;
 import game.bomman.map.Cell;
 import game.bomman.map.Map;
 import javafx.scene.image.Image;
@@ -401,13 +400,9 @@ public class Bomber extends Character {
 
     private void respawn() {
         --numOfLives;
+        DashboardHandler.updateLifeCount();
         if (numOfLives <= 0) {
-            EndingState endingState = new EndingState(false);
-            Game.endGame();
-            MainApplication.primaryStage.setScene(endingState.getScene());
-            MainApplication.primaryStage.sizeToScene();
-            Game.setPosition(MainApplication.primaryStage);
-            SoundPlayer.playGameOverSound();
+            Game.gameLost();
             return;
         }
         isAlive = true;
@@ -557,5 +552,9 @@ public class Bomber extends Character {
                 break;
             }
         }
+    }
+
+    public int getNumOfLives() {
+        return numOfLives;
     }
 }

@@ -1,5 +1,6 @@
 package game.bomman;
 
+import game.bomman.component.DashboardHandler;
 import game.bomman.component.GamePlayComponent;
 import game.bomman.component.InteractionHandler;
 import game.bomman.component.SoundPlayer;
@@ -37,12 +38,7 @@ public class Game {
     public static void levelUp() throws FileNotFoundException {
         ++currentMap;
         if (currentMap >= levels.length) {
-            EndingState endingState = new EndingState(true);
-            endGame();
-            stage.setScene(endingState.getScene());
-            stage.sizeToScene();
-            setPosition(stage);
-            SoundPlayer.playWinSound();
+            gameWin();
             return;
         }
         playingState.loadNextLevelMap();
@@ -50,6 +46,26 @@ public class Game {
         stage.sizeToScene();
         setPosition(stage);
         SoundPlayer.playStageStartSound();
+        playingState.resetGameTimer();
+        DashboardHandler.clearDashboard();
+    }
+
+    public static void gameLost() {
+        EndingState endingState = new EndingState(false);
+        Game.endGame();
+        stage.setScene(endingState.getScene());
+        stage.sizeToScene();
+        Game.setPosition(stage);
+        SoundPlayer.playGameOverSound();
+    }
+
+    public static void gameWin() {
+        EndingState endingState = new EndingState(true);
+        endGame();
+        stage.setScene(endingState.getScene());
+        stage.sizeToScene();
+        setPosition(stage);
+        SoundPlayer.playWinSound();
     }
 
     public static void setPosition(Stage stage) {
@@ -106,5 +122,9 @@ public class Game {
             paused = false;
             MainApplication.pausedStage.close();
         }
+    }
+
+    public static PlayingState getPlayingState() {
+        return playingState;
     }
 }
