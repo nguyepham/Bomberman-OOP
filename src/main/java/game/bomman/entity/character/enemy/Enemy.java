@@ -1,6 +1,5 @@
 package game.bomman.entity.character.enemy;
 
-import game.bomman.component.AI;
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
 import game.bomman.entity.character.Character;
@@ -22,7 +21,7 @@ public abstract class Enemy extends Character {
     private final int nDyingSprites;
     private final Image walkingImage;
     private final Image dyingImage;
-    protected AI movementController = new AI(this);
+    protected AI movementController;
     // the score obtained by removing this enemy
     private int score = 100;
 
@@ -43,6 +42,13 @@ public abstract class Enemy extends Character {
         initHitBox(loadingPosX, loadingPosY, SIDE, SIDE);
         speed = 100;
         setScore(score);
+        movementController = new AI(this);
+    }
+
+    public void setNumOfLives(int numOfLives) {
+        if (numOfLives > 0) {
+            this.numOfLives = numOfLives;
+        }
     }
 
     public abstract void runAI(double elapsedTime);

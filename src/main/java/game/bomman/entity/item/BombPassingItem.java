@@ -32,7 +32,7 @@ public class BombPassingItem extends Item {
         super.interactWith(other);
         if (other instanceof Bomber) {
             ImmobileEntity.countdownTimer = 1.0f;
-            disappear();
+            disappear(true);
         }
     }
 

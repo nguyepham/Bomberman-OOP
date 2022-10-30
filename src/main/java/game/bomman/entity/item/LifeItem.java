@@ -31,7 +31,7 @@ public class LifeItem extends Item {
         super.interactWith(other);
         if (other instanceof Bomber) {
             ((Bomber) other).increaseNumOfLives();
-            disappear();
+            disappear(true);
         }
     }
 

@@ -46,7 +46,6 @@ public class Bomber extends Character {
     private static final Image bomberLevelUp;
     private static final Image detonatorStanding;
     private static final Image detonatorWalking;
-    private int numOfLives;
     private int numOfBombs;
     private int flameLength;
     private final Stack<String> commandStack = new Stack<>();
@@ -234,7 +233,6 @@ public class Bomber extends Character {
 
                 /// Character blocked.
                 if (isBlocked || isBuffering || currentY < cellMinY) {
-                    //System.out.println(aheadCell.getRawConfig());
                     if (hitBox.getMinY() > cellMinY) {
                         hitBox.setMinY(cellMinY);
                     }
@@ -260,6 +258,7 @@ public class Bomber extends Character {
                     }
                     if (map.getCell(positionOnMapX - 1, positionOnMapY + 1).isBlocking(this)
                             && currentY > cellMinY) {
+                        commandStack.add("1up");
                         break;
                     }
                 }

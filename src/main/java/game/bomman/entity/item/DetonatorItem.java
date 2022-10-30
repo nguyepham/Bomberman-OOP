@@ -33,7 +33,7 @@ public class DetonatorItem extends Item {
             Bomber bomber = (Bomber) other;
             if (bomber.isBrickPassing()) return;
             bomber.setDetonator();
-            disappear();
+            disappear(true);
         }
     }
 

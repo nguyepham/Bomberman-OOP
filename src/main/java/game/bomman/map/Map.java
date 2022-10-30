@@ -2,7 +2,12 @@ package game.bomman.map;
 
 import game.bomman.component.InteractionHandler;
 import game.bomman.entity.Entity;
-import game.bomman.entity.character.enemy.*;
+import game.bomman.entity.character.enemy.firstTypeOfMoving.Balloon;
+import game.bomman.entity.character.enemy.firstTypeOfMoving.Ghost;
+import game.bomman.entity.character.enemy.fourthTypeOfMoving.Bear;
+import game.bomman.entity.character.enemy.fourthTypeOfMoving.Frog;
+import game.bomman.entity.character.enemy.thirdTypeOfMoving.Oneal;
+import game.bomman.entity.character.enemy.secondTypeOfMoving.Fire;
 import game.bomman.entity.immobileEntity.Brick;
 import game.bomman.entity.immobileEntity.Portal;
 import game.bomman.entity.item.*;
@@ -192,31 +197,31 @@ public class Map {
                     }
                     continue;
                 }
-                if (rawConfig == '1') {
-                    Balloon balloon = new Balloon(this, posX, posY);
-                    InteractionHandler.addEnemy(balloon);
-                    continue;
-                }
-                if (rawConfig == '3') {
-                    Fire fire = new Fire(this, posX, posY);
-                    InteractionHandler.addEnemy(fire);
-                    continue;
-                }
-                if (rawConfig == '2') {
-                    Oneal oneal = new Oneal(this, posX, posY);
-                    InteractionHandler.addEnemy(oneal);
-                }
-                else if (rawConfig == '4') {
-                    Ghost ghost = new Ghost(this, posX, posY);
-                    InteractionHandler.addEnemy(ghost);
-                }
-                else if (rawConfig == '5') {
-                    Frog frog = new Frog(this, posX, posY);
-                    InteractionHandler.addEnemy(frog);
-                }
-                else if (rawConfig == '6') {
-                    Bear bear = new Bear(this, posX, posY);
-                    InteractionHandler.addEnemy(bear);
+                switch (rawConfig) {
+                    case '1' -> {
+                        Balloon balloon = new Balloon(this, posX, posY);
+                        InteractionHandler.addEnemy(balloon);
+                    }
+                    case '2' -> {
+                        Oneal oneal = new Oneal(this, posX, posY);
+                        InteractionHandler.addEnemy(oneal);
+                    }
+                    case '3' -> {
+                        Fire fire = new Fire(this, posX, posY);
+                        InteractionHandler.addEnemy(fire);
+                    }
+                    case '4' -> {
+                        Ghost ghost = new Ghost(this, posX, posY);
+                        InteractionHandler.addEnemy(ghost);
+                    }
+                    case '5' -> {
+                        Frog frog = new Frog(this, posX, posY);
+                        InteractionHandler.addEnemy(frog);
+                    }
+                    case '6' -> {
+                        Bear bear = new Bear(this, posX, posY);
+                        InteractionHandler.addEnemy(bear);
+                    }
                 }
             }
         }

@@ -23,4 +23,14 @@ module game.bomman {
     opens game.bomman.gameState to javafx.fxml;
     exports game.bomman.gameState.scores;
     opens game.bomman.gameState.scores to javafx.fxml;
+    exports game.bomman.entity.character.enemy;
+    opens game.bomman.entity.character.enemy to javafx.fxml;
+    exports game.bomman.entity.character.enemy.firstTypeOfMoving;
+    opens game.bomman.entity.character.enemy.firstTypeOfMoving to javafx.fxml;
+    exports game.bomman.entity.character.enemy.secondTypeOfMoving;
+    opens game.bomman.entity.character.enemy.secondTypeOfMoving to javafx.fxml;
+    exports game.bomman.entity.character.enemy.thirdTypeOfMoving;
+    opens game.bomman.entity.character.enemy.thirdTypeOfMoving to javafx.fxml;
+    exports game.bomman.entity.character.enemy.fourthTypeOfMoving;
+    opens game.bomman.entity.character.enemy.fourthTypeOfMoving to javafx.fxml;
 }
