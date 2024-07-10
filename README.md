@@ -1,2 +1,5 @@
-# bom-man
-Repository for working on the final project of class INT2204 22 - the game bomberman.
+# Bomberman game
+Repository for the assignment of my OOP course in the university.
+===
+*The class hierarchy of the Bomberman game*
+![Class hierarchy](diagram.png)
